@@ -42,6 +42,7 @@ const InstructionPanel = ({
   currentLevelIndex,
   totalLevels,
   completedLevels,
+  timeTaken,
 }: InstructionPanelProps) => {
   const [dataPreviewOpen, setDataPreviewOpen] = useState(false);
   const testData = level.testData;
