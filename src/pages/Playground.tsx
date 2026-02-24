@@ -162,20 +162,20 @@ const Playground = () => {
           </AnimatePresence>
         </div>
 
-        {/* Main workspace */}
-        <div className="flex-1 flex flex-col">
+        {/* Main workspace area */}
+        <div className="flex-1 flex flex-col lg:flex-row">
           <DragDropContext onDragEnd={onDragEnd}>
-            {/* Available blocks */}
-            <div className="bg-card border-b border-border p-4">
+            {/* Available blocks - left/center area */}
+            <div className="bg-card border-b lg:border-b-0 lg:border-r border-border p-4 lg:w-72 flex flex-col shrink-0">
               <h3 className="font-display text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">
-                Available Blocks — Drag them down ↓
+                Available Blocks — Drag to workspace →
               </h3>
-              <Droppable droppableId="available" direction="horizontal">
+              <Droppable droppableId="available" direction="vertical">
                 {(provided) => (
                   <div
                     ref={provided.innerRef}
                     {...provided.droppableProps}
-                    className="flex flex-wrap gap-3 min-h-[56px]"
+                    className="flex flex-col gap-3 min-h-[56px]"
                   >
                     {availableBlocks.map((block, index) => (
                       <Draggable key={block.id} draggableId={block.id} index={index}>
@@ -206,7 +206,7 @@ const Playground = () => {
               </Droppable>
             </div>
 
-            {/* Drop workspace */}
+            {/* Drop workspace - right side */}
             <div className="flex-1 bg-workspace workspace-grid p-6 relative">
               <Droppable droppableId="workspace">
                 {(provided, snapshot) => (
@@ -214,7 +214,7 @@ const Playground = () => {
                     ref={provided.innerRef}
                     {...provided.droppableProps}
                     className={`
-                      min-h-[300px] max-w-md mx-auto rounded-xl border-2 border-dashed p-4 transition-colors
+                      min-h-[300px] max-w-md ml-auto rounded-xl border-2 border-dashed p-4 transition-colors
                       ${snapshot.isDraggingOver
                         ? "border-primary/50 bg-primary/5"
                         : solved
