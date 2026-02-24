@@ -284,6 +284,7 @@ const AutomationMind = () => {
           currentLevelIndex={currentLevelIndex}
           totalLevels={LEVELS.length}
           completedLevels={completedLevels}
+          timeTaken={timeTaken}
         />
       </div>
     </div>
