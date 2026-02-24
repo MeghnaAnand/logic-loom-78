@@ -1,10 +1,13 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { DragDropContext, Droppable, Draggable, DropResult } from "@hello-pangea/dnd";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, ArrowRight, Lightbulb, RotateCcw, CheckCircle2, Trophy } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { challenges, type Block } from "@/data/challenges";
+import JumpingCharacter from "@/components/puzzle/JumpingCharacter";
+import PuzzleTimer from "@/components/puzzle/PuzzleTimer";
+import WrongAnswerOverlay from "@/components/puzzle/WrongAnswerOverlay";
 
 const blockColorMap: Record<string, string> = {
   trigger: "bg-block-trigger",
@@ -13,6 +16,14 @@ const blockColorMap: Record<string, string> = {
   data: "bg-block-data",
   output: "bg-block-output",
 };
+
+const WRONG_MESSAGES = [
+  "Oops! That's not quite right!",
+  "Almost, but not there yet!",
+  "Hmm, the order's off!",
+  "Nope! Think about the flow!",
+  "So close! Try rearranging!",
+];
 
 const Playground = () => {
   const navigate = useNavigate();
@@ -23,6 +34,14 @@ const Playground = () => {
   const [solved, setSolved] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [solvedChallenges, setSolvedChallenges] = useState<Set<number>>(new Set());
+  const [characterState, setCharacterState] = useState<"idle" | "jumping" | "celebrating" | "falling">("idle");
+  const [showWrong, setShowWrong] = useState(false);
+  const [wrongMessage, setWrongMessage] = useState("");
+  const [wrongShake, setWrongShake] = useState(false);
+  const [timerResetKey, setTimerResetKey] = useState(0);
+  const [timerRunning, setTimerRunning] = useState(false);
+  const [finalTime, setFinalTime] = useState(0);
+  const [attempts, setAttempts] = useState(0);
 
   const challenge = challenges[currentChallenge];
 
@@ -32,6 +51,11 @@ const Playground = () => {
     setShowHint(false);
     setSolved(false);
     setShowSuccess(false);
+    setCharacterState("idle");
+    setShowWrong(false);
+    setTimerResetKey((k) => k + 1);
+    setTimerRunning(false);
+    setAttempts(0);
   };
 
   const loadChallenge = (index: number) => {
@@ -42,23 +66,55 @@ const Playground = () => {
     setShowHint(false);
     setSolved(false);
     setShowSuccess(false);
+    setCharacterState("idle");
+    setShowWrong(false);
+    setTimerResetKey((k) => k + 1);
+    setTimerRunning(false);
+    setAttempts(0);
   };
 
-  const checkSolution = (placed: Block[]) => {
+  const triggerWrongAnswer = useCallback(() => {
+    setAttempts((a) => a + 1);
+    const msg = WRONG_MESSAGES[Math.floor(Math.random() * WRONG_MESSAGES.length)];
+    setWrongMessage(msg);
+    setShowWrong(true);
+    setCharacterState("falling");
+    setWrongShake(true);
+    setTimeout(() => {
+      setWrongShake(false);
+      setCharacterState("idle");
+    }, 1000);
+  }, []);
+
+  const checkSolution = useCallback((placed: Block[]) => {
     const correct = challenge.correctOrder;
     if (placed.length !== correct.length) return;
+
     const isCorrect = placed.every((b, i) => b.id === correct[i]);
     if (isCorrect) {
       setSolved(true);
       setShowSuccess(true);
+      setTimerRunning(false);
+      setCharacterState("celebrating");
       setSolvedChallenges((prev) => new Set([...prev, currentChallenge]));
+    } else {
+      triggerWrongAnswer();
     }
-  };
+  }, [challenge, currentChallenge, triggerWrongAnswer]);
 
   const onDragEnd = (result: DropResult) => {
     if (!result.destination) return;
 
     const { source, destination } = result;
+
+    // Start timer on first interaction
+    if (!timerRunning && !solved) {
+      setTimerRunning(true);
+    }
+    setCharacterState("jumping");
+    setTimeout(() => {
+      if (!solved) setCharacterState("idle");
+    }, 500);
 
     if (source.droppableId === "available" && destination.droppableId === "workspace") {
       const block = availableBlocks[source.index];
@@ -99,24 +155,31 @@ const Playground = () => {
           <div className="h-5 w-px bg-border" />
           <h1 className="font-display font-bold text-foreground">AutoFlow Puzzles</h1>
         </div>
-        <div className="flex items-center gap-2">
-          {challenges.map((_, i) => (
-            <button
-              key={i}
-              onClick={() => loadChallenge(i)}
-              className={`
-                w-8 h-8 rounded-lg font-display font-bold text-sm transition-all
-                ${currentChallenge === i
-                  ? "bg-primary text-primary-foreground"
-                  : solvedChallenges.has(i)
-                    ? "bg-success text-success-foreground"
-                    : "bg-muted text-muted-foreground hover:bg-muted/80"
-                }
-              `}
-            >
-              {solvedChallenges.has(i) ? "✓" : i + 1}
-            </button>
-          ))}
+        <div className="flex items-center gap-4">
+          <PuzzleTimer
+            isRunning={timerRunning}
+            onTimeUpdate={setFinalTime}
+            reset={timerResetKey}
+          />
+          <div className="flex items-center gap-2">
+            {challenges.map((_, i) => (
+              <button
+                key={i}
+                onClick={() => loadChallenge(i)}
+                className={`
+                  w-8 h-8 rounded-lg font-display font-bold text-sm transition-all
+                  ${currentChallenge === i
+                    ? "bg-primary text-primary-foreground"
+                    : solvedChallenges.has(i)
+                      ? "bg-success text-success-foreground"
+                      : "bg-muted text-muted-foreground hover:bg-muted/80"
+                  }
+                `}
+              >
+                {solvedChallenges.has(i) ? "✓" : i + 1}
+              </button>
+            ))}
+          </div>
         </div>
       </header>
 
@@ -138,6 +201,13 @@ const Playground = () => {
             <h3 className="font-display font-semibold text-sm text-foreground mb-1">📋 Scenario</h3>
             <p className="text-sm text-muted-foreground leading-relaxed">{challenge.scenario}</p>
           </div>
+
+          {/* Attempt counter */}
+          {attempts > 0 && !solved && (
+            <div className="bg-destructive/10 rounded-lg px-3 py-2 text-sm text-destructive font-display font-semibold">
+              Attempts: {attempts} — Keep trying! 💪
+            </div>
+          )}
 
           <div className="flex gap-2 mt-auto">
             <Button variant="outline" size="sm" onClick={() => setShowHint(!showHint)} className="gap-1 flex-1">
@@ -165,7 +235,7 @@ const Playground = () => {
         {/* Main workspace area */}
         <div className="flex-1 flex flex-col lg:flex-row">
           <DragDropContext onDragEnd={onDragEnd}>
-            {/* Available blocks - left/center area */}
+            {/* Available blocks - left side */}
             <div className="bg-card border-b lg:border-b-0 lg:border-r border-border p-4 lg:w-72 flex flex-col shrink-0">
               <h3 className="font-display text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">
                 Available Blocks — Drag to workspace →
@@ -207,19 +277,39 @@ const Playground = () => {
             </div>
 
             {/* Drop workspace - right side */}
-            <div className="flex-1 bg-workspace workspace-grid p-6 relative">
+            <div className="flex-1 bg-workspace workspace-grid p-6 relative overflow-hidden">
+              {/* Wrong answer overlay */}
+              <WrongAnswerOverlay
+                show={showWrong}
+                message={wrongMessage}
+                onDismiss={() => setShowWrong(false)}
+              />
+
+              {/* Jumping character above the workspace */}
+              <div className="flex justify-end mb-4 mr-4">
+                <JumpingCharacter
+                  blockIndex={placedBlocks.length - 1}
+                  totalBlocks={placedBlocks.length}
+                  state={characterState}
+                />
+              </div>
+
               <Droppable droppableId="workspace">
                 {(provided, snapshot) => (
-                  <div
+                  <motion.div
                     ref={provided.innerRef}
                     {...provided.droppableProps}
+                    animate={wrongShake ? { x: [0, -6, 6, -4, 4, 0] } : { x: 0 }}
+                    transition={{ duration: 0.4 }}
                     className={`
                       min-h-[300px] max-w-md ml-auto rounded-xl border-2 border-dashed p-4 transition-colors
                       ${snapshot.isDraggingOver
                         ? "border-primary/50 bg-primary/5"
                         : solved
                           ? "border-success/50 bg-success/5"
-                          : "border-workspace-foreground/20"
+                          : wrongShake
+                            ? "border-destructive/50 bg-destructive/5"
+                            : "border-workspace-foreground/20"
                       }
                     `}
                   >
@@ -272,7 +362,7 @@ const Playground = () => {
                       </Draggable>
                     ))}
                     {provided.placeholder}
-                  </div>
+                  </motion.div>
                 )}
               </Droppable>
 
@@ -296,9 +386,13 @@ const Playground = () => {
                       <h3 className="font-display text-xl font-bold text-card-foreground mb-2">
                         Puzzle Solved!
                       </h3>
-                      <p className="text-sm text-muted-foreground mb-6">
+                      <p className="text-sm text-muted-foreground mb-2">
                         {challenge.successMessage}
                       </p>
+                      <div className="flex items-center justify-center gap-4 text-xs text-muted-foreground mb-4 font-mono">
+                        <span>⏱ {Math.floor(finalTime / 60)}:{String(finalTime % 60).padStart(2, "0")}</span>
+                        <span>🔄 {attempts} wrong {attempts === 1 ? "attempt" : "attempts"}</span>
+                      </div>
                       <div className="flex gap-3">
                         <Button
                           variant="outline"
