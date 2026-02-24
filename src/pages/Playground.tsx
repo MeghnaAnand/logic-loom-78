@@ -243,6 +243,7 @@ const Playground = () => {
       setTimerRunning(true);
     }
     setCharacterState("jumping");
+    playWhoosh();
     setTimeout(() => {
       if (!solved) setCharacterState("idle");
     }, 500);
