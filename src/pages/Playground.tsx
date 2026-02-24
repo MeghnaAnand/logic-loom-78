@@ -4,7 +4,7 @@ import { DragDropContext, Droppable, Draggable, DropResult } from "@hello-pangea
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, ArrowRight, Lightbulb, RotateCcw, CheckCircle2, Trophy } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { challenges, type Block } from "@/data/challenges";
+import { pickSessionChallenges, type Block, type Challenge } from "@/data/challenges";
 import JumpingCharacter from "@/components/puzzle/JumpingCharacter";
 import PuzzleTimer from "@/components/puzzle/PuzzleTimer";
 import WrongAnswerOverlay from "@/components/puzzle/WrongAnswerOverlay";
@@ -27,8 +27,9 @@ const WRONG_MESSAGES = [
 
 const Playground = () => {
   const navigate = useNavigate();
+  const [sessionChallenges, setSessionChallenges] = useState<Challenge[]>(() => pickSessionChallenges());
   const [currentChallenge, setCurrentChallenge] = useState(0);
-  const [availableBlocks, setAvailableBlocks] = useState<Block[]>(challenges[0].availableBlocks);
+  const [availableBlocks, setAvailableBlocks] = useState<Block[]>(sessionChallenges[0].availableBlocks);
   const [placedBlocks, setPlacedBlocks] = useState<Block[]>([]);
   const [showHint, setShowHint] = useState(false);
   const [solved, setSolved] = useState(false);
@@ -43,7 +44,7 @@ const Playground = () => {
   const [finalTime, setFinalTime] = useState(0);
   const [attempts, setAttempts] = useState(0);
 
-  const challenge = challenges[currentChallenge];
+  const challenge = sessionChallenges[currentChallenge];
 
   const resetPuzzle = () => {
     setAvailableBlocks([...challenge.availableBlocks]);
@@ -60,7 +61,7 @@ const Playground = () => {
 
   const loadChallenge = (index: number) => {
     setCurrentChallenge(index);
-    const c = challenges[index];
+    const c = sessionChallenges[index];
     setAvailableBlocks([...c.availableBlocks]);
     setPlacedBlocks([]);
     setShowHint(false);
@@ -143,7 +144,24 @@ const Playground = () => {
     }
   };
 
-  const allSolved = solvedChallenges.size === challenges.length;
+  const allSolved = solvedChallenges.size === sessionChallenges.length;
+
+  const startNewSession = () => {
+    const newChallenges = pickSessionChallenges();
+    setSessionChallenges(newChallenges);
+    setCurrentChallenge(0);
+    setAvailableBlocks([...newChallenges[0].availableBlocks]);
+    setPlacedBlocks([]);
+    setShowHint(false);
+    setSolved(false);
+    setShowSuccess(false);
+    setSolvedChallenges(new Set());
+    setCharacterState("idle");
+    setShowWrong(false);
+    setTimerResetKey((k) => k + 1);
+    setTimerRunning(false);
+    setAttempts(0);
+  };
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -163,7 +181,7 @@ const Playground = () => {
             reset={timerResetKey}
           />
           <div className="flex items-center gap-2">
-            {challenges.map((_, i) => (
+            {sessionChallenges.map((_, i) => (
               <button
                 key={i}
                 onClick={() => loadChallenge(i)}
@@ -394,7 +412,7 @@ const Playground = () => {
                         >
                           Review
                         </Button>
-                        {currentChallenge < challenges.length - 1 ? (
+                        {currentChallenge < sessionChallenges.length - 1 ? (
                           <Button
                             onClick={() => loadChallenge(currentChallenge + 1)}
                             className="flex-1 bg-primary text-primary-foreground gap-1"
@@ -403,10 +421,10 @@ const Playground = () => {
                           </Button>
                         ) : (
                           <Button
-                            onClick={() => setShowSuccess(false)}
-                            className="flex-1 bg-success text-success-foreground"
+                            onClick={startNewSession}
+                            className="flex-1 bg-success text-success-foreground gap-1"
                           >
-                            {allSolved ? "🎉 All Complete!" : "Continue"}
+                            🔀 New Puzzles
                           </Button>
                         )}
                       </div>
