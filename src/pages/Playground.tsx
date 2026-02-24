@@ -84,6 +84,9 @@ const Playground = () => {
           throw new Error("Malformed challenge from AI");
         }
       }
+      // Sort AI challenges by difficulty progression
+      const diffOrder: Record<string, number> = { beginner: 0, intermediate: 1, advanced: 2 };
+      challenges.sort((a: Challenge, b: Challenge) => (diffOrder[a.difficulty] ?? 1) - (diffOrder[b.difficulty] ?? 1));
       applyNewChallenges(challenges);
       toast.success("🤖 Fresh AI-generated puzzles loaded!");
     } catch (e) {
