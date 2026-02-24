@@ -236,10 +236,8 @@ const AutomationMind = () => {
             <button
               key={l.id}
               onClick={() => {
-                if (i === 0 || completedLevels.has(i - 1)) {
-                  setCurrentLevelIndex(i);
-                  resetState();
-                }
+                setCurrentLevelIndex(i);
+                resetState();
               }}
               disabled={false}
               className={`
