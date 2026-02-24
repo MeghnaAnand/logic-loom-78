@@ -14,7 +14,30 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      session_history: {
+        Row: {
+          ai_learning_tips: Json | null
+          completed_at: string
+          id: string
+          level_stats: Json
+          user_id: string
+        }
+        Insert: {
+          ai_learning_tips?: Json | null
+          completed_at?: string
+          id?: string
+          level_stats?: Json
+          user_id: string
+        }
+        Update: {
+          ai_learning_tips?: Json | null
+          completed_at?: string
+          id?: string
+          level_stats?: Json
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
