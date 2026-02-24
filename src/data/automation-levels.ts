@@ -63,7 +63,7 @@ export const LEVELS: LevelConfig[] = [
     id: 1,
     title: "Your First Automation",
     subtitle: "Level 1",
-    difficulty: 1,
+    difficulty: 2,
     newConcept: "Automation Basics",
     learningGoal: "Trigger → Action flow",
     estimatedTime: "~3 minutes",
