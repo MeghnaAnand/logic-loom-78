@@ -2,7 +2,7 @@ import { useState, useCallback, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { DragDropContext, Droppable, Draggable, DropResult } from "@hello-pangea/dnd";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, ArrowRight, Lightbulb, RotateCcw, CheckCircle2, Trophy, Sparkles, Loader2, Code2 } from "lucide-react";
+import { ArrowLeft, ArrowRight, Lightbulb, RotateCcw, CheckCircle2, Trophy, Sparkles, Loader2, Code2, Brain } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { pickSessionChallenges, type Block, type Challenge } from "@/data/challenges";
 import { LANGUAGE_META, type CodeLanguage, getFullCode } from "@/data/puzzle-code-translations";
@@ -51,6 +51,18 @@ const Playground = () => {
   const [selectedLanguage, setSelectedLanguage] = useState<CodeLanguage>("pseudocode");
   const [showCode, setShowCode] = useState(false);
 
+  // Struggle tracking per level
+  const [levelStats, setLevelStats] = useState<{ attempts: number; time: number }[]>(
+    () => sessionChallenges.map(() => ({ attempts: 0, time: 0 }))
+  );
+
+  // AI learning tips
+  const [learningTips, setLearningTips] = useState<{
+    summary: string;
+    tips: { emoji: string; title: string; description: string }[];
+  } | null>(null);
+  const [isLoadingTips, setIsLoadingTips] = useState(false);
+
   const challenge = sessionChallenges[currentChallenge];
 
   const applyNewChallenges = useCallback((newChallenges: Challenge[]) => {
@@ -67,6 +79,8 @@ const Playground = () => {
     setTimerResetKey((k) => k + 1);
     setTimerRunning(false);
     setAttempts(0);
+    setLevelStats(newChallenges.map(() => ({ attempts: 0, time: 0 })));
+    setLearningTips(null);
   }, []);
 
   const fetchAIChallenges = useCallback(async () => {
@@ -139,6 +153,30 @@ const Playground = () => {
     }, 1000);
   }, []);
 
+  const fetchLearningTips = useCallback(async (allStats: { attempts: number; time: number }[]) => {
+    setIsLoadingTips(true);
+    try {
+      const payload = allStats.map((s, i) => ({
+        level: i + 1,
+        difficulty: sessionChallenges[i]?.difficulty ?? "beginner",
+        attempts: s.attempts,
+        timeSec: s.time,
+        solved: true,
+      }));
+      const { data, error } = await supabase.functions.invoke("learning-tips", {
+        body: { stats: payload },
+      });
+      if (error) throw error;
+      if (data?.summary && data?.tips) {
+        setLearningTips(data);
+      }
+    } catch (e) {
+      console.error("Learning tips failed:", e);
+    } finally {
+      setIsLoadingTips(false);
+    }
+  }, [sessionChallenges]);
+
   const checkSolution = useCallback((placed: Block[]) => {
     const correct = challenge.correctOrder;
     if (placed.length !== correct.length) return;
@@ -150,11 +188,23 @@ const Playground = () => {
       setShowWrong(false);
       setTimerRunning(false);
       setCharacterState("celebrating");
-      setSolvedChallenges((prev) => new Set([...prev, currentChallenge]));
+
+      // Record stats for this level
+      const updatedStats = [...levelStats];
+      updatedStats[currentChallenge] = { attempts, time: finalTime };
+      setLevelStats(updatedStats);
+
+      const newSolved = new Set([...solvedChallenges, currentChallenge]);
+      setSolvedChallenges(newSolved);
+
+      // If all levels done, fetch AI tips
+      if (newSolved.size === sessionChallenges.length) {
+        fetchLearningTips(updatedStats);
+      }
     } else {
       triggerWrongAnswer();
     }
-  }, [challenge, currentChallenge, triggerWrongAnswer]);
+  }, [challenge, currentChallenge, triggerWrongAnswer, levelStats, attempts, finalTime, solvedChallenges, sessionChallenges, fetchLearningTips]);
 
   const onDragEnd = (result: DropResult) => {
     if (!result.destination) return;
@@ -559,7 +609,7 @@ const Playground = () => {
                     exit={{ opacity: 0 }}
                     className="absolute inset-0 flex items-center justify-center bg-workspace/80 backdrop-blur-sm z-10"
                   >
-                    <div className="bg-card rounded-2xl p-8 max-w-sm text-center shadow-2xl border border-border">
+                    <div className="bg-card rounded-2xl p-8 max-w-md text-center shadow-2xl border border-border overflow-y-auto max-h-[90vh]">
                       <motion.div
                         initial={{ scale: 0 }}
                         animate={{ scale: 1 }}
@@ -577,6 +627,42 @@ const Playground = () => {
                         <span>⏱ {Math.floor(finalTime / 60)}:{String(finalTime % 60).padStart(2, "0")}</span>
                         <span>🔄 {attempts} wrong {attempts === 1 ? "attempt" : "attempts"}</span>
                       </div>
+
+                      {/* AI Learning Tips */}
+                      {allSolved && (isLoadingTips || learningTips) && (
+                        <div className="mb-4 text-left">
+                          {isLoadingTips ? (
+                            <div className="bg-primary/5 border border-primary/20 rounded-xl p-4 flex items-center gap-3">
+                              <Loader2 className="w-5 h-5 animate-spin text-primary shrink-0" />
+                              <p className="text-sm text-muted-foreground">Analyzing your performance…</p>
+                            </div>
+                          ) : learningTips && (
+                            <motion.div
+                              initial={{ opacity: 0, y: 10 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              className="bg-primary/5 border border-primary/20 rounded-xl p-4"
+                            >
+                              <div className="flex items-center gap-2 mb-2">
+                                <Brain className="w-4 h-4 text-primary" />
+                                <h4 className="font-display font-bold text-sm text-card-foreground">Your Learning Path</h4>
+                              </div>
+                              <p className="text-xs text-muted-foreground mb-3">{learningTips.summary}</p>
+                              <div className="space-y-2">
+                                {learningTips.tips.map((tip, i) => (
+                                  <div key={i} className="bg-card rounded-lg p-2.5 border border-border/50 flex gap-2">
+                                    <span className="text-lg shrink-0">{tip.emoji}</span>
+                                    <div>
+                                      <p className="text-xs font-display font-bold text-card-foreground">{tip.title}</p>
+                                      <p className="text-[10px] text-muted-foreground leading-relaxed">{tip.description}</p>
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                            </motion.div>
+                          )}
+                        </div>
+                      )}
+
                       <div className="flex gap-3">
                         <Button
                           variant="outline"
