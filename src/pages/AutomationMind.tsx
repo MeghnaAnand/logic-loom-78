@@ -6,6 +6,7 @@ import confetti from "canvas-confetti";
 import BlockLibrary, { type GameBlock } from "@/components/automation-mind/BlockLibrary";
 import GameCanvas from "@/components/automation-mind/GameCanvas";
 import InstructionPanel from "@/components/automation-mind/InstructionPanel";
+import { playDing, playError } from "@/lib/sounds";
 
 const AutomationMind = () => {
   const navigate = useNavigate();
@@ -37,7 +38,6 @@ const AutomationMind = () => {
     } else if (selectedBlockId === id) {
       setSelectedBlockId(null);
     } else {
-      // Connect the two blocks (trigger → action order)
       const blocks = canvasBlocks;
       const first = blocks.find((b) => b.id === selectedBlockId);
       const second = blocks.find((b) => b.id === id);
@@ -59,19 +59,20 @@ const AutomationMind = () => {
 
     if (!isCorrect) {
       setTestingPhase("failure");
+      playError();
       return;
     }
 
     setTestingPhase("running");
     setCurrentTestItem(0);
 
-    // Animate through 5 test items
     for (let i = 0; i < 5; i++) {
       setTimeout(() => {
         setCurrentTestItem(i);
         if (i === 4) {
           setTimeout(() => {
             setTestingPhase("success");
+            playDing();
             confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 } });
           }, 800);
         }
@@ -91,9 +92,8 @@ const AutomationMind = () => {
 
   return (
     <div className="h-screen flex flex-col bg-background">
-      {/* Header */}
       <header className="border-b border-border px-4 py-2.5 flex items-center gap-3 bg-card shrink-0">
-        <Button variant="ghost" size="sm" onClick={() => navigate("/")} className="gap-1">
+        <Button variant="ghost" size="sm" onClick={() => navigate("/")} className="gap-1 hover:scale-105 transition-transform">
           <ArrowLeft className="w-4 h-4" /> Back
         </Button>
         <div className="h-5 w-px bg-border" />
@@ -103,7 +103,6 @@ const AutomationMind = () => {
         </span>
       </header>
 
-      {/* Main game area */}
       <div className="flex-1 flex min-h-0">
         <BlockLibrary onDragBlock={addBlock} canvasBlocks={canvasBlocks} />
         <GameCanvas
