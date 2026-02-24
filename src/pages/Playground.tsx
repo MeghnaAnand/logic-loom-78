@@ -61,7 +61,7 @@ const Playground = () => {
 
   const loadChallenge = (index: number) => {
     setCurrentChallenge(index);
-    const c = challenges[index];
+    const c = sessionChallenges[index];
     setAvailableBlocks([...c.availableBlocks]);
     setPlacedBlocks([]);
     setShowHint(false);
