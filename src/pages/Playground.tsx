@@ -609,7 +609,7 @@ const Playground = () => {
                     exit={{ opacity: 0 }}
                     className="absolute inset-0 flex items-center justify-center bg-workspace/80 backdrop-blur-sm z-10"
                   >
-                    <div className="bg-card rounded-2xl p-8 max-w-sm text-center shadow-2xl border border-border">
+                    <div className="bg-card rounded-2xl p-8 max-w-md text-center shadow-2xl border border-border overflow-y-auto max-h-[90vh]">
                       <motion.div
                         initial={{ scale: 0 }}
                         animate={{ scale: 1 }}
@@ -627,6 +627,42 @@ const Playground = () => {
                         <span>⏱ {Math.floor(finalTime / 60)}:{String(finalTime % 60).padStart(2, "0")}</span>
                         <span>🔄 {attempts} wrong {attempts === 1 ? "attempt" : "attempts"}</span>
                       </div>
+
+                      {/* AI Learning Tips */}
+                      {allSolved && (isLoadingTips || learningTips) && (
+                        <div className="mb-4 text-left">
+                          {isLoadingTips ? (
+                            <div className="bg-primary/5 border border-primary/20 rounded-xl p-4 flex items-center gap-3">
+                              <Loader2 className="w-5 h-5 animate-spin text-primary shrink-0" />
+                              <p className="text-sm text-muted-foreground">Analyzing your performance…</p>
+                            </div>
+                          ) : learningTips && (
+                            <motion.div
+                              initial={{ opacity: 0, y: 10 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              className="bg-primary/5 border border-primary/20 rounded-xl p-4"
+                            >
+                              <div className="flex items-center gap-2 mb-2">
+                                <Brain className="w-4 h-4 text-primary" />
+                                <h4 className="font-display font-bold text-sm text-card-foreground">Your Learning Path</h4>
+                              </div>
+                              <p className="text-xs text-muted-foreground mb-3">{learningTips.summary}</p>
+                              <div className="space-y-2">
+                                {learningTips.tips.map((tip, i) => (
+                                  <div key={i} className="bg-card rounded-lg p-2.5 border border-border/50 flex gap-2">
+                                    <span className="text-lg shrink-0">{tip.emoji}</span>
+                                    <div>
+                                      <p className="text-xs font-display font-bold text-card-foreground">{tip.title}</p>
+                                      <p className="text-[10px] text-muted-foreground leading-relaxed">{tip.description}</p>
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                            </motion.div>
+                          )}
+                        </div>
+                      )}
+
                       <div className="flex gap-3">
                         <Button
                           variant="outline"
