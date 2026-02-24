@@ -466,12 +466,23 @@ const Playground = () => {
                             Next Puzzle <ArrowRight className="w-4 h-4" />
                           </Button>
                         ) : (
-                          <Button
-                            onClick={startNewSession}
-                            className="flex-1 bg-success text-success-foreground gap-1"
-                          >
-                            🔀 New Puzzles
-                          </Button>
+                          <div className="flex flex-1 gap-2">
+                            <Button
+                              onClick={startNewSession}
+                              variant="outline"
+                              className="flex-1 gap-1"
+                            >
+                              🔀 Random
+                            </Button>
+                            <Button
+                              onClick={() => { setShowSuccess(false); fetchAIChallenges(); }}
+                              disabled={isLoadingAI}
+                              className="flex-1 bg-success text-success-foreground gap-1"
+                            >
+                              {isLoadingAI ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
+                              AI Puzzles
+                            </Button>
+                          </div>
                         )}
                       </div>
                     </div>
