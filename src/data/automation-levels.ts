@@ -88,6 +88,10 @@ export const LEVELS: LevelConfig[] = [
     id: 2,
     title: "Smart Decisions",
     subtitle: "Level 2",
+    difficulty: 2,
+    newConcept: "Decision Making",
+    learningGoal: "Conditional logic (IF/ELSE)",
+    estimatedTime: "~5 minutes",
     challenge:
       "Your shop gets orders of all sizes. Large orders over $500 need manager approval before shipping. Smaller orders can be approved automatically.",
     goal: "Build an automation that checks order amounts and routes them correctly:\n• Orders OVER $500 → Send to Manager\n• Orders $500 or LESS → Auto-Approve",
