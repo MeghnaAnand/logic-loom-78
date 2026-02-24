@@ -1,6 +1,6 @@
 export interface GameBlock {
   id: string;
-  type: "trigger" | "action" | "condition";
+  type: "trigger" | "action" | "condition" | "data";
   label: string;
   icon: string;
 }
@@ -17,13 +17,20 @@ export interface TestItem {
   conditionResult?: "yes" | "no";
   actionLabel: string;
   path: "direct" | "yes" | "no";
+  /** Level 3: extraction steps shown during test */
+  extractions?: string[];
+}
+
+export interface DataPreviewItem {
+  original: string;
+  extracted: { label: string; value: string }[];
 }
 
 export interface LevelConfig {
   id: number;
   title: string;
   subtitle: string;
-  difficulty: number; // 1-5
+  difficulty: number;
   newConcept?: string;
   learningGoal?: string;
   estimatedTime?: string;
@@ -34,12 +41,19 @@ export interface LevelConfig {
   maxTriggers: number;
   maxActions: number;
   maxConditions: number;
+  maxData?: number;
+  /** Level uses linear chain layout instead of branching */
+  layout?: "simple" | "branch" | "chain";
+  /** Expected block order for chain validation */
+  chainOrder?: string[];
   validate: (connections: Connection[], canvasBlocks: GameBlock[]) => boolean;
   testData: TestItem[];
+  dataPreview?: DataPreviewItem[];
   successTitle: string;
   successSubtitle: string;
   failureMessage: string;
   failureHint: string;
+  teachingTip?: string;
 }
 
 export const LEVELS: LevelConfig[] = [
@@ -51,6 +65,7 @@ export const LEVELS: LevelConfig[] = [
     newConcept: "Automation Basics",
     learningGoal: "Trigger → Action flow",
     estimatedTime: "~3 minutes",
+    layout: "simple",
     challenge:
       "You run a small online shop. Every time someone fills out your contact form, you need to save their information. Right now you're copying it manually. Let's automate this!",
     goal: "Connect the right trigger to the right action to automatically save form submissions.",
@@ -92,6 +107,7 @@ export const LEVELS: LevelConfig[] = [
     newConcept: "Decision Making",
     learningGoal: "Conditional logic (IF/ELSE)",
     estimatedTime: "~5 minutes",
+    layout: "branch",
     challenge:
       "Your shop gets orders of all sizes. Large orders over $500 need manager approval before shipping. Smaller orders can be approved automatically.",
     goal: "Build an automation that checks order amounts and routes them correctly:\n• Orders OVER $500 → Send to Manager\n• Orders $500 or LESS → Auto-Approve",
@@ -110,7 +126,6 @@ export const LEVELS: LevelConfig[] = [
     maxActions: 2,
     maxConditions: 1,
     validate: (connections, blocks) => {
-      // Need 3 connections: trigger→condition, condition(yes)→action, condition(no)→action
       if (connections.length !== 3) return false;
       const triggerToCondition = connections.find(
         (c) => c.from === "order-received" && c.to === "if-amount-500" && !c.branch
@@ -140,6 +155,103 @@ export const LEVELS: LevelConfig[] = [
       "5 sent to manager, 5 auto-approved. You've mastered conditional logic! 🧠",
     failureMessage: "❌ Not quite right. Orders are being routed incorrectly.",
     failureHint:
-      "You need a CONDITION block to check the amount, then TWO different actions — one for YES and one for NO.",
+      "You need a CONDITION block to check the amount, then TWO different actions based on YES or NO.",
+  },
+  {
+    id: 3,
+    title: "Data Detective",
+    subtitle: "Level 3",
+    difficulty: 3,
+    newConcept: "Data Extraction",
+    learningGoal: "Multi-step data transformation",
+    estimatedTime: "~7 minutes",
+    layout: "chain",
+    challenge:
+      "Your inbox is flooding with messy order confirmation emails. Each email contains an order number, customer name, and amount buried in paragraphs of text. You need to extract this data and save it cleanly.",
+    goal: "Build a 5-block chain that extracts data step by step:\n📧 Email → 🔍 Extract Order # → 👤 Extract Customer → 💲 Extract Amount → 💾 Save",
+    hint: "Connect blocks in sequence: trigger first, then all three extraction steps in order, then the save action at the end.",
+    blocks: [
+      { id: "email-received", type: "trigger", label: "Email Received", icon: "📧" },
+      { id: "webhook-fired", type: "trigger", label: "Webhook Fired", icon: "🔗" },
+      { id: "extract-order", type: "data", label: "Extract Order #", icon: "🔍" },
+      { id: "extract-customer", type: "data", label: "Extract Customer", icon: "👤" },
+      { id: "extract-amount", type: "data", label: "Extract Amount", icon: "💲" },
+      { id: "format-date", type: "data", label: "Format Date", icon: "📅" },
+      { id: "save-database", type: "action", label: "Save to Database", icon: "💾" },
+      { id: "send-slack", type: "action", label: "Send to Slack", icon: "💬" },
+    ],
+    maxTriggers: 1,
+    maxActions: 1,
+    maxConditions: 0,
+    maxData: 3,
+    chainOrder: ["email-received", "extract-order", "extract-customer", "extract-amount", "save-database"],
+    validate: (connections, blocks) => {
+      // Must have exactly 4 connections forming the correct chain
+      if (connections.length !== 4) return false;
+      const chain = [
+        connections.find((c) => c.from === "email-received" && c.to === "extract-order"),
+        connections.find((c) => c.from === "extract-order" && c.to === "extract-customer"),
+        connections.find((c) => c.from === "extract-customer" && c.to === "extract-amount"),
+        connections.find((c) => c.from === "extract-amount" && c.to === "save-database"),
+      ];
+      return chain.every(Boolean);
+    },
+    testData: [
+      {
+        label: "Email #1",
+        actionLabel: "Saved ✓",
+        path: "direct",
+        extractions: ["ORD-4521", "Sarah Johnson", "$299"],
+      },
+      {
+        label: "Email #2",
+        actionLabel: "Saved ✓",
+        path: "direct",
+        extractions: ["ORD-7833", "Mike Chen", "$1,450"],
+      },
+      {
+        label: "Email #3",
+        actionLabel: "Saved ✓",
+        path: "direct",
+        extractions: ["ORD-2190", "Emma Wilson", "$89"],
+      },
+      {
+        label: "Email #4",
+        actionLabel: "Saved ✓",
+        path: "direct",
+        extractions: ["ORD-5567", "James Rivera", "$675"],
+      },
+      {
+        label: "Email #5",
+        actionLabel: "Saved ✓",
+        path: "direct",
+        extractions: ["ORD-9012", "Ana López", "$340"],
+      },
+    ],
+    dataPreview: [
+      {
+        original: "Hi, this is to confirm order ORD-4521 placed by Sarah Johnson for a total of $299. Thank you for shopping!",
+        extracted: [
+          { label: "Order", value: "ORD-4521" },
+          { label: "Customer", value: "Sarah Johnson" },
+          { label: "Amount", value: "$299" },
+        ],
+      },
+      {
+        original: "Order confirmation: ORD-7833. Customer Mike Chen ordered items worth $1,450. Shipping in 3 days.",
+        extracted: [
+          { label: "Order", value: "ORD-7833" },
+          { label: "Customer", value: "Mike Chen" },
+          { label: "Amount", value: "$1,450" },
+        ],
+      },
+    ],
+    successTitle: "🎉 Data Detective extraordinaire! 5/5 emails extracted perfectly!",
+    successSubtitle: "You turned messy emails into clean, structured data. Real-world skill unlocked! 📊",
+    failureMessage: "❌ The extraction pipeline isn't right.",
+    failureHint:
+      "Make sure all 3 extraction blocks are connected in the correct sequence: Order → Customer → Amount. The trigger starts the chain and the action ends it.",
+    teachingTip:
+      "💡 What you learned: Real-world data is messy. Automation can extract and clean information from unstructured text — a skill used in thousands of workflows!",
   },
 ];
