@@ -41,7 +41,7 @@ const History = () => {
         .order("completed_at", { ascending: false })
         .limit(50);
       if (error) throw error;
-      return data as SessionRecord[];
+      return data as unknown as SessionRecord[];
     },
     enabled: !!user,
   });
