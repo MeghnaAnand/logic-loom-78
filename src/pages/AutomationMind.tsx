@@ -20,7 +20,14 @@ const AutomationMind = () => {
   const [testingPhase, setTestingPhase] = useState<"idle" | "loading" | "running" | "success" | "failure">("idle");
   const [currentTestItem, setCurrentTestItem] = useState(0);
   const [currentExtractionStep, setCurrentExtractionStep] = useState<number | undefined>(undefined);
-  const [completedLevels, setCompletedLevels] = useState<Set<number>>(new Set());
+  const [completedLevels, setCompletedLevels] = useState<Set<number>>(() => {
+    try {
+      const saved = localStorage.getItem("automationmind-completed");
+      return saved ? new Set(JSON.parse(saved)) : new Set();
+    } catch {
+      return new Set();
+    }
+  });
   const [timeTaken, setTimeTaken] = useState<string | undefined>(undefined);
   const [codeView, setCodeView] = useState(false);
   const levelStartRef = useRef<number>(Date.now());
