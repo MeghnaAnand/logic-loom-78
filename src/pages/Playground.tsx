@@ -710,22 +710,33 @@ const Playground = () => {
                             Next Puzzle <ArrowRight className="w-4 h-4" />
                           </Button>
                         ) : (
-                          <div className="flex flex-1 gap-2">
+                          <div className="flex flex-col flex-1 gap-2">
                             <Button
-                              onClick={startNewSession}
-                              variant="outline"
-                              className="flex-1 gap-1"
+                              onClick={() => {
+                                const context = sessionChallenges.map(c => c.title).join(", ");
+                                navigate(`/challenge?context=${encodeURIComponent(context)}`);
+                              }}
+                              className="w-full bg-accent text-accent-foreground gap-1 font-display"
                             >
-                              🔀 Random
+                              🧠 Challenge Mode <ArrowRight className="w-4 h-4" />
                             </Button>
-                            <Button
-                              onClick={() => { setShowSuccess(false); fetchAIChallenges(); }}
-                              disabled={isLoadingAI}
-                              className="flex-1 bg-success text-success-foreground gap-1"
-                            >
-                              {isLoadingAI ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
-                              AI Puzzles
-                            </Button>
+                            <div className="flex gap-2">
+                              <Button
+                                onClick={startNewSession}
+                                variant="outline"
+                                className="flex-1 gap-1"
+                              >
+                                🔀 Random
+                              </Button>
+                              <Button
+                                onClick={() => { setShowSuccess(false); fetchAIChallenges(); }}
+                                disabled={isLoadingAI}
+                                className="flex-1 bg-success text-success-foreground gap-1"
+                              >
+                                {isLoadingAI ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
+                                AI Puzzles
+                              </Button>
+                            </div>
                           </div>
                         )}
                       </div>

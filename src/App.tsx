@@ -9,6 +9,7 @@ import Playground from "./pages/Playground";
 import AutomationMind from "./pages/AutomationMind";
 import Auth from "./pages/Auth";
 import History from "./pages/History";
+import ChallengeMode from "./pages/ChallengeMode";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -26,6 +27,7 @@ const App = () => (
             <Route path="/automation-mind" element={<AutomationMind />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/history" element={<History />} />
+            <Route path="/challenge" element={<ChallengeMode />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
