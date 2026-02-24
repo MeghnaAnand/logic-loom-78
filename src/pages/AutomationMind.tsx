@@ -168,6 +168,11 @@ const AutomationMind = () => {
           setTimeout(() => {
             setTestingPhase("success");
             setCurrentExtractionStep(undefined);
+            // Calculate time taken
+            const elapsed = Math.floor((Date.now() - levelStartRef.current) / 1000);
+            const mins = Math.floor(elapsed / 60);
+            const secs = elapsed % 60;
+            setTimeTaken(`${mins}:${secs.toString().padStart(2, "0")}`);
             playDing();
             const particleCount = level.id === 2 ? 250 : 150;
             confetti({ particleCount, spread: 100, origin: { y: 0.6 } });
