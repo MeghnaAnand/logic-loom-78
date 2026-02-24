@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import confetti from "canvas-confetti";
 import BlockLibrary from "@/components/automation-mind/BlockLibrary";
 import GameCanvas from "@/components/automation-mind/GameCanvas";
+import CodeViewPanel from "@/components/automation-mind/CodeViewPanel";
 import InstructionPanel from "@/components/automation-mind/InstructionPanel";
 import { playDing, playError, playWhoosh } from "@/lib/sounds";
 import { LEVELS, type GameBlock, type Connection } from "@/data/automation-levels";
