@@ -36,6 +36,7 @@ const AutomationMind = () => {
     setCurrentTestItem(0);
     setCurrentExtractionStep(undefined);
     setTimeTaken(undefined);
+    setCodeView(false);
     levelStartRef.current = Date.now();
   }, []);
 
