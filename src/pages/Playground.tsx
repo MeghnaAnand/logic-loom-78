@@ -181,7 +181,7 @@ const Playground = () => {
             reset={timerResetKey}
           />
           <div className="flex items-center gap-2">
-            {challenges.map((_, i) => (
+            {sessionChallenges.map((_, i) => (
               <button
                 key={i}
                 onClick={() => loadChallenge(i)}
