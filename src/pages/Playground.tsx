@@ -48,6 +48,8 @@ const Playground = () => {
   const [finalTime, setFinalTime] = useState(0);
   const [attempts, setAttempts] = useState(0);
   const [isLoadingAI, setIsLoadingAI] = useState(false);
+  const [selectedLanguage, setSelectedLanguage] = useState<CodeLanguage>("pseudocode");
+  const [showCode, setShowCode] = useState(false);
 
   const challenge = sessionChallenges[currentChallenge];
 
