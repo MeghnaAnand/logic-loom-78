@@ -1,38 +1,86 @@
 import { motion } from "framer-motion";
 import { playWhoosh } from "@/lib/sounds";
-
-export interface GameBlock {
-  id: string;
-  type: "trigger" | "action";
-  label: string;
-  icon: string;
-}
-
-export const AVAILABLE_BLOCKS: GameBlock[] = [
-  { id: "form-submitted", type: "trigger", label: "Form Submitted", icon: "📝" },
-  { id: "email-received", type: "trigger", label: "Email Received", icon: "📧" },
-  { id: "schedule-daily", type: "trigger", label: "Schedule: Daily", icon: "⏰" },
-  { id: "save-spreadsheet", type: "action", label: "Save to Spreadsheet", icon: "📊" },
-  { id: "save-database", type: "action", label: "Save to Database", icon: "💾" },
-  { id: "send-email", type: "action", label: "Send Email", icon: "📤" },
-];
+import type { GameBlock, LevelConfig } from "@/data/automation-levels";
 
 interface BlockLibraryProps {
-  onDragBlock: (block: GameBlock) => void;
+  level: LevelConfig;
+  onAddBlock: (block: GameBlock) => void;
   canvasBlocks: GameBlock[];
 }
 
-const BlockLibrary = ({ onDragBlock, canvasBlocks }: BlockLibraryProps) => {
-  const hasTrigger = canvasBlocks.some((b) => b.type === "trigger");
-  const hasAction = canvasBlocks.some((b) => b.type === "action");
+const BlockLibrary = ({ level, onAddBlock, canvasBlocks }: BlockLibraryProps) => {
+  const triggerCount = canvasBlocks.filter((b) => b.type === "trigger").length;
+  const actionCount = canvasBlocks.filter((b) => b.type === "action").length;
+  const conditionCount = canvasBlocks.filter((b) => b.type === "condition").length;
 
-  const triggers = AVAILABLE_BLOCKS.filter((b) => b.type === "trigger");
-  const actions = AVAILABLE_BLOCKS.filter((b) => b.type === "action");
+  const triggers = level.blocks.filter((b) => b.type === "trigger");
+  const conditions = level.blocks.filter((b) => b.type === "condition");
+  const actions = level.blocks.filter((b) => b.type === "action");
 
-  const handleClick = (block: GameBlock, disabled: boolean) => {
-    if (disabled) return;
+  const isOnCanvas = (id: string) => canvasBlocks.some((b) => b.id === id);
+
+  const handleClick = (block: GameBlock) => {
+    const alreadyPlaced = isOnCanvas(block.id);
+    if (alreadyPlaced) return;
+
+    if (block.type === "trigger" && triggerCount >= level.maxTriggers) return;
+    if (block.type === "action" && actionCount >= level.maxActions) return;
+    if (block.type === "condition" && conditionCount >= level.maxConditions) return;
+
     playWhoosh();
-    onDragBlock(block);
+    onAddBlock(block);
+  };
+
+  const bgMap: Record<string, string> = {
+    trigger: "bg-am-trigger text-am-trigger-foreground",
+    action: "bg-am-action text-am-action-foreground",
+    condition: "bg-am-condition text-am-condition-foreground",
+  };
+
+  const renderSection = (
+    title: string,
+    emoji: string,
+    blocks: GameBlock[],
+    maxCount: number,
+    currentCount: number
+  ) => {
+    if (blocks.length === 0) return null;
+    return (
+      <div>
+        <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">
+          {emoji} {title}
+        </h3>
+        <div className="flex flex-col gap-2">
+          {blocks.map((block) => {
+            const placed = isOnCanvas(block.id);
+            const maxReached = currentCount >= maxCount;
+            const disabled = placed || maxReached;
+            return (
+              <motion.button
+                key={block.id}
+                whileHover={disabled ? {} : { scale: 1.05, y: -2 }}
+                whileTap={disabled ? {} : { scale: 0.95 }}
+                onClick={() => handleClick(block)}
+                disabled={disabled}
+                className={`
+                  flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-left text-sm font-semibold font-display
+                  transition-all select-none ${bgMap[block.type]}
+                  ${disabled
+                    ? "opacity-40 cursor-not-allowed"
+                    : "cursor-pointer shadow-md hover:shadow-xl hover:brightness-105"
+                  }
+                  ${block.type === "condition" ? "rotate-0" : ""}
+                `}
+              >
+                <span className="text-lg">{block.icon}</span>
+                {block.label}
+                {placed && <span className="ml-auto text-[10px] opacity-60">on canvas</span>}
+              </motion.button>
+            );
+          })}
+        </div>
+      </div>
+    );
   };
 
   return (
@@ -42,77 +90,19 @@ const BlockLibrary = ({ onDragBlock, canvasBlocks }: BlockLibraryProps) => {
         <p className="text-xs text-muted-foreground">Click a block to add it to the canvas</p>
       </div>
 
-      <div>
-        <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">
-          ⚡ Triggers
-        </h3>
-        <div className="flex flex-col gap-2">
-          {triggers.map((block) => {
-            const disabled = hasTrigger;
-            return (
-              <motion.button
-                key={block.id}
-                whileHover={disabled ? {} : { scale: 1.05, y: -2 }}
-                whileTap={disabled ? {} : { scale: 0.95 }}
-                onClick={() => handleClick(block, disabled)}
-                disabled={disabled}
-                className={`
-                  flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-left text-sm font-semibold font-display
-                  transition-all select-none
-                  bg-am-trigger text-am-trigger-foreground
-                  ${disabled
-                    ? "opacity-40 cursor-not-allowed"
-                    : "cursor-pointer shadow-md hover:shadow-xl hover:brightness-105"
-                  }
-                `}
-              >
-                <span className="text-lg">{block.icon}</span>
-                {block.label}
-              </motion.button>
-            );
-          })}
-        </div>
-      </div>
+      {renderSection("Triggers", "⚡", triggers, level.maxTriggers, triggerCount)}
+      {renderSection("Conditions", "🔀", conditions, level.maxConditions, conditionCount)}
+      {renderSection("Actions", "🔧", actions, level.maxActions, actionCount)}
 
-      <div>
-        <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">
-          🔧 Actions
-        </h3>
-        <div className="flex flex-col gap-2">
-          {actions.map((block) => {
-            const disabled = hasAction;
-            return (
-              <motion.button
-                key={block.id}
-                whileHover={disabled ? {} : { scale: 1.05, y: -2 }}
-                whileTap={disabled ? {} : { scale: 0.95 }}
-                onClick={() => handleClick(block, disabled)}
-                disabled={disabled}
-                className={`
-                  flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-left text-sm font-semibold font-display
-                  transition-all select-none
-                  bg-am-action text-am-action-foreground
-                  ${disabled
-                    ? "opacity-40 cursor-not-allowed"
-                    : "cursor-pointer shadow-md hover:shadow-xl hover:brightness-105"
-                  }
-                `}
-              >
-                <span className="text-lg">{block.icon}</span>
-                {block.label}
-              </motion.button>
-            );
-          })}
-        </div>
-      </div>
-
-      {(hasTrigger || hasAction) && (
+      {canvasBlocks.length > 0 && (
         <p className="text-[11px] text-muted-foreground italic">
-          {hasTrigger && hasAction
-            ? "Max blocks placed. Remove one to swap."
-            : hasTrigger
-              ? "Now add an action block!"
-              : "Now add a trigger block!"}
+          {triggerCount > 0 && conditionCount > 0 && actionCount >= level.maxActions
+            ? "All needed blocks placed! Connect them now."
+            : triggerCount > 0 && level.maxConditions > 0 && conditionCount === 0
+              ? "Now add a condition block!"
+              : actionCount < level.maxActions
+                ? `Add ${level.maxActions - actionCount} more action${level.maxActions - actionCount > 1 ? "s" : ""}!`
+                : "Click blocks on canvas to connect them."}
         </p>
       )}
     </div>
