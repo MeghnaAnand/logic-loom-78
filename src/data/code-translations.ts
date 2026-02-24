@@ -7,304 +7,300 @@ export interface CodeTranslation {
 
 export const LEVEL_CODE_TRANSLATIONS: Record<number, CodeTranslation> = {
   1: {
-    python: `# Level 1: Basic Automation
-# Trigger: Form submission → Action: Save to Spreadsheet
+    python: `# AutomationMind - Level 1
+# Basic trigger → action flow
 
-# TRIGGER: This function runs automatically when a form is submitted
-# 💡 In automation, a "trigger" is the event that starts everything
 def on_form_submitted(form_data):
-    """Triggered when a new form is submitted."""
-    name = form_data["name"]
-    email = form_data["email"]
+    """Trigger: Runs when form is submitted"""
+    # Action: Save data to spreadsheet
+    save_to_spreadsheet(form_data)
 
-    # ACTION: This executes your desired task
-    # 💡 An "action" is what happens in response to the trigger
-    save_to_spreadsheet({
-        "name": name,
-        "email": email,
-        "timestamp": datetime.now()
-    })
-
-    print(f"✅ Saved {name} ({email}) to spreadsheet")
-
-# 💡 In automation, you define WHEN (trigger) and WHAT (action)
-# That's the foundation of every workflow!
+def save_to_spreadsheet(data):
+    """Saves form submission to Google Sheets"""
+    sheet.append_row([
+        data['name'],
+        data['email'],
+        data['message']
+    ])
 `,
-    javascript: `// Level 1: Basic Automation
-// Trigger: Form submission → Action: Save to Spreadsheet
+    javascript: `// AutomationMind - Level 1
+// Basic trigger → action flow
 
-// TRIGGER: This listener fires automatically when the form is submitted
-// 💡 In automation, a "trigger" is the event that starts everything
-form.addEventListener('submit', async (event) => {
-  event.preventDefault();
-
-  const formData = new FormData(event.target);
-  const name = formData.get('name');
-  const email = formData.get('email');
-
-  // ACTION: This executes your desired task
-  // 💡 An "action" is what happens in response to the trigger
-  await saveToSpreadsheet({
-    name,
-    email,
-    timestamp: new Date().toISOString()
-  });
-
-  console.log(\`✅ Saved \${name} (\${email}) to spreadsheet\`);
+// Trigger: Form submission listener
+form.addEventListener('submit', (formData) => {
+    // Action: Save data to spreadsheet
+    saveToSpreadsheet(formData);
 });
 
-// 💡 In automation, you define WHEN (trigger) and WHAT (action)
-// That's the foundation of every workflow!
+function saveToSpreadsheet(data) {
+    // API call to append row
+    sheets.append({
+        name: data.name,
+        email: data.email,
+        message: data.message
+    });
+}
 `,
     n8n: `{
-  "name": "Form to Spreadsheet",
+  "name": "Level 1 Automation",
   "nodes": [
     {
       "name": "Form Trigger",
       "type": "n8n-nodes-base.formTrigger",
-      "position": [250, 300],
+      "position": [250, 300]
+    },
+    {
+      "name": "Google Sheets",
+      "type": "n8n-nodes-base.googleSheets",
       "parameters": {
-        "formTitle": "Contact Form",
-        "formFields": {
-          "values": [
-            { "fieldLabel": "Name", "fieldType": "string" },
-            { "fieldLabel": "Email", "fieldType": "email" }
+        "operation": "append"
+      },
+      "position": [450, 300]
+    }
+  ],
+  "connections": {
+    "Form Trigger": {
+      "main": [[ { "node": "Google Sheets" } ]]
+    }
+  }
+}
+`,
+    pseudocode: `WHEN form is submitted
+  THEN save form_data to spreadsheet
+END
+`,
+  },
+
+  2: {
+    python: `# AutomationMind - Level 2
+# Conditional branching logic
+
+def on_order_received(order):
+    """Trigger: Runs when new order arrives"""
+    # Condition: Check order amount
+    if order['amount'] > 500:
+        # YES path: Large orders
+        send_to_manager(order)
+    else:
+        # NO path: Small orders
+        auto_approve(order)
+
+def send_to_manager(order):
+    """Route order for manager approval"""
+    notify_manager(f"Order {order['id']} needs approval")
+
+def auto_approve(order):
+    """Automatically approve small orders"""
+    process_order(order)
+`,
+    javascript: `// AutomationMind - Level 2
+// Conditional branching logic
+
+// Trigger: Order received listener
+onOrderReceived((order) => {
+    // Condition: Check order amount
+    if (order.amount > 500) {
+        // YES path: Large orders
+        sendToManager(order);
+    } else {
+        // NO path: Small orders
+        autoApprove(order);
+    }
+});
+
+function sendToManager(order) {
+    // Route for approval
+    notifyManager(\`Order \${order.id} needs approval\`);
+}
+
+function autoApprove(order) {
+    // Process automatically
+    processOrder(order);
+}
+`,
+    n8n: `{
+  "name": "Level 2 Automation",
+  "nodes": [
+    {
+      "name": "Order Trigger",
+      "type": "n8n-nodes-base.webhook"
+    },
+    {
+      "name": "IF Amount > 500",
+      "type": "n8n-nodes-base.if",
+      "parameters": {
+        "conditions": {
+          "number": [
+            {
+              "value1": "={{$json.amount}}",
+              "operation": "larger",
+              "value2": 500
+            }
           ]
         }
       }
     },
     {
-      "name": "Save to Google Sheets",
-      "type": "n8n-nodes-base.googleSheets",
-      "position": [500, 300],
-      "parameters": {
-        "operation": "appendOrUpdate",
-        "sheetName": "Submissions"
-      }
+      "name": "Send to Manager",
+      "type": "n8n-nodes-base.slack"
+    },
+    {
+      "name": "Auto Approve",
+      "type": "n8n-nodes-base.set"
     }
-  ],
-  "connections": {
-    "Form Trigger": {
-      "main": [[ { "node": "Save to Google Sheets", "type": "main" } ]]
-    }
-  }
-}
-`,
-    pseudocode: `AUTOMATION: Form to Spreadsheet
-
-# 💡 TRIGGER = the event that kicks off your automation
-WHEN form_is_submitted:
-    RECEIVE name, email FROM form
-
-    # 💡 ACTION = what you want to happen automatically
-    DO save_to_spreadsheet(name, email, current_time)
-
-    LOG "Saved {name} ({email}) to spreadsheet"
-END
-
-# 💡 Every automation has at least one TRIGGER and one ACTION
-`,
-  },
-
-  2: {
-    python: `# Level 2: Conditional Logic
-
-# TRIGGER: This function runs when an order is received
-# 💡 The trigger starts the workflow, just like Level 1
-def on_order_received(order):
-    # CONDITION: This is how you make decisions in code
-    # 💡 Conditions let your automation take different paths
-    if order['amount'] > 500:
-        # YES path — when the condition is true
-        send_to_manager(order)
-    else:
-        # NO path — when the condition is false
-        auto_approve(order)
-
-# 💡 Conditions add intelligence: your automation can now DECIDE
-# instead of always doing the same thing
-`,
-    javascript: `// Level 2: Conditional Logic
-
-// TRIGGER: This callback fires when an order is received
-// 💡 The trigger starts the workflow, just like Level 1
-onOrderReceived((order) => {
-    // CONDITION: This is how you make decisions in code
-    // 💡 Conditions let your automation take different paths
-    if (order.amount > 500) {
-        // YES path — when the condition is true
-        sendToManager(order);
-    } else {
-        // NO path — when the condition is false
-        autoApprove(order);
-    }
-});
-
-// 💡 Conditions add intelligence: your automation can now DECIDE
-// instead of always doing the same thing
-`,
-    n8n: `{
-  "nodes": [
-    { "type": "trigger", "comment": "TRIGGER: Starts when order arrives" },
-    { "type": "if", "parameters": { "condition": "amount > 500" }, "comment": "CONDITION: Routes based on amount" },
-    { "type": "sendToManager", "comment": "ACTION (YES path)" },
-    { "type": "autoApprove", "comment": "ACTION (NO path)" }
   ]
 }
 `,
-    pseudocode: `AUTOMATION: Smart Order Router
-
-# 💡 TRIGGER = the event that kicks off your automation
-WHEN order_is_received:
-    RECEIVE amount FROM order
-
-    # 💡 CONDITION = a decision point that creates two paths
-    IF amount > 500 THEN
-        # YES path
-        DO send_to_manager(order)
-    ELSE
-        # NO path
-        DO auto_approve(order)
-    END IF
+    pseudocode: `WHEN order is received
+  IF order.amount > 500 THEN
+    send order to manager
+  ELSE
+    auto-approve order
+  END IF
 END
-
-# 💡 With conditions, one trigger can lead to MULTIPLE outcomes
 `,
   },
 
   3: {
-    python: `# Level 3: Data Detective
-# Trigger: Email → Extract Order → Extract Customer → Extract Amount → Save
+    python: `# AutomationMind - Level 3
+# Data extraction pipeline
 
 import re
 
-# TRIGGER: This function runs when an email arrives
-# 💡 Triggers can listen for many events — here it's incoming email
-def on_email_received(email):
-    """Triggered when an order confirmation email arrives."""
-    raw_text = email["body"]
+def on_email_arrives(email):
+    """Trigger: Runs when email received"""
+    # Extract: Order number
+    order_num = extract_order_number(email.body)
 
-    # DATA EXTRACTION: Pull structured info from messy text
-    # 💡 Data blocks transform raw input into clean, usable values
+    # Extract: Customer name
+    customer = extract_customer_name(email.body)
 
-    # Step 1: Extract Order Number
-    order_match = re.search(r"ORD-\\d+", raw_text)
-    order_number = order_match.group() if order_match else "UNKNOWN"
+    # Extract: Amount
+    amount = extract_amount(email.body)
 
-    # Step 2: Extract Customer Name
-    customer_match = re.search(
-        r"(?:placed by|Customer)\\s+([A-Z][a-z]+ [A-Z][a-záéíóú]+)",
-        raw_text
-    )
-    customer_name = customer_match.group(1) if customer_match else "UNKNOWN"
-
-    # Step 3: Extract Amount
-    amount_match = re.search(r"\\$[\\d,]+", raw_text)
-    amount = amount_match.group() if amount_match else "$0"
-
-    # ACTION: Save the clean, structured data
+    # Action: Save clean data
     save_to_database({
-        "order": order_number,
-        "customer": customer_name,
-        "amount": amount
+        'order_number': order_num,
+        'customer_name': customer,
+        'amount': amount
     })
 
-    print(f"✅ Extracted: {order_number}, {customer_name}, {amount}")
+def extract_order_number(text):
+    """Extract order number pattern ORD-####"""
+    match = re.search(r'ORD-\\d{4}', text)
+    return match.group(0) if match else None
 
-# 💡 Data extraction turns chaos into order — a key automation skill!
+def extract_customer_name(text):
+    """Extract customer name from text"""
+    match = re.search(r"I'm ([A-Z][a-z]+ [A-Z][a-z]+)", text)
+    return match.group(1) if match else None
+
+def extract_amount(text):
+    """Extract dollar amount"""
+    match = re.search(r'\\$(\\d+)', text)
+    return int(match.group(1)) if match else None
+
+def save_to_database(data):
+    """Insert clean data into database"""
+    db.insert('orders', data)
 `,
-    javascript: `// Level 3: Data Detective
-// Trigger: Email → Extract Order → Extract Customer → Extract Amount → Save
+    javascript: `// AutomationMind - Level 3
+// Data extraction pipeline
 
-// TRIGGER: This listener fires when a new email arrives
-// 💡 Triggers can listen for many events — here it's incoming email
-emailService.on('newEmail', async (email) => {
-  const rawText = email.body;
+// Trigger: Email received
+onEmailArrives((email) => {
+    // Extract: Order number
+    const orderNum = extractOrderNumber(email.body);
 
-  // DATA EXTRACTION: Pull structured info from messy text
-  // 💡 Data blocks transform raw input into clean, usable values
+    // Extract: Customer name
+    const customer = extractCustomerName(email.body);
 
-  // Step 1: Extract Order Number
-  const orderMatch = rawText.match(/ORD-\\d+/);
-  const orderNumber = orderMatch?.[0] ?? 'UNKNOWN';
+    // Extract: Amount
+    const amount = extractAmount(email.body);
 
-  // Step 2: Extract Customer Name
-  const customerMatch = rawText.match(
-    /(?:placed by|Customer)\\s+([A-Z][a-z]+ [A-Z][a-záéíóú]+)/
-  );
-  const customerName = customerMatch?.[1] ?? 'UNKNOWN';
-
-  // Step 3: Extract Amount
-  const amountMatch = rawText.match(/\\$[\\d,]+/);
-  const amount = amountMatch?.[0] ?? '$0';
-
-  // ACTION: Save the clean, structured data
-  await saveToDatabase({
-    order: orderNumber,
-    customer: customerName,
-    amount
-  });
-
-  console.log(\`✅ Extracted: \${orderNumber}, \${customerName}, \${amount}\`);
+    // Action: Save clean data
+    saveToDatabase({
+        orderNumber: orderNum,
+        customerName: customer,
+        amount: amount
+    });
 });
 
-// 💡 Data extraction turns chaos into order — a key automation skill!
+function extractOrderNumber(text) {
+    // Extract order pattern ORD-####
+    const match = text.match(/ORD-\\d{4}/);
+    return match ? match[0] : null;
+}
+
+function extractCustomerName(text) {
+    // Extract name from "I'm [Name]"
+    const match = text.match(/I'm ([A-Z][a-z]+ [A-Z][a-z]+)/);
+    return match ? match[1] : null;
+}
+
+function extractAmount(text) {
+    // Extract dollar amount
+    const match = text.match(/\\$(\\d+)/);
+    return match ? parseInt(match[1]) : null;
+}
+
+function saveToDatabase(data) {
+    // Insert into database
+    db.insert('orders', data);
+}
 `,
     n8n: `{
-  "name": "Email Data Extractor",
+  "name": "Level 3 Automation",
   "nodes": [
     {
       "name": "Email Trigger",
-      "type": "n8n-nodes-base.emailReadImap",
-      "position": [250, 300],
-      "parameters": {
-        "mailbox": "INBOX",
-        "options": { "searchCriteria": "UNSEEN" }
-      }
+      "type": "n8n-nodes-base.emailReadImap"
     },
     {
-      "name": "Extract Order #",
+      "name": "Extract Order Number",
       "type": "n8n-nodes-base.set",
-      "position": [450, 300],
       "parameters": {
         "values": {
-          "string": [{
-            "name": "orderNumber",
-            "value": "={{ $json.text.match(/ORD-\\\\d+/)?.[0] }}"
-          }]
+          "string": [
+            {
+              "name": "order_number",
+              "value": "={{$json.body.match(/ORD-\\\\d{4}/)[0]}}"
+            }
+          ]
         }
       }
     },
     {
-      "name": "Extract Customer",
+      "name": "Extract Customer Name",
       "type": "n8n-nodes-base.set",
-      "position": [650, 300],
       "parameters": {
         "values": {
-          "string": [{
-            "name": "customer",
-            "value": "={{ $json.text.match(/by ([A-Za-z ]+)/)?.[1] }}"
-          }]
+          "string": [
+            {
+              "name": "customer_name",
+              "value": "={{$json.body.match(/I'm ([A-Z][a-z]+ [A-Z][a-z]+)/)[1]}}"
+            }
+          ]
         }
       }
     },
     {
       "name": "Extract Amount",
       "type": "n8n-nodes-base.set",
-      "position": [850, 300],
       "parameters": {
         "values": {
-          "string": [{
-            "name": "amount",
-            "value": "={{ $json.text.match(/\\\\$[\\\\d,]+/)?.[0] }}"
-          }]
+          "number": [
+            {
+              "name": "amount",
+              "value": "={{parseInt($json.body.match(/\\\\$(\\\\d+)/)[1])}}"
+            }
+          ]
         }
       }
     },
     {
       "name": "Save to Database",
       "type": "n8n-nodes-base.postgres",
-      "position": [1050, 300],
       "parameters": {
         "operation": "insert",
         "table": "orders"
@@ -312,32 +308,20 @@ emailService.on('newEmail', async (email) => {
     }
   ],
   "connections": {
-    "Email Trigger": { "main": [[ { "node": "Extract Order #" } ]] },
-    "Extract Order #": { "main": [[ { "node": "Extract Customer" } ]] },
-    "Extract Customer": { "main": [[ { "node": "Extract Amount" } ]] },
+    "Email Trigger": { "main": [[ { "node": "Extract Order Number" } ]] },
+    "Extract Order Number": { "main": [[ { "node": "Extract Customer Name" } ]] },
+    "Extract Customer Name": { "main": [[ { "node": "Extract Amount" } ]] },
     "Extract Amount": { "main": [[ { "node": "Save to Database" } ]] }
   }
 }
 `,
-    pseudocode: `AUTOMATION: Email Data Extractor
+    pseudocode: `WHEN email arrives
+  EXTRACT order_number FROM email.body
+  EXTRACT customer_name FROM email.body
+  EXTRACT amount FROM email.body
 
-# 💡 TRIGGER = the event that kicks off your automation
-WHEN email_is_received:
-    RECEIVE raw_text FROM email.body
-
-    # 💡 DATA EXTRACTION = pulling clean values from messy input
-    EXTRACT order_number MATCHING "ORD-####" FROM raw_text
-    EXTRACT customer_name MATCHING "placed by [Name]" FROM raw_text
-    EXTRACT amount MATCHING "$###" FROM raw_text
-
-    # 💡 ACTION = what you do with the extracted data
-    DO save_to_database(order_number, customer_name, amount)
-
-    LOG "Extracted: {order_number}, {customer_name}, {amount}"
+  SAVE order_number, customer_name, amount TO database
 END
-
-# 💡 Data extraction is the bridge between messy real-world data
-# and clean, structured information your systems can use
 `,
   },
 };
