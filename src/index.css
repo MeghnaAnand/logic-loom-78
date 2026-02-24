@@ -53,8 +53,12 @@
     --am-trigger-foreground: 30 50% 15%;
     --am-action: 217 91% 60%;
     --am-action-foreground: 0 0% 100%;
+    --am-condition: 271 81% 56%;
+    --am-condition-foreground: 0 0% 100%;
     --am-canvas: 220 15% 95%;
     --am-canvas-foreground: 220 20% 40%;
+    --am-yes: 160 84% 39%;
+    --am-no: 0 84% 60%;
 
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 240 5.3% 26.1%;
