@@ -13,7 +13,119 @@ interface GameCanvasProps {
   onRemoveBlock: (id: string) => void;
   testingPhase: "idle" | "loading" | "running" | "success" | "failure";
   currentTestItem: number;
+  /** Which extraction step (0-2) is currently active within a test item */
+  currentExtractionStep?: number;
 }
+
+/* ---- Email preview with highlighting ---- */
+const EmailPreviewWindow = ({
+  level,
+  currentTestItem,
+  currentExtractionStep,
+  testingPhase,
+}: {
+  level: LevelConfig;
+  currentTestItem: number;
+  currentExtractionStep?: number;
+  testingPhase: string;
+}) => {
+  if (!level.dataPreview || level.dataPreview.length === 0) return null;
+  const isRunning = testingPhase === "running";
+  const isSuccess = testingPhase === "success";
+  const isIdle = testingPhase === "idle";
+
+  // Pick the preview that matches the current test item (cycle through available previews)
+  const previewIndex = isRunning ? currentTestItem % level.dataPreview.length : 0;
+  const preview = level.dataPreview[previewIndex];
+  if (!preview) return null;
+
+  // Build highlighted email text
+  const highlightEmail = (text: string, step?: number) => {
+    if (step === undefined || step < 0) return <span>{text}</span>;
+    const extracted = preview.extracted;
+    // Find and highlight the value for the current extraction step
+    const highlightValue = extracted[step]?.value;
+    if (!highlightValue) return <span>{text}</span>;
+
+    const idx = text.indexOf(highlightValue);
+    if (idx === -1) return <span>{text}</span>;
+
+    return (
+      <>
+        <span>{text.slice(0, idx)}</span>
+        <motion.span
+          initial={{ backgroundColor: "transparent" }}
+          animate={{ backgroundColor: "hsl(48 96% 53% / 0.4)" }}
+          className="font-bold text-foreground rounded px-0.5"
+          style={{ display: "inline" }}
+        >
+          {highlightValue}
+        </motion.span>
+        <span>{text.slice(idx + highlightValue.length)}</span>
+      </>
+    );
+  };
+
+  return (
+    <AnimatePresence>
+      {(isIdle || isRunning || isSuccess) && (
+        <motion.div
+          initial={{ opacity: 0, y: -10, scale: 0.95 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          exit={{ opacity: 0, y: -10, scale: 0.95 }}
+          className="absolute top-4 right-4 z-30 w-72"
+        >
+          <div className="bg-card border border-border rounded-xl shadow-lg overflow-hidden">
+            <div className="bg-muted px-3 py-1.5 flex items-center gap-1.5 border-b border-border">
+              <span className="text-xs">📧</span>
+              <span className="text-[10px] font-display font-bold text-foreground uppercase tracking-wider">
+                {isRunning ? `Email #${currentTestItem + 1}` : isSuccess ? "Extraction Complete" : "Sample Email"}
+              </span>
+              {isRunning && currentExtractionStep !== undefined && (
+                <motion.span
+                  key={currentExtractionStep}
+                  initial={{ opacity: 0, x: 5 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  className="ml-auto text-[9px] font-display font-bold px-1.5 py-0.5 rounded-full"
+                  style={{ backgroundColor: "hsl(48 96% 53% / 0.3)", color: "hsl(var(--foreground))" }}
+                >
+                  Extracting: {preview.extracted[currentExtractionStep]?.label}
+                </motion.span>
+              )}
+            </div>
+            <div className="px-3 py-2">
+              <p className="text-[11px] text-muted-foreground leading-relaxed italic">
+                {isRunning ? highlightEmail(preview.original, currentExtractionStep) : preview.original}
+              </p>
+            </div>
+            {/* Show extracted fields progressively during running */}
+            {isRunning && currentExtractionStep !== undefined && currentExtractionStep >= 0 && (
+              <motion.div
+                initial={{ height: 0 }}
+                animate={{ height: "auto" }}
+                className="border-t border-border px-3 py-2 bg-success/5"
+              >
+                <div className="text-[9px] uppercase tracking-wider text-muted-foreground mb-1 font-display">Extracted:</div>
+                {preview.extracted.slice(0, currentExtractionStep + 1).map((item, j) => (
+                  <motion.div
+                    key={j}
+                    initial={{ opacity: 0, x: -8 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    className="flex items-center gap-1 text-[11px]"
+                  >
+                    <span className="text-success">✓</span>
+                    <span className="text-muted-foreground">{item.label}:</span>
+                    <span className="text-foreground font-bold font-display">{item.value}</span>
+                  </motion.div>
+                ))}
+              </motion.div>
+            )}
+          </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+};
 
 /* ---- Connection count helper ---- */
 const getConnectionCount = (blockId: string, connections: Connection[]) => {
