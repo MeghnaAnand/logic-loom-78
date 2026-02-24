@@ -260,19 +260,25 @@ const AutomationMind = () => {
 
       <div className="flex-1 flex min-h-0">
         <BlockLibrary level={level} onAddBlock={addBlock} canvasBlocks={canvasBlocks} />
-        <GameCanvas
-          level={level}
-          blocks={canvasBlocks}
-          connections={connections}
-          selectedBlockId={selectedBlockId}
-          connectingFrom={connectingFrom}
-          onSelectBlock={selectBlock}
-          onConnectBranch={connectBranch}
-          onRemoveBlock={removeBlock}
-          testingPhase={testingPhase}
-          currentTestItem={currentTestItem}
-          currentExtractionStep={currentExtractionStep}
-        />
+        {codeView && testingPhase === "success" ? (
+          <div className="flex-1 p-4 min-h-0 flex">
+            <CodeViewPanel levelId={level.id} />
+          </div>
+        ) : (
+          <GameCanvas
+            level={level}
+            blocks={canvasBlocks}
+            connections={connections}
+            selectedBlockId={selectedBlockId}
+            connectingFrom={connectingFrom}
+            onSelectBlock={selectBlock}
+            onConnectBranch={connectBranch}
+            onRemoveBlock={removeBlock}
+            testingPhase={testingPhase}
+            currentTestItem={currentTestItem}
+            currentExtractionStep={currentExtractionStep}
+          />
+        )}
         <InstructionPanel
           level={level}
           testingPhase={testingPhase}
