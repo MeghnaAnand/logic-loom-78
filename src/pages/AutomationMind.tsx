@@ -30,6 +30,7 @@ const AutomationMind = () => {
     setConnectingFrom(null);
     setTestingPhase("idle");
     setCurrentTestItem(0);
+    setCurrentExtractionStep(undefined);
   }, []);
 
   const addBlock = useCallback((block: GameBlock) => {
