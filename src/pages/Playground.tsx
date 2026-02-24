@@ -79,6 +79,8 @@ const Playground = () => {
     setTimerResetKey((k) => k + 1);
     setTimerRunning(false);
     setAttempts(0);
+    setLevelStats(newChallenges.map(() => ({ attempts: 0, time: 0 })));
+    setLearningTips(null);
   }, []);
 
   const fetchAIChallenges = useCallback(async () => {
