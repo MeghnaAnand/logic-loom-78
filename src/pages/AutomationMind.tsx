@@ -33,6 +33,8 @@ const AutomationMind = () => {
     setTestingPhase("idle");
     setCurrentTestItem(0);
     setCurrentExtractionStep(undefined);
+    setTimeTaken(undefined);
+    levelStartRef.current = Date.now();
   }, []);
 
   const addBlock = useCallback((block: GameBlock) => {
