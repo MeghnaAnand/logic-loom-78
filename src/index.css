@@ -48,6 +48,14 @@
     --success: 145 65% 42%;
     --success-foreground: 0 0% 100%;
 
+    /* AutomationMind tokens */
+    --am-trigger: 43 96% 56%;
+    --am-trigger-foreground: 30 50% 15%;
+    --am-action: 217 91% 60%;
+    --am-action-foreground: 0 0% 100%;
+    --am-canvas: 220 15% 95%;
+    --am-canvas-foreground: 220 20% 40%;
+
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 240 5.3% 26.1%;
     --sidebar-primary: 240 5.9% 10%;
