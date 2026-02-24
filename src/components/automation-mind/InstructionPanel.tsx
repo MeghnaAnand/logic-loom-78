@@ -55,6 +55,35 @@ const InstructionPanel = ({
           <h2 className="font-display font-bold text-card-foreground">{level.title}</h2>
         </div>
 
+        {/* Difficulty & metadata row */}
+        <div className="flex flex-wrap items-center gap-2 mb-3">
+          <span className="text-sm tracking-wide" title={`Difficulty: ${level.difficulty}/5`}>
+            {Array.from({ length: 5 }, (_, i) => (
+              <span key={i} className={i < level.difficulty ? "text-amber-400" : "text-muted-foreground/30"}>★</span>
+            ))}
+          </span>
+          {level.estimatedTime && (
+            <span className="inline-flex items-center gap-1 text-[11px] text-muted-foreground bg-muted px-2 py-0.5 rounded-full">
+              <Clock className="w-3 h-3" /> {level.estimatedTime}
+            </span>
+          )}
+        </div>
+
+        {/* New concept badge */}
+        {level.newConcept && (
+          <div className="inline-flex items-center gap-1.5 bg-am-condition/15 text-am-condition-foreground text-xs font-bold px-2.5 py-1 rounded-lg font-display mb-2">
+            <Sparkles className="w-3 h-3" /> New Concept: {level.newConcept}
+          </div>
+        )}
+
+        {/* Learning goal */}
+        {level.learningGoal && (
+          <div className="flex items-center gap-1.5 text-xs text-muted-foreground mb-3">
+            <BookOpen className="w-3 h-3 shrink-0" />
+            <span>What you're learning: <strong className="text-foreground">{level.learningGoal}</strong></span>
+          </div>
+        )}
+
         {/* Overall progress bar */}
         <div className="flex items-center gap-2 text-xs text-muted-foreground mb-3">
           <Progress value={(levelProgress / totalLevels) * 100} className="h-1.5 flex-1" />
