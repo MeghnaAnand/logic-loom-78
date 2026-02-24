@@ -66,6 +66,20 @@ export default {
           data: "hsl(var(--block-data))",
           output: "hsl(var(--block-output))",
         },
+        am: {
+          trigger: {
+            DEFAULT: "hsl(var(--am-trigger))",
+            foreground: "hsl(var(--am-trigger-foreground))",
+          },
+          action: {
+            DEFAULT: "hsl(var(--am-action))",
+            foreground: "hsl(var(--am-action-foreground))",
+          },
+          canvas: {
+            DEFAULT: "hsl(var(--am-canvas))",
+            foreground: "hsl(var(--am-canvas-foreground))",
+          },
+        },
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",

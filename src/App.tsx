@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import Playground from "./pages/Playground";
+import AutomationMind from "./pages/AutomationMind";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -18,6 +19,7 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/play" element={<Playground />} />
+          <Route path="/automation-mind" element={<AutomationMind />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
