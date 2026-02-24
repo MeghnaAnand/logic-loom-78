@@ -359,7 +359,7 @@ const Playground = () => {
                   </Button>
                 </div>
                 <pre className="bg-[#1e1e1e] text-[#d4d4d4] text-[10px] leading-relaxed rounded-md px-3 py-2 font-mono overflow-x-auto whitespace-pre-wrap border border-border/30 max-h-48 overflow-y-auto">
-                  {getFullCode(placedBlocks, selectedLanguage)}
+                  {getFullCode(placedBlocks, selectedLanguage, currentChallenge + 1)}
                 </pre>
               </motion.div>
             )}
