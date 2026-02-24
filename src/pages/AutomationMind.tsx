@@ -232,6 +232,13 @@ const AutomationMind = () => {
     }
   }, [currentLevelIndex, resetState]);
 
+  const resetProgress = useCallback(() => {
+    localStorage.removeItem("automationmind-completed");
+    setCompletedLevels(new Set());
+    setCurrentLevelIndex(0);
+    resetState();
+  }, [resetState]);
+
   const isBusy = testingPhase === "loading" || testingPhase === "running";
 
   return (
