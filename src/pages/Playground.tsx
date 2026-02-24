@@ -9,6 +9,7 @@ import { LANGUAGE_META, type CodeLanguage, getFullCode } from "@/data/puzzle-cod
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
+import { playDing, playError, playWhoosh } from "@/lib/sounds";
 import JumpingCharacter from "@/components/puzzle/JumpingCharacter";
 import PuzzleTimer from "@/components/puzzle/PuzzleTimer";
 import WrongAnswerOverlay from "@/components/puzzle/WrongAnswerOverlay";
@@ -147,6 +148,7 @@ const Playground = () => {
     const msg = WRONG_MESSAGES[Math.floor(Math.random() * WRONG_MESSAGES.length)];
     setWrongMessage(msg);
     setShowWrong(true);
+    playError();
     setCharacterState("falling");
     setWrongShake(true);
     setTimeout(() => {
@@ -209,6 +211,7 @@ const Playground = () => {
     if (isCorrect) {
       setSolved(true);
       setShowSuccess(true);
+      playDing();
       setShowWrong(false);
       setTimerRunning(false);
       setCharacterState("celebrating");
@@ -240,6 +243,7 @@ const Playground = () => {
       setTimerRunning(true);
     }
     setCharacterState("jumping");
+    playWhoosh();
     setTimeout(() => {
       if (!solved) setCharacterState("idle");
     }, 500);
