@@ -117,14 +117,19 @@ const AutomationMind = () => {
     const t = canvasBlocks.filter((b) => b.type === "trigger").length >= 1;
     const a = canvasBlocks.filter((b) => b.type === "action").length >= level.maxActions;
     const c = level.maxConditions === 0 || canvasBlocks.filter((b) => b.type === "condition").length >= 1;
-    return t && a && c;
+    const d = (level.maxData ?? 0) === 0 || canvasBlocks.filter((b) => b.type === "data").length >= (level.maxData ?? 0);
+    return t && a && c && d;
   })();
 
   const isFullyConnected = (() => {
+    if (level.layout === "chain") {
+      // Need exactly chainOrder.length - 1 connections forming the chain
+      const expectedCount = (level.chainOrder?.length ?? 1) - 1;
+      return connections.filter((c) => !c.branch).length >= expectedCount;
+    }
     if (level.maxConditions === 0) {
       return connections.some((c) => !c.branch);
     }
-    // Need trigger→condition + yes + no
     const hasTriggerConn = connections.some((c) => !c.branch);
     const hasYes = connections.some((c) => c.branch === "yes");
     const hasNo = connections.some((c) => c.branch === "no");
