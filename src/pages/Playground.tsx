@@ -206,7 +206,21 @@ const Playground = () => {
           <div className="h-5 w-px bg-border" />
           <h1 className="font-display font-bold text-foreground">AutoFlow Puzzles</h1>
         </div>
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={fetchAIChallenges}
+            disabled={isLoadingAI}
+            className="gap-1.5 text-xs"
+          >
+            {isLoadingAI ? (
+              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+            ) : (
+              <Sparkles className="w-3.5 h-3.5" />
+            )}
+            {isLoadingAI ? "Generating..." : "AI Puzzles"}
+          </Button>
           <PuzzleTimer
             isRunning={timerRunning}
             onTimeUpdate={setFinalTime}
