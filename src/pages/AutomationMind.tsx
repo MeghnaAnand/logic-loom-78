@@ -74,14 +74,27 @@ const AutomationMind = () => {
       const first = canvasBlocks.find((b) => b.id === selectedBlockId);
       const second = canvasBlocks.find((b) => b.id === id);
       if (first && second) {
-        // Trigger → Condition or Trigger → Action (Level 1)
-        if (first.type === "trigger" && (second.type === "action" || second.type === "condition")) {
+        // Determine if this is a valid connection pair
+        const canConnect = (from: GameBlock, to: GameBlock): boolean => {
+          // Chain layout: trigger→data, data→data, data→action, trigger→action
+          if (level.layout === "chain") {
+            if (from.type === "trigger" && (to.type === "data" || to.type === "action")) return true;
+            if (from.type === "data" && (to.type === "data" || to.type === "action")) return true;
+            return false;
+          }
+          // Branch layout
+          if (from.type === "trigger" && (to.type === "action" || to.type === "condition")) return true;
+          return false;
+        };
+
+        if (canConnect(first, second)) {
           setConnections((prev) => {
+            // Remove existing connection from this source (non-branch)
             const filtered = prev.filter((c) => c.from !== first.id || c.branch);
             return [...filtered, { from: first.id, to: second.id }];
           });
           playWhoosh();
-        } else if (second.type === "trigger" && (first.type === "action" || first.type === "condition")) {
+        } else if (canConnect(second, first)) {
           setConnections((prev) => {
             const filtered = prev.filter((c) => c.from !== second.id || c.branch);
             return [...filtered, { from: second.id, to: first.id }];
@@ -92,7 +105,7 @@ const AutomationMind = () => {
       setSelectedBlockId(null);
       setTestingPhase("idle");
     }
-  }, [selectedBlockId, connectingFrom, canvasBlocks]);
+  }, [selectedBlockId, connectingFrom, canvasBlocks, level]);
 
   const connectBranch = useCallback((blockId: string, branch: "yes" | "no") => {
     setConnectingFrom({ blockId, branch });
