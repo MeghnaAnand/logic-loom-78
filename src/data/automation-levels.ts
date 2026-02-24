@@ -23,6 +23,10 @@ export interface LevelConfig {
   id: number;
   title: string;
   subtitle: string;
+  difficulty: number; // 1-5
+  newConcept?: string;
+  learningGoal?: string;
+  estimatedTime?: string;
   challenge: string;
   goal: string;
   hint: string;
@@ -43,6 +47,10 @@ export const LEVELS: LevelConfig[] = [
     id: 1,
     title: "Your First Automation",
     subtitle: "Level 1",
+    difficulty: 1,
+    newConcept: "Automation Basics",
+    learningGoal: "Trigger → Action flow",
+    estimatedTime: "~3 minutes",
     challenge:
       "You run a small online shop. Every time someone fills out your contact form, you need to save their information. Right now you're copying it manually. Let's automate this!",
     goal: "Connect the right trigger to the right action to automatically save form submissions.",
@@ -80,6 +88,10 @@ export const LEVELS: LevelConfig[] = [
     id: 2,
     title: "Smart Decisions",
     subtitle: "Level 2",
+    difficulty: 2,
+    newConcept: "Decision Making",
+    learningGoal: "Conditional logic (IF/ELSE)",
+    estimatedTime: "~5 minutes",
     challenge:
       "Your shop gets orders of all sizes. Large orders over $500 need manager approval before shipping. Smaller orders can be approved automatically.",
     goal: "Build an automation that checks order amounts and routes them correctly:\n• Orders OVER $500 → Send to Manager\n• Orders $500 or LESS → Auto-Approve",
