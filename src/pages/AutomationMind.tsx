@@ -1,6 +1,6 @@
 import { useState, useCallback, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import confetti from "canvas-confetti";
 import BlockLibrary from "@/components/automation-mind/BlockLibrary";
@@ -232,6 +232,13 @@ const AutomationMind = () => {
     }
   }, [currentLevelIndex, resetState]);
 
+  const resetProgress = useCallback(() => {
+    localStorage.removeItem("automationmind-completed");
+    setCompletedLevels(new Set());
+    setCurrentLevelIndex(0);
+    resetState();
+  }, [resetState]);
+
   const isBusy = testingPhase === "loading" || testingPhase === "running";
 
   return (
@@ -265,6 +272,11 @@ const AutomationMind = () => {
             </button>
           ))}
         </div>
+        {completedLevels.size > 0 && (
+          <Button variant="ghost" size="sm" onClick={resetProgress} className="ml-auto gap-1 text-muted-foreground hover:text-destructive text-xs">
+            <RotateCcw className="w-3.5 h-3.5" /> Reset Progress
+          </Button>
+        )}
       </header>
 
       <div className="flex-1 flex min-h-0">
