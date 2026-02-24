@@ -236,19 +236,17 @@ const AutomationMind = () => {
             <button
               key={l.id}
               onClick={() => {
-                if (i === 0 || completedLevels.has(i - 1)) {
-                  setCurrentLevelIndex(i);
-                  resetState();
-                }
+                setCurrentLevelIndex(i);
+                resetState();
               }}
-              disabled={i > 0 && !completedLevels.has(i - 1) && i !== currentLevelIndex}
+              disabled={false}
               className={`
                 w-7 h-7 rounded-lg text-xs font-bold font-display transition-all
                 ${currentLevelIndex === i
                   ? "bg-primary text-primary-foreground"
                   : completedLevels.has(i)
                     ? "bg-success text-success-foreground"
-                    : "bg-muted text-muted-foreground opacity-50"
+                    : "bg-muted text-muted-foreground"
                 }
               `}
             >
