@@ -285,14 +285,6 @@ const Playground = () => {
                 onDismiss={() => setShowWrong(false)}
               />
 
-              {/* Jumping character above the workspace */}
-              <div className="flex justify-end mb-4 mr-4">
-                <JumpingCharacter
-                  blockIndex={placedBlocks.length - 1}
-                  totalBlocks={placedBlocks.length}
-                  state={characterState}
-                />
-              </div>
 
               <Droppable droppableId="workspace">
                 {(provided, snapshot) => (
