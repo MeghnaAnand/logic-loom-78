@@ -29,6 +29,18 @@ const BezierArrow = ({ connected, running }: { connected: boolean; running: bool
 
   return (
     <svg width="60" height="80" viewBox="0 0 60 80" className="my-1">
+      {/* Glow filter for connection animation */}
+      {connected && (
+        <defs>
+          <filter id="glow">
+            <feGaussianBlur stdDeviation="3" result="blur" />
+            <feMerge>
+              <feMergeNode in="blur" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
+        </defs>
+      )}
       <motion.path
         d="M30 0 C30 30, 30 50, 30 65"
         fill="none"
@@ -36,9 +48,10 @@ const BezierArrow = ({ connected, running }: { connected: boolean; running: bool
         strokeWidth={connected ? 3 : 2}
         strokeDasharray={connected ? "none" : "6 4"}
         strokeLinecap="round"
-        initial={connected ? { pathLength: 0 } : {}}
-        animate={connected ? { pathLength: 1 } : {}}
-        transition={{ duration: 0.4, ease: "easeOut" }}
+        filter={connected ? "url(#glow)" : undefined}
+        initial={connected ? { pathLength: 0, opacity: 0 } : {}}
+        animate={connected ? { pathLength: 1, opacity: 1 } : {}}
+        transition={{ duration: 0.6, ease: "easeOut" }}
       />
       {connected && (
         <motion.polygon

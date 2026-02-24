@@ -1,6 +1,6 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Play, ArrowRight, RotateCcw, CheckCircle2, Loader2 } from "lucide-react";
+import { Play, ArrowRight, RotateCcw, CheckCircle2, Loader2, X } from "lucide-react";
 import { TEST_DATA } from "./GameCanvas";
 import { Progress } from "@/components/ui/progress";
 
@@ -172,11 +172,11 @@ const InstructionPanel = ({
               transition={{ delay: 0.9 }}
               className="pt-2 border-t border-success/20"
             >
-              <p className="text-success font-bold font-display">
-                🎉 Success! 5/5 forms saved automatically.
+              <p className="text-success font-bold font-display text-base">
+                🎉 You're a natural! All 5 forms saved flawlessly!
               </p>
               <p className="text-success font-display text-sm mt-1">
-                You've completed Level 1!
+                Level 1 crushed! You're on your way to becoming an automation pro 🚀
               </p>
             </motion.div>
           </motion.div>
@@ -188,8 +188,14 @@ const InstructionPanel = ({
             initial={{ opacity: 0, x: -10 }}
             animate={{ opacity: 1, x: [0, -4, 4, -2, 2, 0] }}
             transition={{ duration: 0.4 }}
-            className="bg-destructive/10 border border-destructive/30 rounded-xl p-4 text-sm shadow-sm"
+            className="relative bg-destructive/10 border border-destructive/30 rounded-xl p-4 text-sm shadow-sm"
           >
+            <button
+              onClick={onReset}
+              className="absolute top-2 right-2 w-5 h-5 rounded-full bg-destructive/20 hover:bg-destructive/40 flex items-center justify-center transition-colors"
+            >
+              <X className="w-3 h-3 text-destructive" />
+            </button>
             <p className="text-destructive font-semibold">
               ❌ This automation won't work.
             </p>
