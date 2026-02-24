@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Play, ArrowRight, RotateCcw, CheckCircle2, Loader2, X, Lock, Clock, Sparkles, BookOpen, ChevronDown, ChevronUp, Lightbulb, Rewind } from "lucide-react";
+import { Play, ArrowRight, RotateCcw, CheckCircle2, Loader2, X, Lock, Clock, Sparkles, BookOpen, ChevronDown, ChevronUp, Lightbulb, Rewind, Code, Palette } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import type { LevelConfig } from "@/data/automation-levels";
 
