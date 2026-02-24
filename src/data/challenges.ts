@@ -239,9 +239,17 @@ function shuffle<T>(arr: T[]): T[] {
   return a;
 }
 
-/** Pick SESSION_SIZE random challenges, reshuffling when exhausted */
+const DIFFICULTY_ORDER: Record<Challenge["difficulty"], number> = {
+  beginner: 0,
+  intermediate: 1,
+  advanced: 2,
+};
+
+/** Pick SESSION_SIZE random challenges, sorted by ascending difficulty */
 export function pickSessionChallenges(): Challenge[] {
-  return shuffle(allChallenges).slice(0, SESSION_SIZE);
+  return shuffle(allChallenges)
+    .slice(0, SESSION_SIZE)
+    .sort((a, b) => DIFFICULTY_ORDER[a.difficulty] - DIFFICULTY_ORDER[b.difficulty]);
 }
 
 /** Legacy export — picks a random set on import (for backwards compat) */

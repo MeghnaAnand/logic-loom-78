@@ -84,6 +84,9 @@ const Playground = () => {
           throw new Error("Malformed challenge from AI");
         }
       }
+      // Sort AI challenges by difficulty progression
+      const diffOrder: Record<string, number> = { beginner: 0, intermediate: 1, advanced: 2 };
+      challenges.sort((a: Challenge, b: Challenge) => (diffOrder[a.difficulty] ?? 1) - (diffOrder[b.difficulty] ?? 1));
       applyNewChallenges(challenges);
       toast.success("🤖 Fresh AI-generated puzzles loaded!");
     } catch (e) {
@@ -231,23 +234,33 @@ const Playground = () => {
             reset={timerResetKey}
           />
           <div className="flex items-center gap-2">
-            {sessionChallenges.map((_, i) => (
-              <button
-                key={i}
-                onClick={() => loadChallenge(i)}
-                className={`
-                  w-8 h-8 rounded-lg font-display font-bold text-sm transition-all
-                  ${currentChallenge === i
-                    ? "bg-primary text-primary-foreground"
-                    : solvedChallenges.has(i)
-                      ? "bg-success text-success-foreground"
-                      : "bg-muted text-muted-foreground hover:bg-muted/80"
-                  }
-                `}
-              >
-                {solvedChallenges.has(i) ? "✓" : i + 1}
-              </button>
-            ))}
+            {sessionChallenges.map((c, i) => {
+              const diffColor =
+                c.difficulty === "beginner"
+                  ? "border-success"
+                  : c.difficulty === "intermediate"
+                    ? "border-accent"
+                    : "border-destructive";
+              return (
+                <button
+                  key={i}
+                  onClick={() => loadChallenge(i)}
+                  className={`
+                    w-8 h-8 rounded-lg font-display font-bold text-sm transition-all border-2
+                    ${diffColor}
+                    ${currentChallenge === i
+                      ? "bg-primary text-primary-foreground"
+                      : solvedChallenges.has(i)
+                        ? "bg-success text-success-foreground"
+                        : "bg-muted text-muted-foreground hover:bg-muted/80"
+                    }
+                  `}
+                  title={`Level ${i + 1} — ${c.difficulty}`}
+                >
+                  {solvedChallenges.has(i) ? "✓" : i + 1}
+                </button>
+              );
+            })}
           </div>
         </div>
       </header>
