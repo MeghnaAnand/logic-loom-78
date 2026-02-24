@@ -204,14 +204,15 @@ const ArrowLine = ({
   color,
   label,
   running,
-  vertical = true,
+  testLabel,
 }: {
   color: string;
   label?: string;
   running: boolean;
   vertical?: boolean;
+  testLabel?: string;
 }) => (
-  <div className="flex flex-col items-center">
+  <div className="flex flex-col items-center relative">
     <svg width="60" height="60" viewBox="0 0 60 60">
       <defs>
         <filter id={`glow-${color}`}>
@@ -259,6 +260,19 @@ const ArrowLine = ({
         {label}
       </span>
     )}
+    <AnimatePresence>
+      {testLabel && running && (
+        <motion.span
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.8 }}
+          className="absolute -right-20 top-1/2 -translate-y-1/2 text-[9px] font-display font-bold whitespace-nowrap px-1.5 py-0.5 rounded-md bg-card shadow-sm border border-border"
+          style={{ color }}
+        >
+          {testLabel}
+        </motion.span>
+      )}
+    </AnimatePresence>
   </div>
 );
 
