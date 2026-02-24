@@ -20,6 +20,8 @@ interface InstructionPanelProps {
   totalLevels: number;
   completedLevels: Set<number>;
   timeTaken?: string;
+  codeView?: boolean;
+  onToggleCodeView?: () => void;
 }
 
 const BADGES = [
