@@ -1,16 +1,18 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Play, ArrowRight, RotateCcw, CheckCircle2 } from "lucide-react";
+import { Play, ArrowRight, RotateCcw, CheckCircle2, Loader2 } from "lucide-react";
 import { TEST_DATA } from "./GameCanvas";
+import { Progress } from "@/components/ui/progress";
 
 interface InstructionPanelProps {
-  testingPhase: "idle" | "running" | "success" | "failure";
+  testingPhase: "idle" | "loading" | "running" | "success" | "failure";
   currentTestItem: number;
   onTest: () => void;
   onReset: () => void;
   onNextLevel: () => void;
   hasBlocks: boolean;
   isConnected: boolean;
+  isBusy: boolean;
 }
 
 const InstructionPanel = ({
@@ -21,7 +23,14 @@ const InstructionPanel = ({
   onNextLevel,
   hasBlocks,
   isConnected,
+  isBusy,
 }: InstructionPanelProps) => {
+  const progressValue = testingPhase === "running"
+    ? ((currentTestItem + 1) / TEST_DATA.length) * 100
+    : testingPhase === "success"
+      ? 100
+      : 0;
+
   return (
     <div className="w-80 border-l border-border bg-card p-5 flex flex-col gap-5 overflow-y-auto">
       {/* Instructions */}
@@ -71,25 +80,59 @@ const InstructionPanel = ({
 
       {/* Test results */}
       <AnimatePresence mode="wait">
+        {testingPhase === "loading" && (
+          <motion.div
+            key="loading"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0 }}
+            className="bg-muted rounded-xl p-6 text-sm shadow-sm flex flex-col items-center gap-3"
+          >
+            <Loader2 className="w-8 h-8 text-primary animate-spin" />
+            <p className="text-foreground font-display font-semibold">Initializing automation...</p>
+            <p className="text-muted-foreground text-xs">Setting up test environment</p>
+          </motion.div>
+        )}
+
         {testingPhase === "running" && (
           <motion.div
             key="running"
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0 }}
-            className="bg-muted rounded-xl p-4 text-sm font-mono space-y-1 shadow-sm"
+            className="bg-muted rounded-xl p-4 text-sm font-mono space-y-2 shadow-sm"
           >
-            <p className="text-foreground font-semibold">✅ Testing automation...</p>
-            {TEST_DATA.slice(0, currentTestItem + 1).map((item, i) => (
-              <motion.p
-                key={i}
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                className="text-muted-foreground"
-              >
-                Form #{i + 1}: {item.name} ({item.email}) → Saved
-              </motion.p>
-            ))}
+            {/* Progress bar */}
+            <div className="space-y-1.5">
+              <div className="flex items-center justify-between text-xs">
+                <span className="text-foreground font-display font-semibold flex items-center gap-1.5">
+                  <Loader2 className="w-3 h-3 animate-spin" />
+                  Testing...
+                </span>
+                <span className="text-muted-foreground font-display">
+                  {currentTestItem + 1}/{TEST_DATA.length} complete
+                </span>
+              </div>
+              <Progress value={progressValue} className="h-2" />
+            </div>
+
+            {/* Sequential results */}
+            <div className="space-y-1 pt-1">
+              {TEST_DATA.slice(0, currentTestItem + 1).map((item, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, x: -12, height: 0 }}
+                  animate={{ opacity: 1, x: 0, height: "auto" }}
+                  transition={{ duration: 0.3 }}
+                  className="flex items-center gap-1.5 text-muted-foreground"
+                >
+                  <CheckCircle2 className="w-3.5 h-3.5 text-success shrink-0" />
+                  <span className="text-xs">
+                    Form #{i + 1}: {item.name} ({item.email}) → Saved
+                  </span>
+                </motion.div>
+              ))}
+            </div>
           </motion.div>
         )}
 
@@ -100,7 +143,11 @@ const InstructionPanel = ({
             animate={{ opacity: 1, scale: 1 }}
             className="bg-success/10 border border-success/30 rounded-xl p-4 text-sm space-y-1.5 shadow-sm"
           >
-            <p className="font-semibold text-foreground">✅ Testing automation...</p>
+            <div className="flex items-center justify-between mb-2">
+              <p className="font-semibold text-foreground">✅ Test complete</p>
+              <span className="text-xs text-success font-display font-bold">5/5</span>
+            </div>
+            <Progress value={100} className="h-2 mb-2" />
             {TEST_DATA.map((item, i) => (
               <motion.div
                 key={i}
@@ -168,14 +215,23 @@ const InstructionPanel = ({
           <>
             <Button
               onClick={onTest}
-              disabled={!isConnected || testingPhase === "running"}
+              disabled={!isConnected || isBusy}
               className="gap-2 rounded-xl hover:scale-[1.02] transition-transform"
             >
-              <Play className="w-4 h-4" />
-              {testingPhase === "running" ? "Testing..." : "Test Automation"}
+              {isBusy ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  Testing...
+                </>
+              ) : (
+                <>
+                  <Play className="w-4 h-4" />
+                  Test Automation
+                </>
+              )}
             </Button>
             {hasBlocks && (
-              <Button variant="outline" size="sm" onClick={onReset} className="gap-1 rounded-xl hover:scale-[1.02] transition-transform">
+              <Button variant="outline" size="sm" onClick={onReset} disabled={isBusy} className="gap-1 rounded-xl hover:scale-[1.02] transition-transform">
                 <RotateCcw className="w-3 h-3" /> Reset
               </Button>
             )}

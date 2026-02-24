@@ -13,7 +13,7 @@ const AutomationMind = () => {
   const [canvasBlocks, setCanvasBlocks] = useState<GameBlock[]>([]);
   const [connection, setConnection] = useState<{ from: string; to: string } | null>(null);
   const [selectedBlockId, setSelectedBlockId] = useState<string | null>(null);
-  const [testingPhase, setTestingPhase] = useState<"idle" | "running" | "success" | "failure">("idle");
+  const [testingPhase, setTestingPhase] = useState<"idle" | "loading" | "running" | "success" | "failure">("idle");
   const [currentTestItem, setCurrentTestItem] = useState(0);
 
   const addBlock = useCallback((block: GameBlock) => {
@@ -57,27 +57,33 @@ const AutomationMind = () => {
 
     const isCorrect = trigger?.id === "form-submitted" && action?.id === "save-spreadsheet";
 
-    if (!isCorrect) {
-      setTestingPhase("failure");
-      playError();
-      return;
-    }
-
-    setTestingPhase("running");
+    // Show loading spinner for 2 seconds first
+    setTestingPhase("loading");
     setCurrentTestItem(0);
 
-    for (let i = 0; i < 5; i++) {
-      setTimeout(() => {
-        setCurrentTestItem(i);
-        if (i === 4) {
-          setTimeout(() => {
-            setTestingPhase("success");
-            playDing();
-            confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 } });
-          }, 800);
-        }
-      }, i * 600);
-    }
+    setTimeout(() => {
+      if (!isCorrect) {
+        setTestingPhase("failure");
+        playError();
+        return;
+      }
+
+      setTestingPhase("running");
+      setCurrentTestItem(0);
+
+      for (let i = 0; i < 5; i++) {
+        setTimeout(() => {
+          setCurrentTestItem(i);
+          if (i === 4) {
+            setTimeout(() => {
+              setTestingPhase("success");
+              playDing();
+              confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 } });
+            }, 800);
+          }
+        }, i * 600);
+      }
+    }, 2000);
   }, [connection, canvasBlocks]);
 
   const reset = useCallback(() => {
@@ -89,6 +95,7 @@ const AutomationMind = () => {
   }, []);
 
   const hasBothBlocks = canvasBlocks.some((b) => b.type === "trigger") && canvasBlocks.some((b) => b.type === "action");
+  const isBusy = testingPhase === "loading" || testingPhase === "running";
 
   return (
     <div className="h-screen flex flex-col bg-background">
@@ -111,7 +118,7 @@ const AutomationMind = () => {
           selectedBlockId={selectedBlockId}
           onSelectBlock={selectBlock}
           onRemoveBlock={removeBlock}
-          testingPhase={testingPhase}
+          testingPhase={testingPhase === "loading" ? "idle" : testingPhase}
           currentTestItem={currentTestItem}
         />
         <InstructionPanel
@@ -122,6 +129,7 @@ const AutomationMind = () => {
           onNextLevel={() => navigate("/play")}
           hasBlocks={hasBothBlocks}
           isConnected={!!connection}
+          isBusy={isBusy}
         />
       </div>
     </div>
