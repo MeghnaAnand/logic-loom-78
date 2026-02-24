@@ -34,6 +34,8 @@ export interface LevelConfig {
   newConcept?: string;
   learningGoal?: string;
   estimatedTime?: string;
+  averageTime?: string;
+  bonusChallenge?: string;
   challenge: string;
   goal: string;
   hint: string;
