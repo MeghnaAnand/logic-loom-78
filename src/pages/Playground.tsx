@@ -286,7 +286,9 @@ const Playground = () => {
           </Button>
           <div className="h-5 w-px bg-border" />
           <h1 className="font-display font-bold text-foreground">AutoFlow Puzzles</h1>
-        </div>
+          <Button variant="ghost" size="sm" onClick={() => navigate(user ? "/history" : "/auth")} className="gap-1 text-xs">
+            <History className="w-3.5 h-3.5" /> {user ? "History" : "Sign In"}
+          </Button>
         <div className="flex items-center gap-3">
           <Button
             variant="outline"
