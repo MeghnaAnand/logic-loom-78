@@ -107,7 +107,7 @@ def on_order_received(order):
             "amount": amount,
             "reason": "Large order - needs approval"
         })
-        print(f"📋 Order ${amount} sent to manager")
+        print(f"📋 Order {amount} sent to manager")
     else:
         # NO path: Auto-approve
         auto_approve_order(order)
