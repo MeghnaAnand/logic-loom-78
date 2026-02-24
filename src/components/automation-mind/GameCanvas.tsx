@@ -548,6 +548,7 @@ const GameCanvas = ({
   onRemoveBlock,
   testingPhase,
   currentTestItem,
+  currentExtractionStep,
 }: GameCanvasProps) => {
   const triggerBlock = blocks.find((b) => b.type === "trigger");
   const conditionBlock = blocks.find((b) => b.type === "condition");
