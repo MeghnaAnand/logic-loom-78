@@ -36,7 +36,10 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background overflow-hidden">
       {/* Top nav */}
-      <nav className="absolute top-0 right-0 p-4 z-20">
+      <nav className="absolute top-0 left-0 right-0 p-4 z-20 flex items-center justify-between">
+        <span className="font-display text-xl font-bold text-foreground tracking-tight">
+          AutomationMind
+        </span>
         <Button
           variant="ghost"
           size="sm"
