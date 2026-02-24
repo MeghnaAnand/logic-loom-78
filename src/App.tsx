@@ -27,6 +27,7 @@ const App = () => (
             <Route path="/automation-mind" element={<AutomationMind />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/history" element={<History />} />
+            <Route path="/challenge" element={<ChallengeMode />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
