@@ -468,6 +468,7 @@ const GameCanvas = ({
                       color="hsl(var(--am-yes))"
                       label="YES"
                       running={isRunning && currentPath === "yes"}
+                      testLabel={isRunning && currentPath === "yes" ? "Large orders →" : undefined}
                     />
                     <CanvasBlock
                       block={yesAction}
