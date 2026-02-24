@@ -47,6 +47,10 @@ export const LEVELS: LevelConfig[] = [
     id: 1,
     title: "Your First Automation",
     subtitle: "Level 1",
+    difficulty: 1,
+    newConcept: "Automation Basics",
+    learningGoal: "Trigger → Action flow",
+    estimatedTime: "~3 minutes",
     challenge:
       "You run a small online shop. Every time someone fills out your contact form, you need to save their information. Right now you're copying it manually. Let's automate this!",
     goal: "Connect the right trigger to the right action to automatically save form submissions.",
