@@ -18,6 +18,7 @@ const AutomationMind = () => {
   const [connectingFrom, setConnectingFrom] = useState<{ blockId: string; branch?: "yes" | "no" } | null>(null);
   const [testingPhase, setTestingPhase] = useState<"idle" | "loading" | "running" | "success" | "failure">("idle");
   const [currentTestItem, setCurrentTestItem] = useState(0);
+  const [currentExtractionStep, setCurrentExtractionStep] = useState<number | undefined>(undefined);
   const [completedLevels, setCompletedLevels] = useState<Set<number>>(new Set());
 
   const level = LEVELS[currentLevelIndex];
@@ -29,6 +30,7 @@ const AutomationMind = () => {
     setConnectingFrom(null);
     setTestingPhase("idle");
     setCurrentTestItem(0);
+    setCurrentExtractionStep(undefined);
   }, []);
 
   const addBlock = useCallback((block: GameBlock) => {
@@ -136,11 +138,52 @@ const AutomationMind = () => {
     return hasTriggerConn && hasYes && hasNo;
   })();
 
+  const runTestAnimation = useCallback(() => {
+    setTestingPhase("running");
+    setCurrentTestItem(0);
+    setCurrentExtractionStep(undefined);
+
+    const total = level.testData.length;
+    const hasExtractions = level.testData[0]?.extractions && level.testData[0].extractions.length > 0;
+    const extractionCount = hasExtractions ? (level.testData[0].extractions?.length ?? 0) : 0;
+    const itemDuration = hasExtractions ? (extractionCount * 400 + 300) : 500;
+
+    for (let i = 0; i < total; i++) {
+      setTimeout(() => {
+        setCurrentTestItem(i);
+        setCurrentExtractionStep(undefined);
+
+        // Step through extractions for chain levels
+        if (hasExtractions) {
+          for (let e = 0; e < extractionCount; e++) {
+            setTimeout(() => setCurrentExtractionStep(e), e * 400 + 100);
+          }
+        }
+
+        if (i === total - 1) {
+          setTimeout(() => {
+            setTestingPhase("success");
+            setCurrentExtractionStep(undefined);
+            playDing();
+            const particleCount = level.id === 2 ? 250 : 150;
+            confetti({ particleCount, spread: 100, origin: { y: 0.6 } });
+            if (level.id === 2) {
+              setTimeout(() => confetti({ particleCount: 80, spread: 60, origin: { x: 0.2, y: 0.7 } }), 300);
+              setTimeout(() => confetti({ particleCount: 80, spread: 60, origin: { x: 0.8, y: 0.7 } }), 500);
+            }
+            setCompletedLevels((prev) => new Set([...prev, currentLevelIndex]));
+          }, itemDuration);
+        }
+      }, i * itemDuration);
+    }
+  }, [level, currentLevelIndex]);
+
   const runTest = useCallback(() => {
     if (!isFullyConnected) return;
 
     setTestingPhase("loading");
     setCurrentTestItem(0);
+    setCurrentExtractionStep(undefined);
 
     setTimeout(() => {
       const isCorrect = level.validate(connections, canvasBlocks);
@@ -151,30 +194,13 @@ const AutomationMind = () => {
         return;
       }
 
-      setTestingPhase("running");
-      setCurrentTestItem(0);
-
-      const total = level.testData.length;
-      for (let i = 0; i < total; i++) {
-        setTimeout(() => {
-          setCurrentTestItem(i);
-          if (i === total - 1) {
-            setTimeout(() => {
-              setTestingPhase("success");
-              playDing();
-              const particleCount = level.id === 2 ? 250 : 150;
-              confetti({ particleCount, spread: 100, origin: { y: 0.6 } });
-              if (level.id === 2) {
-                setTimeout(() => confetti({ particleCount: 80, spread: 60, origin: { x: 0.2, y: 0.7 } }), 300);
-                setTimeout(() => confetti({ particleCount: 80, spread: 60, origin: { x: 0.8, y: 0.7 } }), 500);
-              }
-              setCompletedLevels((prev) => new Set([...prev, currentLevelIndex]));
-            }, 800);
-          }
-        }, i * 500);
-      }
+      runTestAnimation();
     }, 2000);
-  }, [isFullyConnected, connections, canvasBlocks, level, currentLevelIndex]);
+  }, [isFullyConnected, connections, canvasBlocks, level, runTestAnimation]);
+
+  const replayTest = useCallback(() => {
+    runTestAnimation();
+  }, [runTestAnimation]);
 
   const goToNextLevel = useCallback(() => {
     if (currentLevelIndex < LEVELS.length - 1) {
@@ -233,6 +259,7 @@ const AutomationMind = () => {
           onRemoveBlock={removeBlock}
           testingPhase={testingPhase}
           currentTestItem={currentTestItem}
+          currentExtractionStep={currentExtractionStep}
         />
         <InstructionPanel
           level={level}
@@ -241,6 +268,7 @@ const AutomationMind = () => {
           onTest={runTest}
           onReset={resetState}
           onNextLevel={goToNextLevel}
+          onReplay={level.layout === "chain" ? replayTest : undefined}
           hasMinBlocks={hasMinBlocks}
           isFullyConnected={isFullyConnected}
           isBusy={isBusy}

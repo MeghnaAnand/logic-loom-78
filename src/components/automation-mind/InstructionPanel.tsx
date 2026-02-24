@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Play, ArrowRight, RotateCcw, CheckCircle2, Loader2, X, Lock, Clock, Sparkles, BookOpen, ChevronDown, ChevronUp, Lightbulb } from "lucide-react";
+import { Play, ArrowRight, RotateCcw, CheckCircle2, Loader2, X, Lock, Clock, Sparkles, BookOpen, ChevronDown, ChevronUp, Lightbulb, Rewind } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import type { LevelConfig } from "@/data/automation-levels";
 
@@ -12,6 +12,7 @@ interface InstructionPanelProps {
   onTest: () => void;
   onReset: () => void;
   onNextLevel: () => void;
+  onReplay?: () => void;
   hasMinBlocks: boolean;
   isFullyConnected: boolean;
   isBusy: boolean;
@@ -33,6 +34,7 @@ const InstructionPanel = ({
   onTest,
   onReset,
   onNextLevel,
+  onReplay,
   hasMinBlocks,
   isFullyConnected,
   isBusy,
@@ -343,6 +345,55 @@ const InstructionPanel = ({
                 {level.successSubtitle}
               </p>
             </motion.div>
+
+            {/* Before / After comparison for Level 3 */}
+            {level.dataPreview && level.dataPreview.length > 0 && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 1.2 }}
+                className="mt-3 space-y-2"
+              >
+                <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-display font-bold">Before → After</div>
+                {level.dataPreview.slice(0, 2).map((preview, i) => (
+                  <div key={i} className="flex gap-2 items-stretch text-[10px]">
+                    <div className="flex-1 bg-destructive/5 border border-destructive/10 rounded-lg p-1.5">
+                      <div className="text-[8px] uppercase tracking-wider text-muted-foreground font-display mb-0.5">Messy</div>
+                      <p className="text-muted-foreground italic leading-snug line-clamp-2">{preview.original}</p>
+                    </div>
+                    <div className="flex items-center text-muted-foreground text-xs">→</div>
+                    <div className="flex-1 bg-success/5 border border-success/10 rounded-lg p-1.5">
+                      <div className="text-[8px] uppercase tracking-wider text-muted-foreground font-display mb-0.5">Clean</div>
+                      {preview.extracted.map((item, j) => (
+                        <div key={j} className="flex gap-0.5 text-[10px]">
+                          <span className="text-muted-foreground">{item.label}:</span>
+                          <span className="text-foreground font-bold font-display">{item.value}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </motion.div>
+            )}
+
+            {/* Rewind button */}
+            {onReplay && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 1.4 }}
+                className="mt-2"
+              >
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={onReplay}
+                  className="gap-1.5 rounded-xl hover:scale-[1.02] transition-transform w-full text-xs"
+                >
+                  <Rewind className="w-3 h-3" /> Replay Data Flow
+                </Button>
+              </motion.div>
+            )}
           </motion.div>
         )}
 
