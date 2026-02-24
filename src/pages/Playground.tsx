@@ -412,7 +412,7 @@ const Playground = () => {
                         >
                           Review
                         </Button>
-                        {currentChallenge < challenges.length - 1 ? (
+                        {currentChallenge < sessionChallenges.length - 1 ? (
                           <Button
                             onClick={() => loadChallenge(currentChallenge + 1)}
                             className="flex-1 bg-primary text-primary-foreground gap-1"
@@ -421,10 +421,10 @@ const Playground = () => {
                           </Button>
                         ) : (
                           <Button
-                            onClick={() => setShowSuccess(false)}
-                            className="flex-1 bg-success text-success-foreground"
+                            onClick={startNewSession}
+                            className="flex-1 bg-success text-success-foreground gap-1"
                           >
-                            {allSolved ? "🎉 All Complete!" : "Continue"}
+                            🔀 New Puzzles
                           </Button>
                         )}
                       </div>
