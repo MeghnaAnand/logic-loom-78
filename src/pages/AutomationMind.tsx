@@ -20,6 +20,8 @@ const AutomationMind = () => {
   const [currentTestItem, setCurrentTestItem] = useState(0);
   const [currentExtractionStep, setCurrentExtractionStep] = useState<number | undefined>(undefined);
   const [completedLevels, setCompletedLevels] = useState<Set<number>>(new Set());
+  const [timeTaken, setTimeTaken] = useState<string | undefined>(undefined);
+  const levelStartRef = useRef<number>(Date.now());
 
   const level = LEVELS[currentLevelIndex];
 
