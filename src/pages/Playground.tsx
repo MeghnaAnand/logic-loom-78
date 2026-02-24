@@ -192,20 +192,7 @@ const Playground = () => {
   const allSolved = solvedChallenges.size === sessionChallenges.length;
 
   const startNewSession = () => {
-    const newChallenges = pickSessionChallenges();
-    setSessionChallenges(newChallenges);
-    setCurrentChallenge(0);
-    setAvailableBlocks([...newChallenges[0].availableBlocks]);
-    setPlacedBlocks([]);
-    setShowHint(false);
-    setSolved(false);
-    setShowSuccess(false);
-    setSolvedChallenges(new Set());
-    setCharacterState("idle");
-    setShowWrong(false);
-    setTimerResetKey((k) => k + 1);
-    setTimerRunning(false);
-    setAttempts(0);
+    applyNewChallenges(pickSessionChallenges());
   };
 
   return (
