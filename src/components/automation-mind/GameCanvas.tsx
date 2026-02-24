@@ -333,7 +333,23 @@ const GameCanvas = ({
 
   return (
     <div className="flex-1 bg-am-canvas workspace-grid flex flex-col items-center justify-center p-8 relative overflow-auto">
-      {blocks.length === 0 ? (
+      {/* Connecting tooltip banner */}
+      <AnimatePresence>
+        {connectingFrom && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            className="absolute top-4 left-1/2 -translate-x-1/2 z-40 px-4 py-2 rounded-full font-display font-bold text-sm shadow-lg"
+            style={{
+              backgroundColor: connectingFrom.branch === "yes" ? "hsl(var(--am-yes))" : "hsl(var(--am-no))",
+              color: "white",
+            }}
+          >
+            {connectingFrom.branch === "yes" ? "🟢 Connect to YES action" : "🔴 Connect to NO action"} — click an action block
+          </motion.div>
+        )}
+      </AnimatePresence>
         <motion.div
           animate={{ opacity: [0.4, 0.7, 0.4] }}
           transition={{ duration: 2, repeat: Infinity }}
