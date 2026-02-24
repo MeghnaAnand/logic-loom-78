@@ -500,6 +500,7 @@ const GameCanvas = ({
                       color="hsl(var(--am-no))"
                       label="NO"
                       running={isRunning && currentPath === "no"}
+                      testLabel={isRunning && currentPath === "no" ? "Small orders →" : undefined}
                     />
                     <CanvasBlock
                       block={noAction}
