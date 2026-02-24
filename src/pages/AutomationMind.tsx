@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -20,10 +20,21 @@ const AutomationMind = () => {
   const [testingPhase, setTestingPhase] = useState<"idle" | "loading" | "running" | "success" | "failure">("idle");
   const [currentTestItem, setCurrentTestItem] = useState(0);
   const [currentExtractionStep, setCurrentExtractionStep] = useState<number | undefined>(undefined);
-  const [completedLevels, setCompletedLevels] = useState<Set<number>>(new Set());
+  const [completedLevels, setCompletedLevels] = useState<Set<number>>(() => {
+    try {
+      const saved = localStorage.getItem("automationmind-completed");
+      return saved ? new Set(JSON.parse(saved)) : new Set();
+    } catch {
+      return new Set();
+    }
+  });
   const [timeTaken, setTimeTaken] = useState<string | undefined>(undefined);
   const [codeView, setCodeView] = useState(false);
   const levelStartRef = useRef<number>(Date.now());
+
+  useEffect(() => {
+    localStorage.setItem("automationmind-completed", JSON.stringify([...completedLevels]));
+  }, [completedLevels]);
 
   const level = LEVELS[currentLevelIndex];
 
