@@ -2,14 +2,16 @@ import { useState, useCallback, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { DragDropContext, Droppable, Draggable, DropResult } from "@hello-pangea/dnd";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, ArrowRight, Lightbulb, RotateCcw, CheckCircle2, Trophy, Sparkles, Loader2 } from "lucide-react";
+import { ArrowLeft, ArrowRight, Lightbulb, RotateCcw, CheckCircle2, Trophy, Sparkles, Loader2, Code2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { pickSessionChallenges, type Block, type Challenge } from "@/data/challenges";
+import { LANGUAGE_META, type CodeLanguage, getFullCode } from "@/data/puzzle-code-translations";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import JumpingCharacter from "@/components/puzzle/JumpingCharacter";
 import PuzzleTimer from "@/components/puzzle/PuzzleTimer";
 import WrongAnswerOverlay from "@/components/puzzle/WrongAnswerOverlay";
+import BlockCodeSnippet from "@/components/puzzle/BlockCodeSnippet";
 
 const blockColorMap: Record<string, string> = {
   trigger: "bg-block-trigger",
@@ -46,6 +48,8 @@ const Playground = () => {
   const [finalTime, setFinalTime] = useState(0);
   const [attempts, setAttempts] = useState(0);
   const [isLoadingAI, setIsLoadingAI] = useState(false);
+  const [selectedLanguage, setSelectedLanguage] = useState<CodeLanguage>("pseudocode");
+  const [showCode, setShowCode] = useState(false);
 
   const challenge = sessionChallenges[currentChallenge];
 
@@ -283,6 +287,71 @@ const Playground = () => {
             </Button>
           </div>
 
+          {/* Language selector */}
+          <div className="border-t border-border pt-3">
+            <div className="flex items-center justify-between mb-2">
+              <h3 className="font-display text-xs font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-1">
+                <Code2 className="w-3.5 h-3.5" /> Code View
+              </h3>
+              <Button
+                variant={showCode ? "default" : "outline"}
+                size="sm"
+                onClick={() => setShowCode(!showCode)}
+                className="h-6 px-2 text-[10px]"
+              >
+                {showCode ? "Hide Code" : "Show Code"}
+              </Button>
+            </div>
+            <div className="flex gap-1">
+              {(Object.keys(LANGUAGE_META) as CodeLanguage[]).map((lang) => (
+                <button
+                  key={lang}
+                  onClick={() => { setSelectedLanguage(lang); setShowCode(true); }}
+                  className={`
+                    flex-1 px-2 py-1.5 rounded-md text-[10px] font-display font-semibold transition-all
+                    ${selectedLanguage === lang
+                      ? "bg-primary text-primary-foreground shadow-sm"
+                      : "bg-muted text-muted-foreground hover:bg-muted/80"
+                    }
+                  `}
+                >
+                  <span className="block">{LANGUAGE_META[lang].icon}</span>
+                  <span className="block mt-0.5">{LANGUAGE_META[lang].label}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Full code preview when solved */}
+          <AnimatePresence>
+            {showCode && solved && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                className="border-t border-border pt-2"
+              >
+                <div className="flex items-center justify-between mb-1">
+                  <span className="text-[10px] font-display font-semibold text-muted-foreground uppercase">Full Code</span>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-5 px-1.5 text-[10px]"
+                    onClick={() => {
+                      navigator.clipboard.writeText(getFullCode(placedBlocks, selectedLanguage));
+                      toast.success("Code copied!");
+                    }}
+                  >
+                    📋 Copy
+                  </Button>
+                </div>
+                <pre className="bg-[#1e1e1e] text-[#d4d4d4] text-[10px] leading-relaxed rounded-md px-3 py-2 font-mono overflow-x-auto whitespace-pre-wrap border border-border/30 max-h-48 overflow-y-auto">
+                  {getFullCode(placedBlocks, selectedLanguage)}
+                </pre>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
           <AnimatePresence>
             {showHint && (
               <motion.div
@@ -420,6 +489,12 @@ const Playground = () => {
                                 )}
                               </div>
                             </motion.div>
+                            <BlockCodeSnippet
+                              block={block}
+                              language={selectedLanguage}
+                              index={index}
+                              show={showCode}
+                            />
                             {index < placedBlocks.length - 1 && (
                               <div className="flex justify-center my-1">
                                 <div className="w-0.5 h-4 bg-workspace-foreground/20 rounded" />
