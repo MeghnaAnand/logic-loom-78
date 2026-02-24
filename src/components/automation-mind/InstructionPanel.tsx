@@ -1,6 +1,6 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Play, ArrowRight, RotateCcw, CheckCircle2, Loader2 } from "lucide-react";
+import { Play, ArrowRight, RotateCcw, CheckCircle2, Loader2, X } from "lucide-react";
 import { TEST_DATA } from "./GameCanvas";
 import { Progress } from "@/components/ui/progress";
 
