@@ -294,6 +294,8 @@ const AutomationMind = () => {
           totalLevels={LEVELS.length}
           completedLevels={completedLevels}
           timeTaken={timeTaken}
+          codeView={codeView}
+          onToggleCodeView={() => setCodeView((v) => !v)}
         />
       </div>
     </div>
