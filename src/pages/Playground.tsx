@@ -27,8 +27,9 @@ const WRONG_MESSAGES = [
 
 const Playground = () => {
   const navigate = useNavigate();
+  const [sessionChallenges, setSessionChallenges] = useState<Challenge[]>(() => pickSessionChallenges());
   const [currentChallenge, setCurrentChallenge] = useState(0);
-  const [availableBlocks, setAvailableBlocks] = useState<Block[]>(challenges[0].availableBlocks);
+  const [availableBlocks, setAvailableBlocks] = useState<Block[]>(sessionChallenges[0].availableBlocks);
   const [placedBlocks, setPlacedBlocks] = useState<Block[]>([]);
   const [showHint, setShowHint] = useState(false);
   const [solved, setSolved] = useState(false);
@@ -43,7 +44,7 @@ const Playground = () => {
   const [finalTime, setFinalTime] = useState(0);
   const [attempts, setAttempts] = useState(0);
 
-  const challenge = challenges[currentChallenge];
+  const challenge = sessionChallenges[currentChallenge];
 
   const resetPuzzle = () => {
     setAvailableBlocks([...challenge.availableBlocks]);
