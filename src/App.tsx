@@ -9,6 +9,7 @@ import Playground from "./pages/Playground";
 import AutomationMind from "./pages/AutomationMind";
 import Auth from "./pages/Auth";
 import History from "./pages/History";
+import ChallengeMode from "./pages/ChallengeMode";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
