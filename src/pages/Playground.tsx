@@ -351,7 +351,7 @@ const Playground = () => {
                     size="sm"
                     className="h-5 px-1.5 text-[10px]"
                     onClick={() => {
-                      navigator.clipboard.writeText(getFullCode(placedBlocks, selectedLanguage));
+                      navigator.clipboard.writeText(getFullCode(placedBlocks, selectedLanguage, currentChallenge + 1));
                       toast.success("Code copied!");
                     }}
                   >
