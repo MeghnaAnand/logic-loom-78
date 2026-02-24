@@ -82,38 +82,52 @@ const DiamondBlock = ({
 
       {/* YES / NO connection buttons */}
       <div className="flex gap-6 -mt-2 z-10">
-        <motion.button
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={(e) => { e.stopPropagation(); onConnectYes(); }}
-          className={`
-            flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-bold font-display shadow-md transition-all
-            ${hasYes
-              ? "bg-am-yes text-white"
-              : isConnecting
-                ? "bg-am-yes/20 text-am-yes ring-2 ring-am-yes animate-pulse"
-                : "bg-am-yes/10 text-am-yes hover:bg-am-yes/20 border border-am-yes/30"
-            }
-          `}
-        >
-          ✓ YES {hasYes && "→"}
-        </motion.button>
-        <motion.button
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={(e) => { e.stopPropagation(); onConnectNo(); }}
-          className={`
-            flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-bold font-display shadow-md transition-all
-            ${hasNo
-              ? "bg-am-no text-white"
-              : isConnecting
-                ? "bg-am-no/20 text-am-no ring-2 ring-am-no animate-pulse"
-                : "bg-am-no/10 text-am-no hover:bg-am-no/20 border border-am-no/30"
-            }
-          `}
-        >
-          ✗ NO {hasNo && "→"}
-        </motion.button>
+        <div className="relative group">
+          <motion.button
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={(e) => { e.stopPropagation(); onConnectYes(); }}
+            className={`
+              flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-bold font-display shadow-md transition-all
+              ${hasYes
+                ? "bg-am-yes text-white"
+                : isConnecting
+                  ? "bg-am-yes/20 text-am-yes ring-2 ring-am-yes animate-pulse"
+                  : "bg-am-yes/10 text-am-yes hover:bg-am-yes/30 hover:shadow-[0_0_12px_hsl(var(--am-yes)/0.4)] border border-am-yes/30"
+              }
+            `}
+          >
+            ✓ YES {hasYes && "→"}
+          </motion.button>
+          {!hasYes && !isConnecting && (
+            <div className="absolute -top-8 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap bg-foreground text-background text-[10px] font-display px-2 py-1 rounded-md shadow-lg z-30">
+              Connect to YES action
+            </div>
+          )}
+        </div>
+        <div className="relative group">
+          <motion.button
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={(e) => { e.stopPropagation(); onConnectNo(); }}
+            className={`
+              flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-bold font-display shadow-md transition-all
+              ${hasNo
+                ? "bg-am-no text-white"
+                : isConnecting
+                  ? "bg-am-no/20 text-am-no ring-2 ring-am-no animate-pulse"
+                  : "bg-am-no/10 text-am-no hover:bg-am-no/30 hover:shadow-[0_0_12px_hsl(var(--am-no)/0.4)] border border-am-no/30"
+              }
+            `}
+          >
+            ✗ NO {hasNo && "→"}
+          </motion.button>
+          {!hasNo && !isConnecting && (
+            <div className="absolute -top-8 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap bg-foreground text-background text-[10px] font-display px-2 py-1 rounded-md shadow-lg z-30">
+              Connect to NO action
+            </div>
+          )}
+        </div>
       </div>
     </motion.div>
   );
@@ -190,14 +204,15 @@ const ArrowLine = ({
   color,
   label,
   running,
-  vertical = true,
+  testLabel,
 }: {
   color: string;
   label?: string;
   running: boolean;
   vertical?: boolean;
+  testLabel?: string;
 }) => (
-  <div className="flex flex-col items-center">
+  <div className="flex flex-col items-center relative">
     <svg width="60" height="60" viewBox="0 0 60 60">
       <defs>
         <filter id={`glow-${color}`}>
@@ -245,6 +260,19 @@ const ArrowLine = ({
         {label}
       </span>
     )}
+    <AnimatePresence>
+      {testLabel && running && (
+        <motion.span
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.8 }}
+          className="absolute -right-20 top-1/2 -translate-y-1/2 text-[9px] font-display font-bold whitespace-nowrap px-1.5 py-0.5 rounded-md bg-card shadow-sm border border-border"
+          style={{ color }}
+        >
+          {testLabel}
+        </motion.span>
+      )}
+    </AnimatePresence>
   </div>
 );
 
@@ -305,6 +333,23 @@ const GameCanvas = ({
 
   return (
     <div className="flex-1 bg-am-canvas workspace-grid flex flex-col items-center justify-center p-8 relative overflow-auto">
+      {/* Connecting tooltip banner */}
+      <AnimatePresence>
+        {connectingFrom && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            className="absolute top-4 left-1/2 -translate-x-1/2 z-40 px-4 py-2 rounded-full font-display font-bold text-sm shadow-lg"
+            style={{
+              backgroundColor: connectingFrom.branch === "yes" ? "hsl(var(--am-yes))" : "hsl(var(--am-no))",
+              color: "white",
+            }}
+          >
+            {connectingFrom.branch === "yes" ? "🟢 Connect to YES action" : "🔴 Connect to NO action"} — click an action block
+          </motion.div>
+        )}
+      </AnimatePresence>
       {blocks.length === 0 ? (
         <motion.div
           animate={{ opacity: [0.4, 0.7, 0.4] }}
@@ -424,6 +469,7 @@ const GameCanvas = ({
                       color="hsl(var(--am-yes))"
                       label="YES"
                       running={isRunning && currentPath === "yes"}
+                      testLabel={isRunning && currentPath === "yes" ? "Large orders →" : undefined}
                     />
                     <CanvasBlock
                       block={yesAction}
@@ -455,6 +501,7 @@ const GameCanvas = ({
                       color="hsl(var(--am-no))"
                       label="NO"
                       running={isRunning && currentPath === "no"}
+                      testLabel={isRunning && currentPath === "no" ? "Small orders →" : undefined}
                     />
                     <CanvasBlock
                       block={noAction}
