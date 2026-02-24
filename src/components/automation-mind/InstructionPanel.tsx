@@ -1,6 +1,7 @@
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Play, ArrowRight, RotateCcw, CheckCircle2, Loader2, X, Lock, Clock, Sparkles, BookOpen } from "lucide-react";
+import { Play, ArrowRight, RotateCcw, CheckCircle2, Loader2, X, Lock, Clock, Sparkles, BookOpen, ChevronDown, ChevronUp, Lightbulb } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import type { LevelConfig } from "@/data/automation-levels";
 
@@ -19,6 +20,12 @@ interface InstructionPanelProps {
   completedLevels: Set<number>;
 }
 
+const BADGES = [
+  { level: 0, label: "First Automation", emoji: "✅" },
+  { level: 1, label: "Conditional Logic", emoji: "✅" },
+  { level: 2, label: "Data Detective", emoji: "🔍" },
+];
+
 const InstructionPanel = ({
   level,
   testingPhase,
@@ -33,6 +40,7 @@ const InstructionPanel = ({
   totalLevels,
   completedLevels,
 }: InstructionPanelProps) => {
+  const [dataPreviewOpen, setDataPreviewOpen] = useState(false);
   const testData = level.testData;
   const progressValue =
     testingPhase === "running"
@@ -43,6 +51,7 @@ const InstructionPanel = ({
 
   const levelProgress = completedLevels.size;
   const isLastLevel = currentLevelIndex >= totalLevels - 1;
+  const earnedBadges = BADGES.filter((b) => completedLevels.has(b.level));
 
   return (
     <div className="w-80 border-l border-border bg-card p-5 flex flex-col gap-5 overflow-y-auto">
@@ -71,8 +80,8 @@ const InstructionPanel = ({
 
         {/* New concept badge */}
         {level.newConcept && (
-          <div className="inline-flex items-center gap-1.5 bg-am-condition/15 text-am-condition-foreground text-xs font-bold px-2.5 py-1 rounded-lg font-display mb-2">
-            <Sparkles className="w-3 h-3" /> New Concept: {level.newConcept}
+          <div className="inline-flex items-center gap-1.5 bg-am-condition/15 text-foreground text-xs font-bold px-2.5 py-1 rounded-lg font-display mb-2">
+            <Sparkles className="w-3 h-3 text-am-condition" /> New Concept: {level.newConcept}
           </div>
         )}
 
@@ -90,10 +99,17 @@ const InstructionPanel = ({
           <span className="font-display font-semibold">{levelProgress}/{totalLevels}</span>
         </div>
 
-        {/* Completed badge */}
-        {currentLevelIndex > 0 && completedLevels.has(0) && (
-          <div className="bg-success/10 text-success text-xs font-bold px-2.5 py-1 rounded-lg font-display mb-3 inline-flex items-center gap-1">
-            <CheckCircle2 className="w-3 h-3" /> Level 1 Complete
+        {/* Earned badges */}
+        {earnedBadges.length > 0 && (
+          <div className="flex flex-wrap gap-1.5 mb-3">
+            {earnedBadges.map((badge) => (
+              <span
+                key={badge.level}
+                className="inline-flex items-center gap-1 bg-success/10 text-success text-[10px] font-bold font-display px-2 py-0.5 rounded-full"
+              >
+                {badge.emoji} {badge.label}
+              </span>
+            ))}
           </div>
         )}
 
@@ -142,6 +158,57 @@ const InstructionPanel = ({
         >
           💡 <strong>Hint:</strong> {level.hint}
         </motion.div>
+      )}
+
+      {/* Data Preview Panel (Level 3) */}
+      {level.dataPreview && level.dataPreview.length > 0 && (
+        <div className="bg-muted/50 border border-border rounded-xl overflow-hidden">
+          <button
+            onClick={() => setDataPreviewOpen(!dataPreviewOpen)}
+            className="w-full flex items-center justify-between px-3 py-2 text-xs font-display font-bold text-foreground hover:bg-muted transition-colors"
+          >
+            <span className="flex items-center gap-1.5">
+              📋 Data Preview
+            </span>
+            {dataPreviewOpen ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+          </button>
+          <AnimatePresence>
+            {dataPreviewOpen && (
+              <motion.div
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: "auto", opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                className="overflow-hidden"
+              >
+                <div className="px-3 pb-3 space-y-3">
+                  {level.dataPreview.map((preview, i) => (
+                    <div key={i} className="space-y-1.5">
+                      <div className="bg-destructive/5 border border-destructive/10 rounded-lg p-2">
+                        <div className="text-[9px] uppercase tracking-wider text-muted-foreground mb-1 font-display">Original Email:</div>
+                        <p className="text-[11px] text-muted-foreground italic leading-relaxed">{preview.original}</p>
+                      </div>
+                      <div className="flex items-center justify-center text-muted-foreground">
+                        <span className="text-xs">↓</span>
+                      </div>
+                      <div className="bg-success/5 border border-success/10 rounded-lg p-2">
+                        <div className="text-[9px] uppercase tracking-wider text-muted-foreground mb-1 font-display">After Extraction:</div>
+                        <div className="space-y-0.5">
+                          {preview.extracted.map((item, j) => (
+                            <div key={j} className="flex items-center gap-1 text-[11px]">
+                              <span className="text-muted-foreground">-</span>
+                              <span className="text-muted-foreground">{item.label}:</span>
+                              <span className="text-foreground font-bold font-display">{item.value}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
       )}
 
       {/* Test results */}
@@ -200,9 +267,11 @@ const InstructionPanel = ({
                     }}
                   />
                   <span className="text-xs">
-                    {level.id === 2
-                      ? `Order ${item.label} → ${item.conditionResult === "yes" ? "YES" : "NO"} → ${item.actionLabel}`
-                      : `Form: ${item.label} → ${item.actionLabel}`
+                    {level.id === 3
+                      ? `${item.label}: ${item.extractions?.join(" → ")} → ${item.actionLabel}`
+                      : level.id === 2
+                        ? `Order ${item.label} → ${item.conditionResult === "yes" ? "YES" : "NO"} → ${item.actionLabel}`
+                        : `Form: ${item.label} → ${item.actionLabel}`
                     }
                   </span>
                 </motion.div>
@@ -251,9 +320,11 @@ const InstructionPanel = ({
                     />
                   </motion.div>
                   <span>
-                    {level.id === 2
-                      ? `${item.label} → ${item.conditionResult === "yes" ? "YES" : "NO"} → ${item.actionLabel}`
-                      : `${item.label} → ${item.actionLabel}`
+                    {level.id === 3
+                      ? `${item.label}: ${item.extractions?.join(" → ")} → ${item.actionLabel}`
+                      : level.id === 2
+                        ? `${item.label} → ${item.conditionResult === "yes" ? "YES" : "NO"} → ${item.actionLabel}`
+                        : `${item.label} → ${item.actionLabel}`
                     }
                   </span>
                 </motion.div>
@@ -297,13 +368,28 @@ const InstructionPanel = ({
         )}
       </AnimatePresence>
 
+      {/* Teaching tip after success */}
+      {testingPhase === "success" && level.teachingTip && (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 1.5 }}
+          className="bg-accent/10 border border-accent/20 rounded-xl p-3 text-xs text-accent-foreground leading-relaxed"
+        >
+          <div className="flex items-start gap-1.5">
+            <Lightbulb className="w-3.5 h-3.5 shrink-0 mt-0.5 text-accent" />
+            <span>{level.teachingTip}</span>
+          </div>
+        </motion.div>
+      )}
+
       {/* Action buttons */}
       <div className="mt-auto flex flex-col gap-2">
         {testingPhase === "success" ? (
           <>
             {isLastLevel ? (
               <Button disabled className="gap-2 rounded-xl opacity-60">
-                <Lock className="w-4 h-4" /> Level 3 Coming Soon
+                <Lock className="w-4 h-4" /> Level {currentLevelIndex + 2} Coming Soon
               </Button>
             ) : (
               <Button

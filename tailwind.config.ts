@@ -79,6 +79,10 @@ export default {
             DEFAULT: "hsl(var(--am-condition))",
             foreground: "hsl(var(--am-condition-foreground))",
           },
+          data: {
+            DEFAULT: "hsl(var(--am-data))",
+            foreground: "hsl(var(--am-data-foreground))",
+          },
           canvas: {
             DEFAULT: "hsl(var(--am-canvas))",
             foreground: "hsl(var(--am-canvas-foreground))",

@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { X } from "lucide-react";
+import { X, ArrowDown } from "lucide-react";
 import type { GameBlock, Connection, LevelConfig, TestItem } from "@/data/automation-levels";
 
 interface GameCanvasProps {
@@ -14,6 +14,11 @@ interface GameCanvasProps {
   testingPhase: "idle" | "loading" | "running" | "success" | "failure";
   currentTestItem: number;
 }
+
+/* ---- Connection count helper ---- */
+const getConnectionCount = (blockId: string, connections: Connection[]) => {
+  return connections.filter((c) => c.from === blockId || c.to === blockId).length;
+};
 
 /* ---- Diamond shape for condition blocks ---- */
 const DiamondBlock = ({
@@ -39,6 +44,7 @@ const DiamondBlock = ({
 }) => {
   const hasYes = connections.some((c) => c.from === block.id && c.branch === "yes");
   const hasNo = connections.some((c) => c.from === block.id && c.branch === "no");
+  const connCount = getConnectionCount(block.id, connections);
 
   return (
     <motion.div
@@ -63,14 +69,19 @@ const DiamondBlock = ({
             ${isSelected ? "ring-4 ring-foreground/30 shadow-2xl" : "hover:shadow-xl"}
           `}
         />
-        {/* Content (un-rotated) */}
         <div className="absolute inset-0 flex flex-col items-center justify-center text-am-condition-foreground z-10 pointer-events-none">
           <span className="text-2xl mb-0.5">{block.icon}</span>
           <div className="text-[10px] uppercase tracking-wider opacity-70 font-display">Condition</div>
           <div className="text-sm font-bold font-display text-center leading-tight px-2">{block.label}</div>
         </div>
 
-        {/* Remove button */}
+        {/* Connection count badge */}
+        {connCount > 0 && (
+          <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 bg-foreground text-background text-[9px] font-bold font-display px-1.5 py-0.5 rounded-full z-20">
+            {connCount} conn.
+          </div>
+        )}
+
         <motion.button
           whileHover={{ scale: 1.2, rotate: 90 }}
           onClick={(e) => { e.stopPropagation(); onRemove(); }}
@@ -133,6 +144,75 @@ const DiamondBlock = ({
   );
 };
 
+/* ---- Data operation block (smaller, orange) ---- */
+const DataBlock = ({
+  block,
+  isSelected,
+  onSelect,
+  onRemove,
+  isRunning,
+  connectionCount,
+  extractionLabel,
+}: {
+  block: GameBlock;
+  isSelected: boolean;
+  onSelect: () => void;
+  onRemove: () => void;
+  isRunning: boolean;
+  connectionCount: number;
+  extractionLabel?: string;
+}) => (
+  <motion.div
+    layout
+    initial={{ opacity: 0, scale: 0.9, y: 10 }}
+    animate={{ opacity: 1, scale: 1, y: 0 }}
+    whileHover={{ scale: 1.04, y: -2 }}
+    className="relative"
+  >
+    <div
+      onClick={onSelect}
+      className={`
+        relative flex items-center gap-2.5 px-4 py-3 rounded-xl font-display font-bold text-sm
+        bg-am-data text-am-data-foreground shadow-lg cursor-pointer select-none transition-all duration-200
+        ${isSelected ? "ring-4 ring-foreground/30 scale-105 shadow-2xl" : "hover:shadow-xl"}
+        ${isRunning ? "animate-pulse" : ""}
+      `}
+    >
+      <span className="text-xl">{block.icon}</span>
+      <div>
+        <div className="text-[9px] uppercase tracking-wider opacity-70">Data Op</div>
+        <div className="text-sm">{block.label}</div>
+      </div>
+      {connectionCount > 0 && (
+        <span className="ml-auto text-[9px] bg-white/20 px-1.5 py-0.5 rounded-full">
+          {connectionCount === 1 ? "1 connection" : `${connectionCount} connections`}
+        </span>
+      )}
+      <motion.button
+        whileHover={{ scale: 1.2, rotate: 90 }}
+        whileTap={{ scale: 0.9 }}
+        onClick={(e) => { e.stopPropagation(); onRemove(); }}
+        className="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-destructive text-destructive-foreground flex items-center justify-center text-xs shadow-md"
+      >
+        <X className="w-3 h-3" />
+      </motion.button>
+    </div>
+    {/* Extraction label during testing */}
+    <AnimatePresence>
+      {extractionLabel && (
+        <motion.div
+          initial={{ opacity: 0, x: 20, scale: 0.8 }}
+          animate={{ opacity: 1, x: 0, scale: 1 }}
+          exit={{ opacity: 0, x: -20, scale: 0.8 }}
+          className="absolute -right-28 top-1/2 -translate-y-1/2 bg-card border border-am-data/30 text-foreground text-[10px] font-display font-bold px-2 py-1 rounded-lg shadow-md z-30 whitespace-nowrap"
+        >
+          → {extractionLabel}
+        </motion.div>
+      )}
+    </AnimatePresence>
+  </motion.div>
+);
+
 /* ---- Regular block (trigger / action) ---- */
 const CanvasBlock = ({
   block,
@@ -141,6 +221,7 @@ const CanvasBlock = ({
   onRemove,
   isRunning,
   highlightColor,
+  connectionCount,
 }: {
   block: GameBlock;
   isSelected: boolean;
@@ -148,6 +229,7 @@ const CanvasBlock = ({
   onRemove: () => void;
   isRunning: boolean;
   highlightColor?: "yes" | "no";
+  connectionCount?: number;
 }) => {
   const bgClass =
     block.type === "trigger"
@@ -186,6 +268,11 @@ const CanvasBlock = ({
           </div>
           <div className="text-base">{block.label}</div>
         </div>
+        {connectionCount !== undefined && connectionCount > 0 && (
+          <span className="ml-1 text-[9px] bg-white/20 px-1.5 py-0.5 rounded-full">
+            {connectionCount === 1 ? "1 conn." : `${connectionCount} conn.`}
+          </span>
+        )}
         <motion.button
           whileHover={{ scale: 1.2, rotate: 90 }}
           whileTap={{ scale: 0.9 }}
@@ -253,10 +340,7 @@ const ArrowLine = ({
       )}
     </svg>
     {label && (
-      <span
-        className="text-[10px] font-display font-bold -mt-1"
-        style={{ color }}
-      >
+      <span className="text-[10px] font-display font-bold -mt-1" style={{ color }}>
         {label}
       </span>
     )}
@@ -273,6 +357,47 @@ const ArrowLine = ({
         </motion.span>
       )}
     </AnimatePresence>
+  </div>
+);
+
+/* ---- Compact Arrow for chain layout ---- */
+const ChainArrow = ({
+  connected,
+  running,
+}: {
+  connected: boolean;
+  running: boolean;
+}) => (
+  <div className="flex flex-col items-center">
+    <svg width="40" height="36" viewBox="0 0 40 36">
+      <motion.path
+        d="M20 0 L20 28"
+        fill="none"
+        stroke={connected ? "hsl(var(--am-data))" : "hsl(var(--border))"}
+        strokeWidth={2.5}
+        strokeLinecap="round"
+        initial={{ pathLength: 0 }}
+        animate={{ pathLength: 1 }}
+        transition={{ duration: 0.4 }}
+      />
+      <motion.polygon
+        points="14,25 20,35 26,25"
+        fill={connected ? "hsl(var(--am-data))" : "hsl(var(--border))"}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.3 }}
+      />
+      {running && connected && (
+        <motion.circle
+          cx="20"
+          r="3"
+          fill="hsl(var(--am-data))"
+          initial={{ cy: 0 }}
+          animate={{ cy: [0, 28] }}
+          transition={{ duration: 0.4, repeat: Infinity, ease: "easeIn" }}
+        />
+      )}
+    </svg>
   </div>
 );
 
@@ -314,6 +439,7 @@ const GameCanvas = ({
 }: GameCanvasProps) => {
   const triggerBlock = blocks.find((b) => b.type === "trigger");
   const conditionBlock = blocks.find((b) => b.type === "condition");
+  const dataBlocks = blocks.filter((b) => b.type === "data");
   const actionBlocks = blocks.filter((b) => b.type === "action");
   const isRunning = testingPhase === "running";
 
@@ -328,8 +454,25 @@ const GameCanvas = ({
   const currentTest = level.testData[currentTestItem];
   const currentPath = currentTest?.path;
 
-  // For Level 1 simple layout
-  const isSimple = level.maxConditions === 0;
+  const layoutType = level.layout || (level.maxConditions === 0 ? "simple" : "branch");
+
+  // For chain layout: build ordered chain from connections
+  const buildChain = (): GameBlock[] => {
+    if (!triggerBlock) return [];
+    const chain: GameBlock[] = [triggerBlock];
+    let currentId = triggerBlock.id;
+    const visited = new Set<string>([currentId]);
+    while (true) {
+      const nextConn = connections.find((c) => c.from === currentId && !c.branch);
+      if (!nextConn) break;
+      const nextBlock = blocks.find((b) => b.id === nextConn.to);
+      if (!nextBlock || visited.has(nextBlock.id)) break;
+      chain.push(nextBlock);
+      visited.add(nextBlock.id);
+      currentId = nextBlock.id;
+    }
+    return chain;
+  };
 
   return (
     <div className="flex-1 bg-am-canvas workspace-grid flex flex-col items-center justify-center p-8 relative overflow-auto">
@@ -358,7 +501,110 @@ const GameCanvas = ({
         >
           Click blocks from the library<br />to add them here
         </motion.div>
-      ) : isSimple ? (
+      ) : layoutType === "chain" ? (
+        /* ---- Level 3: Linear chain flow ---- */
+        <div className="flex flex-col items-center">
+          {(() => {
+            const chain = buildChain();
+            const unchainedData = dataBlocks.filter((d) => !chain.some((c) => c.id === d.id));
+            const unchainedActions = actionBlocks.filter((a) => !chain.some((c) => c.id === a.id));
+            const allChained = chain.length === (level.chainOrder?.length ?? 0);
+
+            return (
+              <>
+                {/* Render chain */}
+                {chain.map((block, i) => {
+                  const isLast = i === chain.length - 1;
+                  const connCount = getConnectionCount(block.id, connections);
+                  const isBlockRunning = isRunning;
+
+                  // Extraction label during testing
+                  let extractionLabel: string | undefined;
+                  if (isRunning && currentTest?.extractions && block.type === "data") {
+                    const dataIndex = chain.filter((b, idx) => idx <= i && b.type === "data").length - 1;
+                    extractionLabel = currentTest.extractions[dataIndex];
+                  }
+
+                  return (
+                    <div key={block.id} className="flex flex-col items-center">
+                      {block.type === "data" ? (
+                        <DataBlock
+                          block={block}
+                          isSelected={selectedBlockId === block.id}
+                          onSelect={() => onSelectBlock(block.id)}
+                          onRemove={() => onRemoveBlock(block.id)}
+                          isRunning={isBlockRunning}
+                          connectionCount={connCount}
+                          extractionLabel={extractionLabel}
+                        />
+                      ) : (
+                        <CanvasBlock
+                          block={block}
+                          isSelected={selectedBlockId === block.id}
+                          onSelect={() => onSelectBlock(block.id)}
+                          onRemove={() => onRemoveBlock(block.id)}
+                          isRunning={isBlockRunning}
+                          connectionCount={connCount}
+                        />
+                      )}
+                      {!isLast && (
+                        <ChainArrow
+                          connected={connections.some((c) => c.from === block.id)}
+                          running={isRunning}
+                        />
+                      )}
+                    </div>
+                  );
+                })}
+
+                {/* Unchained blocks (placed but not yet connected into chain) */}
+                {(unchainedData.length > 0 || unchainedActions.length > 0) && (
+                  <div className="flex gap-3 mt-6 flex-wrap justify-center">
+                    {[...unchainedData, ...unchainedActions].map((block) => (
+                      block.type === "data" ? (
+                        <DataBlock
+                          key={block.id}
+                          block={block}
+                          isSelected={selectedBlockId === block.id}
+                          onSelect={() => onSelectBlock(block.id)}
+                          onRemove={() => onRemoveBlock(block.id)}
+                          isRunning={false}
+                          connectionCount={0}
+                        />
+                      ) : (
+                        <CanvasBlock
+                          key={block.id}
+                          block={block}
+                          isSelected={selectedBlockId === block.id}
+                          onSelect={() => onSelectBlock(block.id)}
+                          onRemove={() => onRemoveBlock(block.id)}
+                          isRunning={false}
+                        />
+                      )
+                    ))}
+                  </div>
+                )}
+
+                {/* Connection hint */}
+                {!allChained && blocks.length >= 2 && (
+                  <motion.p
+                    animate={{ opacity: [0.5, 1, 0.5] }}
+                    transition={{ duration: 1.5, repeat: Infinity }}
+                    className="text-[11px] text-muted-foreground font-display mt-3"
+                  >
+                    Click two blocks in sequence to connect them
+                  </motion.p>
+                )}
+                {allChained && (
+                  <span className="text-[10px] text-success font-display font-semibold mt-2">
+                    Full chain connected ✓
+                  </span>
+                )}
+              </>
+            );
+          })()}
+        </div>
+      ) : layoutType === "simple" ? (
         /* ---- Level 1: Simple linear flow ---- */
         <div className="flex flex-col items-center">
           {triggerBlock && (
@@ -368,6 +614,7 @@ const GameCanvas = ({
               onSelect={() => onSelectBlock(triggerBlock.id)}
               onRemove={() => onRemoveBlock(triggerBlock.id)}
               isRunning={isRunning}
+              connectionCount={getConnectionCount(triggerBlock.id, connections)}
             />
           )}
           {triggerBlock && actionBlocks[0] && (
@@ -383,6 +630,7 @@ const GameCanvas = ({
               onSelect={() => onSelectBlock(actionBlocks[0].id)}
               onRemove={() => onRemoveBlock(actionBlocks[0].id)}
               isRunning={isRunning}
+              connectionCount={getConnectionCount(actionBlocks[0].id, connections)}
             />
           )}
           {!directConn && triggerBlock && actionBlocks[0] && (
@@ -401,7 +649,6 @@ const GameCanvas = ({
       ) : (
         /* ---- Level 2+: Branching flow ---- */
         <div className="flex flex-col items-center relative">
-          {/* Trigger */}
           {triggerBlock && (
             <CanvasBlock
               block={triggerBlock}
@@ -409,10 +656,10 @@ const GameCanvas = ({
               onSelect={() => onSelectBlock(triggerBlock.id)}
               onRemove={() => onRemoveBlock(triggerBlock.id)}
               isRunning={isRunning}
+              connectionCount={getConnectionCount(triggerBlock.id, connections)}
             />
           )}
 
-          {/* Arrow: Trigger → Condition */}
           {triggerBlock && conditionBlock && (
             <div className="relative">
               <ArrowLine
@@ -432,7 +679,6 @@ const GameCanvas = ({
             </div>
           )}
 
-          {/* Condition diamond */}
           {conditionBlock && (
             <DiamondBlock
               block={conditionBlock}
@@ -447,7 +693,6 @@ const GameCanvas = ({
             />
           )}
 
-          {/* Not connected hint */}
           {triggerBlock && conditionBlock && !connections.some((c) => c.from === triggerBlock.id) && (
             <motion.p
               animate={{ opacity: [0.5, 1, 0.5] }}
@@ -458,10 +703,8 @@ const GameCanvas = ({
             </motion.p>
           )}
 
-          {/* Branching actions */}
           {(yesAction || noAction || (actionBlocks.length > 0 && conditionBlock)) && (
             <div className="flex gap-12 mt-1">
-              {/* YES path */}
               <div className="flex flex-col items-center">
                 {yesAction ? (
                   <>
@@ -478,6 +721,7 @@ const GameCanvas = ({
                       onRemove={() => onRemoveBlock(yesAction.id)}
                       isRunning={isRunning && currentPath === "yes"}
                       highlightColor={isRunning && currentPath === "yes" ? "yes" : undefined}
+                      connectionCount={getConnectionCount(yesAction.id, connections)}
                     />
                   </>
                 ) : (
@@ -493,7 +737,6 @@ const GameCanvas = ({
                 )}
               </div>
 
-              {/* NO path */}
               <div className="flex flex-col items-center">
                 {noAction ? (
                   <>
@@ -510,6 +753,7 @@ const GameCanvas = ({
                       onRemove={() => onRemoveBlock(noAction.id)}
                       isRunning={isRunning && currentPath === "no"}
                       highlightColor={isRunning && currentPath === "no" ? "no" : undefined}
+                      connectionCount={getConnectionCount(noAction.id, connections)}
                     />
                   </>
                 ) : (
@@ -527,7 +771,6 @@ const GameCanvas = ({
             </div>
           )}
 
-          {/* Unconnected actions (placed but not yet routed) */}
           {actionBlocks.filter((a) => !yesConn || a.id !== yesConn.to).filter((a) => !noConn || a.id !== noConn.to).length > 0 && conditionBlock && (
             <div className="flex gap-4 mt-6">
               {actionBlocks
