@@ -259,6 +259,7 @@ const AutomationMind = () => {
           onRemoveBlock={removeBlock}
           testingPhase={testingPhase}
           currentTestItem={currentTestItem}
+          currentExtractionStep={currentExtractionStep}
         />
         <InstructionPanel
           level={level}
