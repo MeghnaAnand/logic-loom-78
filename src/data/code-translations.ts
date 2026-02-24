@@ -111,7 +111,7 @@ def on_order_received(order):
     else:
         # NO path: Auto-approve
         auto_approve_order(order)
-        print(f"✅ Order ${amount} auto-approved")
+        print(f"✅ Order {amount} auto-approved")
 `,
     javascript: `// Level 2: Smart Decisions
 // Trigger: Order received → Condition: Check amount → Route
