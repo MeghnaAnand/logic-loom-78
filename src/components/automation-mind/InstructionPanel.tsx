@@ -19,6 +19,7 @@ interface InstructionPanelProps {
   currentLevelIndex: number;
   totalLevels: number;
   completedLevels: Set<number>;
+  timeTaken?: string;
 }
 
 const BADGES = [
