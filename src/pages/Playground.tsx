@@ -507,6 +507,7 @@ const Playground = () => {
                               language={selectedLanguage}
                               index={index}
                               show={showCode}
+                              level={currentChallenge + 1}
                             />
                             {index < placedBlocks.length - 1 && (
                               <div className="flex justify-center my-1">
