@@ -148,6 +148,7 @@ const Playground = () => {
     const msg = WRONG_MESSAGES[Math.floor(Math.random() * WRONG_MESSAGES.length)];
     setWrongMessage(msg);
     setShowWrong(true);
+    playError();
     setCharacterState("falling");
     setWrongShake(true);
     setTimeout(() => {
