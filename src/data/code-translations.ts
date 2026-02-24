@@ -91,113 +91,48 @@ END
   },
 
   2: {
-    python: `# Level 2: Smart Decisions
-# Trigger: Order received → Condition: Check amount → Route
+    python: `# Level 2: Conditional Logic
 
 def on_order_received(order):
-    """Triggered when a new order comes in."""
-    amount = order["amount"]
-    customer = order["customer"]
-
-    # Condition: Check if amount > $500
-    if amount > 500:
-        # YES path: Send to manager for approval
-        send_to_manager({
-            "customer": customer,
-            "amount": amount,
-            "reason": "Large order - needs approval"
-        })
-        print(f"📋 Order {amount} sent to manager")
+    # Condition: Check amount
+    if order['amount'] > 500:
+        # YES path
+        send_to_manager(order)
     else:
-        # NO path: Auto-approve
-        auto_approve_order(order)
-        print(f"✅ Order {amount} auto-approved")
+        # NO path
+        auto_approve(order)
 `,
-    javascript: `// Level 2: Smart Decisions
-// Trigger: Order received → Condition: Check amount → Route
+    javascript: `// Level 2: Conditional Logic
 
-orderSystem.on('orderReceived', async (order) => {
-  const { amount, customer } = order;
-
-  // Condition: Check if amount > $500
-  if (amount > 500) {
-    // YES path: Send to manager for approval
-    await sendToManager({
-      customer,
-      amount,
-      reason: 'Large order - needs approval'
-    });
-    console.log(\`📋 Order $\${amount} sent to manager\`);
-  } else {
-    // NO path: Auto-approve
-    await autoApproveOrder(order);
-    console.log(\`✅ Order $\${amount} auto-approved\`);
-  }
+onOrderReceived((order) => {
+    // Condition: Check amount
+    if (order.amount > 500) {
+        // YES path
+        sendToManager(order);
+    } else {
+        // NO path
+        autoApprove(order);
+    }
 });
 `,
     n8n: `{
-  "name": "Smart Order Router",
   "nodes": [
-    {
-      "name": "Order Received",
-      "type": "n8n-nodes-base.webhook",
-      "position": [250, 300],
-      "parameters": {
-        "path": "new-order",
-        "httpMethod": "POST"
-      }
-    },
-    {
-      "name": "IF Amount > 500",
-      "type": "n8n-nodes-base.if",
-      "position": [500, 300],
-      "parameters": {
-        "conditions": {
-          "number": [{
-            "value1": "={{ $json.amount }}",
-            "operation": "larger",
-            "value2": 500
-          }]
-        }
-      }
-    },
-    {
-      "name": "Send to Manager",
-      "type": "n8n-nodes-base.slack",
-      "position": [750, 200],
-      "parameters": { "channel": "#approvals" }
-    },
-    {
-      "name": "Auto-Approve",
-      "type": "n8n-nodes-base.httpRequest",
-      "position": [750, 400],
-      "parameters": { "url": "https://api.shop.com/approve" }
-    }
-  ],
-  "connections": {
-    "Order Received": {
-      "main": [[ { "node": "IF Amount > 500" } ]]
-    },
-    "IF Amount > 500": {
-      "main": [
-        [ { "node": "Send to Manager" } ],
-        [ { "node": "Auto-Approve" } ]
-      ]
-    }
-  }
+    { "type": "trigger" },
+    { "type": "if", "parameters": { "condition": "amount > 500" } },
+    { "type": "sendToManager" },
+    { "type": "autoApprove" }
+  ]
 }
 `,
     pseudocode: `AUTOMATION: Smart Order Router
 
 WHEN order_is_received:
-    RECEIVE amount, customer FROM order
+    RECEIVE amount FROM order
 
     IF amount > 500 THEN
-        DO send_to_manager(customer, amount, "Needs approval")
-        LOG "Order sent to manager"
+        DO send_to_manager(order)
     ELSE
         DO auto_approve(order)
-        LOG "Order auto-approved"
     END IF
 END
 `,
