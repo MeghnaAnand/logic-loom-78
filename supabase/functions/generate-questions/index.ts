@@ -116,10 +116,33 @@ serve(async (req) => {
     }
 
     const data = await response.json();
+    console.log("AI response structure:", JSON.stringify(data.choices?.[0]?.message, null, 2).slice(0, 500));
+    
     const toolCall = data.choices?.[0]?.message?.tool_calls?.[0];
-    if (!toolCall) throw new Error("No tool call in response");
-
-    const result = JSON.parse(toolCall.function.arguments);
+    let result: { questions: unknown[] };
+    
+    if (toolCall) {
+      result = JSON.parse(toolCall.function.arguments);
+    } else {
+      // Fallback: try to extract from content
+      const content = data.choices?.[0]?.message?.content;
+      if (content) {
+        // Try to parse JSON from content
+        const jsonMatch = content.match(/\{[\s\S]*"questions"[\s\S]*\}/);
+        if (jsonMatch) {
+          result = JSON.parse(jsonMatch[0]);
+        } else {
+          throw new Error("No questions in AI response");
+        }
+      } else {
+        throw new Error("No tool call or content in AI response");
+      }
+    }
+    
+    if (!result.questions || result.questions.length === 0) {
+      throw new Error("AI returned empty questions");
+    }
+    
     return new Response(JSON.stringify(result), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
