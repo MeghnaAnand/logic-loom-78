@@ -67,6 +67,7 @@ export const LEVELS: LevelConfig[] = [
     newConcept: "Automation Basics",
     learningGoal: "Trigger → Action flow",
     estimatedTime: "~3 minutes",
+    averageTime: "3:45",
     layout: "simple",
     challenge:
       "You run a small online shop. Every time someone fills out your contact form, you need to save their information. Right now you're copying it manually. Let's automate this!",
