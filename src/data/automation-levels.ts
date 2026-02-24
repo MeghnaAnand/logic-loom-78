@@ -106,7 +106,7 @@ export const LEVELS: LevelConfig[] = [
     id: 2,
     title: "Smart Decisions",
     subtitle: "Level 2",
-    difficulty: 2,
+    difficulty: 3,
     newConcept: "Decision Making",
     learningGoal: "Conditional logic (IF/ELSE)",
     estimatedTime: "~5 minutes",
