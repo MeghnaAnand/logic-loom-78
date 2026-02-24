@@ -23,6 +23,10 @@ export interface LevelConfig {
   id: number;
   title: string;
   subtitle: string;
+  difficulty: number; // 1-5
+  newConcept?: string;
+  learningGoal?: string;
+  estimatedTime?: string;
   challenge: string;
   goal: string;
   hint: string;
