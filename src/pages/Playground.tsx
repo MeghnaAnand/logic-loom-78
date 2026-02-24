@@ -284,6 +284,33 @@ const Playground = () => {
             <p className="text-sm text-muted-foreground leading-relaxed">{challenge.scenario}</p>
           </div>
 
+          {/* Level concepts info panel */}
+          <div className="bg-primary/5 border border-primary/20 rounded-lg p-3">
+            <h3 className="font-display font-semibold text-xs text-primary mb-1.5 uppercase tracking-wider">
+              🧠 Level {currentChallenge + 1} Concepts
+            </h3>
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              {[
+                "Simple linear code — function calls in sequence, no branching.",
+                "If/else branching — conditional logic to choose different paths.",
+                "Data operations — variables, transformations & validation steps.",
+                "Error handling — try/catch blocks, loops & retry logic.",
+                "Production-grade — async/await, classes, caching & rate limiting.",
+              ][Math.min(currentChallenge, 4)]}
+            </p>
+            {currentChallenge > 0 && (
+              <p className="text-[10px] text-primary/70 mt-1.5 font-display font-semibold">
+                ✨ New: {[
+                  "",
+                  "if/else conditionals",
+                  "variables & transform()",
+                  "try/except, for loops",
+                  "async/await, classes, caching",
+                ][Math.min(currentChallenge, 4)]}
+              </p>
+            )}
+          </div>
+
           {/* Attempt counter */}
           {attempts > 0 && !solved && (
             <div className="bg-destructive/10 rounded-lg px-3 py-2 text-sm text-destructive font-display font-semibold">
