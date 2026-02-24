@@ -372,32 +372,40 @@ const InstructionPanel = ({
               </motion.div>
             )}
 
-            {/* Code View Toggle */}
-            {onToggleCodeView && (
+            {/* See the Code CTA */}
+            {onToggleCodeView && !codeView && (
               <motion.div
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 1.1 }}
                 className="mt-2"
               >
+                <button
+                  onClick={onToggleCodeView}
+                  className="w-full flex items-center justify-center gap-2 px-3 py-2.5 text-xs font-display font-bold bg-accent/15 hover:bg-accent/25 text-accent-foreground border border-accent/20 rounded-xl transition-all hover:scale-[1.02]"
+                >
+                  <Lightbulb className="w-3.5 h-3.5 text-accent" /> 💡 See the Code
+                </button>
+              </motion.div>
+            )}
+
+            {/* Code View Toggle */}
+            {onToggleCodeView && codeView && (
+              <motion.div
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 }}
+                className="mt-2"
+              >
                 <div className="flex rounded-xl overflow-hidden border border-border">
                   <button
-                    onClick={() => codeView && onToggleCodeView()}
-                    className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-display font-bold transition-all ${
-                      !codeView
-                        ? "bg-primary text-primary-foreground"
-                        : "bg-muted text-muted-foreground hover:text-foreground"
-                    }`}
+                    onClick={onToggleCodeView}
+                    className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-display font-bold transition-all bg-muted text-muted-foreground hover:text-foreground"
                   >
                     <Palette className="w-3 h-3" /> Visual View
                   </button>
                   <button
-                    onClick={() => !codeView && onToggleCodeView()}
-                    className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-display font-bold transition-all ${
-                      codeView
-                        ? "bg-primary text-primary-foreground"
-                        : "bg-muted text-muted-foreground hover:text-foreground"
-                    }`}
+                    className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-display font-bold transition-all bg-primary text-primary-foreground"
                   >
                     <Code className="w-3 h-3" /> Code View
                   </button>
