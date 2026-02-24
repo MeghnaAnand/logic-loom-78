@@ -489,6 +489,12 @@ const Playground = () => {
                                 )}
                               </div>
                             </motion.div>
+                            <BlockCodeSnippet
+                              block={block}
+                              language={selectedLanguage}
+                              index={index}
+                              show={showCode}
+                            />
                             {index < placedBlocks.length - 1 && (
                               <div className="flex justify-center my-1">
                                 <div className="w-0.5 h-4 bg-workspace-foreground/20 rounded" />
