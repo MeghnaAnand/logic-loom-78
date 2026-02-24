@@ -18,6 +18,7 @@ const AutomationMind = () => {
   const [connectingFrom, setConnectingFrom] = useState<{ blockId: string; branch?: "yes" | "no" } | null>(null);
   const [testingPhase, setTestingPhase] = useState<"idle" | "loading" | "running" | "success" | "failure">("idle");
   const [currentTestItem, setCurrentTestItem] = useState(0);
+  const [currentExtractionStep, setCurrentExtractionStep] = useState<number | undefined>(undefined);
   const [completedLevels, setCompletedLevels] = useState<Set<number>>(new Set());
 
   const level = LEVELS[currentLevelIndex];
