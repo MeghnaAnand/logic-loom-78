@@ -45,8 +45,51 @@ const Playground = () => {
   const [timerRunning, setTimerRunning] = useState(false);
   const [finalTime, setFinalTime] = useState(0);
   const [attempts, setAttempts] = useState(0);
+  const [isLoadingAI, setIsLoadingAI] = useState(false);
 
   const challenge = sessionChallenges[currentChallenge];
+
+  const applyNewChallenges = useCallback((newChallenges: Challenge[]) => {
+    setSessionChallenges(newChallenges);
+    setCurrentChallenge(0);
+    setAvailableBlocks([...newChallenges[0].availableBlocks]);
+    setPlacedBlocks([]);
+    setShowHint(false);
+    setSolved(false);
+    setShowSuccess(false);
+    setSolvedChallenges(new Set());
+    setCharacterState("idle");
+    setShowWrong(false);
+    setTimerResetKey((k) => k + 1);
+    setTimerRunning(false);
+    setAttempts(0);
+  }, []);
+
+  const fetchAIChallenges = useCallback(async () => {
+    setIsLoadingAI(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("generate-challenges");
+      if (error) throw error;
+      const challenges = data?.challenges;
+      if (!challenges || !Array.isArray(challenges) || challenges.length === 0) {
+        throw new Error("Invalid AI response");
+      }
+      // Validate structure
+      for (const c of challenges) {
+        if (!c.id || !c.availableBlocks || !c.correctOrder || c.availableBlocks.length === 0) {
+          throw new Error("Malformed challenge from AI");
+        }
+      }
+      applyNewChallenges(challenges);
+      toast.success("🤖 Fresh AI-generated puzzles loaded!");
+    } catch (e) {
+      console.error("AI challenge generation failed:", e);
+      toast.error("AI generation failed — loading random puzzles instead");
+      applyNewChallenges(pickSessionChallenges());
+    } finally {
+      setIsLoadingAI(false);
+    }
+  }, [applyNewChallenges]);
 
   const resetPuzzle = () => {
     setAvailableBlocks([...challenge.availableBlocks]);
