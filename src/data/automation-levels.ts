@@ -169,6 +169,8 @@ export const LEVELS: LevelConfig[] = [
     newConcept: "Data Extraction",
     learningGoal: "Multi-step data transformation",
     estimatedTime: "~7 minutes",
+    averageTime: "6:15",
+    bonusChallenge: "What if you also needed to extract a phone number? You'd add a 4th extraction block — try imagining where it would go in the chain!",
     layout: "chain",
     challenge:
       "Your inbox is flooding with messy order confirmation emails. Each email contains an order number, customer name, and amount buried in paragraphs of text. You need to extract this data and save it cleanly.",
