@@ -172,11 +172,11 @@ const InstructionPanel = ({
               transition={{ delay: 0.9 }}
               className="pt-2 border-t border-success/20"
             >
-              <p className="text-success font-bold font-display">
-                🎉 Success! 5/5 forms saved automatically.
+              <p className="text-success font-bold font-display text-base">
+                🎉 You're a natural! All 5 forms saved flawlessly!
               </p>
               <p className="text-success font-display text-sm mt-1">
-                You've completed Level 1!
+                Level 1 crushed! You're on your way to becoming an automation pro 🚀
               </p>
             </motion.div>
           </motion.div>
