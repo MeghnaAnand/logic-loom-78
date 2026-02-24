@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import confetti from "canvas-confetti";
 import BlockLibrary from "@/components/automation-mind/BlockLibrary";
 import GameCanvas from "@/components/automation-mind/GameCanvas";
+import CodeViewPanel from "@/components/automation-mind/CodeViewPanel";
 import InstructionPanel from "@/components/automation-mind/InstructionPanel";
 import { playDing, playError, playWhoosh } from "@/lib/sounds";
 import { LEVELS, type GameBlock, type Connection } from "@/data/automation-levels";
@@ -21,6 +22,7 @@ const AutomationMind = () => {
   const [currentExtractionStep, setCurrentExtractionStep] = useState<number | undefined>(undefined);
   const [completedLevels, setCompletedLevels] = useState<Set<number>>(new Set());
   const [timeTaken, setTimeTaken] = useState<string | undefined>(undefined);
+  const [codeView, setCodeView] = useState(false);
   const levelStartRef = useRef<number>(Date.now());
 
   const level = LEVELS[currentLevelIndex];
@@ -34,6 +36,7 @@ const AutomationMind = () => {
     setCurrentTestItem(0);
     setCurrentExtractionStep(undefined);
     setTimeTaken(undefined);
+    setCodeView(false);
     levelStartRef.current = Date.now();
   }, []);
 
@@ -257,19 +260,25 @@ const AutomationMind = () => {
 
       <div className="flex-1 flex min-h-0">
         <BlockLibrary level={level} onAddBlock={addBlock} canvasBlocks={canvasBlocks} />
-        <GameCanvas
-          level={level}
-          blocks={canvasBlocks}
-          connections={connections}
-          selectedBlockId={selectedBlockId}
-          connectingFrom={connectingFrom}
-          onSelectBlock={selectBlock}
-          onConnectBranch={connectBranch}
-          onRemoveBlock={removeBlock}
-          testingPhase={testingPhase}
-          currentTestItem={currentTestItem}
-          currentExtractionStep={currentExtractionStep}
-        />
+        {codeView && testingPhase === "success" ? (
+          <div className="flex-1 p-4 min-h-0 flex">
+            <CodeViewPanel levelId={level.id} />
+          </div>
+        ) : (
+          <GameCanvas
+            level={level}
+            blocks={canvasBlocks}
+            connections={connections}
+            selectedBlockId={selectedBlockId}
+            connectingFrom={connectingFrom}
+            onSelectBlock={selectBlock}
+            onConnectBranch={connectBranch}
+            onRemoveBlock={removeBlock}
+            testingPhase={testingPhase}
+            currentTestItem={currentTestItem}
+            currentExtractionStep={currentExtractionStep}
+          />
+        )}
         <InstructionPanel
           level={level}
           testingPhase={testingPhase}
@@ -285,6 +294,8 @@ const AutomationMind = () => {
           totalLevels={LEVELS.length}
           completedLevels={completedLevels}
           timeTaken={timeTaken}
+          codeView={codeView}
+          onToggleCodeView={() => setCodeView((v) => !v)}
         />
       </div>
     </div>

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Play, ArrowRight, RotateCcw, CheckCircle2, Loader2, X, Lock, Clock, Sparkles, BookOpen, ChevronDown, ChevronUp, Lightbulb, Rewind } from "lucide-react";
+import { Play, ArrowRight, RotateCcw, CheckCircle2, Loader2, X, Lock, Clock, Sparkles, BookOpen, ChevronDown, ChevronUp, Lightbulb, Rewind, Code, Palette } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import type { LevelConfig } from "@/data/automation-levels";
 
@@ -20,6 +20,8 @@ interface InstructionPanelProps {
   totalLevels: number;
   completedLevels: Set<number>;
   timeTaken?: string;
+  codeView?: boolean;
+  onToggleCodeView?: () => void;
 }
 
 const BADGES = [
@@ -43,6 +45,8 @@ const InstructionPanel = ({
   totalLevels,
   completedLevels,
   timeTaken,
+  codeView,
+  onToggleCodeView,
 }: InstructionPanelProps) => {
   const [dataPreviewOpen, setDataPreviewOpen] = useState(false);
   const testData = level.testData;
@@ -368,7 +372,39 @@ const InstructionPanel = ({
               </motion.div>
             )}
 
-            {/* Before / After comparison for Level 3 */}
+            {/* Code View Toggle */}
+            {onToggleCodeView && (
+              <motion.div
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 1.1 }}
+                className="mt-2"
+              >
+                <div className="flex rounded-xl overflow-hidden border border-border">
+                  <button
+                    onClick={() => codeView && onToggleCodeView()}
+                    className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-display font-bold transition-all ${
+                      !codeView
+                        ? "bg-primary text-primary-foreground"
+                        : "bg-muted text-muted-foreground hover:text-foreground"
+                    }`}
+                  >
+                    <Palette className="w-3 h-3" /> Visual View
+                  </button>
+                  <button
+                    onClick={() => !codeView && onToggleCodeView()}
+                    className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-display font-bold transition-all ${
+                      codeView
+                        ? "bg-primary text-primary-foreground"
+                        : "bg-muted text-muted-foreground hover:text-foreground"
+                    }`}
+                  >
+                    <Code className="w-3 h-3" /> Code View
+                  </button>
+                </div>
+              </motion.div>
+            )}
+
             {level.dataPreview && level.dataPreview.length > 0 && (
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
