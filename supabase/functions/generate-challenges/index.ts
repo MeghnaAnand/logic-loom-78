@@ -8,7 +8,7 @@ const corsHeaders = {
 
 const SYSTEM_PROMPT = `You are a creative puzzle designer for an automation learning game called "AutoFlow Puzzles". 
 
-Generate exactly 3 unique automation puzzle challenges. Each puzzle teaches users how automation workflows work by having them arrange blocks in the correct order.
+Generate exactly 5 unique automation puzzle challenges. Each puzzle teaches users how automation workflows work by having them arrange blocks in the correct order.
 
 RULES:
 - Each puzzle must have exactly 5 blocks
@@ -17,9 +17,9 @@ RULES:
 - The last block should be an "output" or "action" type
 - Each block needs a unique id (lowercase, hyphenated), a label (2-4 words), an icon (single emoji), and a type
 - The correctOrder array must list block ids in the logical automation sequence
-- Difficulties: one "beginner", one "beginner" or "intermediate", one "intermediate" or "advanced"
+- Difficulties: two "beginner", two "intermediate", one "advanced"
 - Make scenarios realistic and relatable (business, personal productivity, tech, marketing, etc.)
-- Never repeat the same scenario theme across the 3 puzzles
+- Never repeat the same scenario theme across the 5 puzzles
 - Keep hints helpful but not too revealing
 - Success messages should be celebratory with an emoji
 
