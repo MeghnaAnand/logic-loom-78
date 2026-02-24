@@ -278,7 +278,7 @@ const Playground = () => {
             </div>
 
             {/* Drop workspace - right side */}
-            <div className="flex-1 bg-workspace workspace-grid p-6 relative overflow-hidden">
+            <div className="flex-1 bg-workspace workspace-grid p-6 relative overflow-auto">
               {/* Wrong answer overlay */}
               <WrongAnswerOverlay
                 show={showWrong}
@@ -295,7 +295,7 @@ const Playground = () => {
                     animate={wrongShake ? { x: [0, -6, 6, -4, 4, 0] } : { x: 0 }}
                     transition={{ duration: 0.4 }}
                     className={`
-                      min-h-[300px] max-w-md ml-auto rounded-xl border-2 border-dashed p-4 transition-colors
+                      min-h-[300px] max-w-md ml-auto rounded-xl border-2 border-dashed p-4 transition-colors mb-4
                       ${snapshot.isDraggingOver
                         ? "border-primary/50 bg-primary/5"
                         : solved
