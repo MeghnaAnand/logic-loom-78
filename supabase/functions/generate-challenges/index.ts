@@ -49,7 +49,7 @@ serve(async (req) => {
             {
               role: "user",
               content:
-                "Generate 3 fresh, unique automation puzzle challenges. Make them creative and different from typical examples. Think of unusual but realistic automation scenarios.",
+                "Generate 5 fresh, unique automation puzzle challenges. Make them creative and different from typical examples. Think of unusual but realistic automation scenarios.",
             },
           ],
           tools: [
