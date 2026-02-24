@@ -51,6 +51,18 @@ const Playground = () => {
   const [selectedLanguage, setSelectedLanguage] = useState<CodeLanguage>("pseudocode");
   const [showCode, setShowCode] = useState(false);
 
+  // Struggle tracking per level
+  const [levelStats, setLevelStats] = useState<{ attempts: number; time: number }[]>(
+    () => sessionChallenges.map(() => ({ attempts: 0, time: 0 }))
+  );
+
+  // AI learning tips
+  const [learningTips, setLearningTips] = useState<{
+    summary: string;
+    tips: { emoji: string; title: string; description: string }[];
+  } | null>(null);
+  const [isLoadingTips, setIsLoadingTips] = useState(false);
+
   const challenge = sessionChallenges[currentChallenge];
 
   const applyNewChallenges = useCallback((newChallenges: Challenge[]) => {
