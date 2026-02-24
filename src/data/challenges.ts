@@ -227,7 +227,7 @@ const allChallenges: Challenge[] = [
 ];
 
 /** Number of challenges shown per session */
-const SESSION_SIZE = 3;
+const SESSION_SIZE = 5;
 
 /** Shuffle array using Fisher-Yates */
 function shuffle<T>(arr: T[]): T[] {
