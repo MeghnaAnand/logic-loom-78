@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -20,6 +20,8 @@ const AutomationMind = () => {
   const [currentTestItem, setCurrentTestItem] = useState(0);
   const [currentExtractionStep, setCurrentExtractionStep] = useState<number | undefined>(undefined);
   const [completedLevels, setCompletedLevels] = useState<Set<number>>(new Set());
+  const [timeTaken, setTimeTaken] = useState<string | undefined>(undefined);
+  const levelStartRef = useRef<number>(Date.now());
 
   const level = LEVELS[currentLevelIndex];
 
@@ -31,6 +33,8 @@ const AutomationMind = () => {
     setTestingPhase("idle");
     setCurrentTestItem(0);
     setCurrentExtractionStep(undefined);
+    setTimeTaken(undefined);
+    levelStartRef.current = Date.now();
   }, []);
 
   const addBlock = useCallback((block: GameBlock) => {
@@ -164,6 +168,11 @@ const AutomationMind = () => {
           setTimeout(() => {
             setTestingPhase("success");
             setCurrentExtractionStep(undefined);
+            // Calculate time taken
+            const elapsed = Math.floor((Date.now() - levelStartRef.current) / 1000);
+            const mins = Math.floor(elapsed / 60);
+            const secs = elapsed % 60;
+            setTimeTaken(`${mins}:${secs.toString().padStart(2, "0")}`);
             playDing();
             const particleCount = level.id === 2 ? 250 : 150;
             confetti({ particleCount, spread: 100, origin: { y: 0.6 } });
@@ -275,6 +284,7 @@ const AutomationMind = () => {
           currentLevelIndex={currentLevelIndex}
           totalLevels={LEVELS.length}
           completedLevels={completedLevels}
+          timeTaken={timeTaken}
         />
       </div>
     </div>

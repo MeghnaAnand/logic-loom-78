@@ -19,6 +19,7 @@ interface InstructionPanelProps {
   currentLevelIndex: number;
   totalLevels: number;
   completedLevels: Set<number>;
+  timeTaken?: string;
 }
 
 const BADGES = [
@@ -41,6 +42,7 @@ const InstructionPanel = ({
   currentLevelIndex,
   totalLevels,
   completedLevels,
+  timeTaken,
 }: InstructionPanelProps) => {
   const [dataPreviewOpen, setDataPreviewOpen] = useState(false);
   const testData = level.testData;
@@ -346,6 +348,26 @@ const InstructionPanel = ({
               </p>
             </motion.div>
 
+            {/* Time taken + comparison */}
+            {timeTaken && (
+              <motion.div
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 1.0 }}
+                className="mt-2 flex items-center gap-3 text-xs"
+              >
+                <div className="flex items-center gap-1 bg-primary/10 text-primary font-display font-bold px-2.5 py-1 rounded-lg">
+                  <Clock className="w-3 h-3" />
+                  <span>Time: {timeTaken}</span>
+                </div>
+                {level.averageTime && (
+                  <div className="flex items-center gap-1 text-muted-foreground font-display">
+                    <span>Most people: <strong className="text-foreground">{level.averageTime}</strong></span>
+                  </div>
+                )}
+              </motion.div>
+            )}
+
             {/* Before / After comparison for Level 3 */}
             {level.dataPreview && level.dataPreview.length > 0 && (
               <motion.div
@@ -434,7 +456,24 @@ const InstructionPanel = ({
         </motion.div>
       )}
 
-      {/* Action buttons */}
+      {/* Bonus challenge after success */}
+      {testingPhase === "success" && level.bonusChallenge && (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 1.8 }}
+          className="bg-primary/5 border border-primary/20 rounded-xl p-3 text-xs text-foreground leading-relaxed"
+        >
+          <div className="flex items-start gap-1.5">
+            <Sparkles className="w-3.5 h-3.5 shrink-0 mt-0.5 text-primary" />
+            <div>
+              <span className="font-display font-bold text-primary">Bonus Challenge:</span>{" "}
+              <span className="text-muted-foreground">{level.bonusChallenge}</span>
+            </div>
+          </div>
+        </motion.div>
+      )}
+
       <div className="mt-auto flex flex-col gap-2">
         {testingPhase === "success" ? (
           <>

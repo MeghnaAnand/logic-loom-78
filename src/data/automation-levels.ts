@@ -34,6 +34,8 @@ export interface LevelConfig {
   newConcept?: string;
   learningGoal?: string;
   estimatedTime?: string;
+  averageTime?: string;
+  bonusChallenge?: string;
   challenge: string;
   goal: string;
   hint: string;
@@ -65,6 +67,7 @@ export const LEVELS: LevelConfig[] = [
     newConcept: "Automation Basics",
     learningGoal: "Trigger → Action flow",
     estimatedTime: "~3 minutes",
+    averageTime: "3:45",
     layout: "simple",
     challenge:
       "You run a small online shop. Every time someone fills out your contact form, you need to save their information. Right now you're copying it manually. Let's automate this!",
@@ -107,6 +110,7 @@ export const LEVELS: LevelConfig[] = [
     newConcept: "Decision Making",
     learningGoal: "Conditional logic (IF/ELSE)",
     estimatedTime: "~5 minutes",
+    averageTime: "5:30",
     layout: "branch",
     challenge:
       "Your shop gets orders of all sizes. Large orders over $500 need manager approval before shipping. Smaller orders can be approved automatically.",
@@ -165,6 +169,8 @@ export const LEVELS: LevelConfig[] = [
     newConcept: "Data Extraction",
     learningGoal: "Multi-step data transformation",
     estimatedTime: "~7 minutes",
+    averageTime: "6:15",
+    bonusChallenge: "What if you also needed to extract a phone number? You'd add a 4th extraction block — try imagining where it would go in the chain!",
     layout: "chain",
     challenge:
       "Your inbox is flooding with messy order confirmation emails. Each email contains an order number, customer name, and amount buried in paragraphs of text. You need to extract this data and save it cleanly.",
