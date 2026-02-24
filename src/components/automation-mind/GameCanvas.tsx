@@ -82,38 +82,52 @@ const DiamondBlock = ({
 
       {/* YES / NO connection buttons */}
       <div className="flex gap-6 -mt-2 z-10">
-        <motion.button
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={(e) => { e.stopPropagation(); onConnectYes(); }}
-          className={`
-            flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-bold font-display shadow-md transition-all
-            ${hasYes
-              ? "bg-am-yes text-white"
-              : isConnecting
-                ? "bg-am-yes/20 text-am-yes ring-2 ring-am-yes animate-pulse"
-                : "bg-am-yes/10 text-am-yes hover:bg-am-yes/20 border border-am-yes/30"
-            }
-          `}
-        >
-          ✓ YES {hasYes && "→"}
-        </motion.button>
-        <motion.button
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={(e) => { e.stopPropagation(); onConnectNo(); }}
-          className={`
-            flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-bold font-display shadow-md transition-all
-            ${hasNo
-              ? "bg-am-no text-white"
-              : isConnecting
-                ? "bg-am-no/20 text-am-no ring-2 ring-am-no animate-pulse"
-                : "bg-am-no/10 text-am-no hover:bg-am-no/20 border border-am-no/30"
-            }
-          `}
-        >
-          ✗ NO {hasNo && "→"}
-        </motion.button>
+        <div className="relative group">
+          <motion.button
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={(e) => { e.stopPropagation(); onConnectYes(); }}
+            className={`
+              flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-bold font-display shadow-md transition-all
+              ${hasYes
+                ? "bg-am-yes text-white"
+                : isConnecting
+                  ? "bg-am-yes/20 text-am-yes ring-2 ring-am-yes animate-pulse"
+                  : "bg-am-yes/10 text-am-yes hover:bg-am-yes/30 hover:shadow-[0_0_12px_hsl(var(--am-yes)/0.4)] border border-am-yes/30"
+              }
+            `}
+          >
+            ✓ YES {hasYes && "→"}
+          </motion.button>
+          {!hasYes && !isConnecting && (
+            <div className="absolute -top-8 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap bg-foreground text-background text-[10px] font-display px-2 py-1 rounded-md shadow-lg z-30">
+              Connect to YES action
+            </div>
+          )}
+        </div>
+        <div className="relative group">
+          <motion.button
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={(e) => { e.stopPropagation(); onConnectNo(); }}
+            className={`
+              flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-bold font-display shadow-md transition-all
+              ${hasNo
+                ? "bg-am-no text-white"
+                : isConnecting
+                  ? "bg-am-no/20 text-am-no ring-2 ring-am-no animate-pulse"
+                  : "bg-am-no/10 text-am-no hover:bg-am-no/30 hover:shadow-[0_0_12px_hsl(var(--am-no)/0.4)] border border-am-no/30"
+              }
+            `}
+          >
+            ✗ NO {hasNo && "→"}
+          </motion.button>
+          {!hasNo && !isConnecting && (
+            <div className="absolute -top-8 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap bg-foreground text-background text-[10px] font-display px-2 py-1 rounded-md shadow-lg z-30">
+              Connect to NO action
+            </div>
+          )}
+        </div>
       </div>
     </motion.div>
   );
