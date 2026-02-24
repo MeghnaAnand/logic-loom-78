@@ -248,7 +248,7 @@ const AutomationMind = () => {
                   ? "bg-primary text-primary-foreground"
                   : completedLevels.has(i)
                     ? "bg-success text-success-foreground"
-                    : "bg-muted text-muted-foreground opacity-50"
+                    : "bg-muted text-muted-foreground"
                 }
               `}
             >

@@ -165,7 +165,7 @@ export const LEVELS: LevelConfig[] = [
     id: 3,
     title: "Data Detective",
     subtitle: "Level 3",
-    difficulty: 3,
+    difficulty: 5,
     newConcept: "Data Extraction",
     learningGoal: "Multi-step data transformation",
     estimatedTime: "~7 minutes",
