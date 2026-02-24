@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import { playWhoosh } from "@/lib/sounds";
 
 export interface GameBlock {
   id: string;
@@ -28,6 +29,12 @@ const BlockLibrary = ({ onDragBlock, canvasBlocks }: BlockLibraryProps) => {
   const triggers = AVAILABLE_BLOCKS.filter((b) => b.type === "trigger");
   const actions = AVAILABLE_BLOCKS.filter((b) => b.type === "action");
 
+  const handleClick = (block: GameBlock, disabled: boolean) => {
+    if (disabled) return;
+    playWhoosh();
+    onDragBlock(block);
+  };
+
   return (
     <div className="w-64 border-r border-border bg-card p-4 flex flex-col gap-5 overflow-y-auto">
       <div>
@@ -45,15 +52,18 @@ const BlockLibrary = ({ onDragBlock, canvasBlocks }: BlockLibraryProps) => {
             return (
               <motion.button
                 key={block.id}
-                whileHover={disabled ? {} : { scale: 1.03 }}
-                whileTap={disabled ? {} : { scale: 0.97 }}
-                onClick={() => !disabled && onDragBlock(block)}
+                whileHover={disabled ? {} : { scale: 1.05, y: -2 }}
+                whileTap={disabled ? {} : { scale: 0.95 }}
+                onClick={() => handleClick(block, disabled)}
                 disabled={disabled}
                 className={`
-                  flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-left text-sm font-semibold font-display
+                  flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-left text-sm font-semibold font-display
                   transition-all select-none
                   bg-am-trigger text-am-trigger-foreground
-                  ${disabled ? "opacity-40 cursor-not-allowed" : "cursor-pointer shadow-md hover:shadow-lg"}
+                  ${disabled
+                    ? "opacity-40 cursor-not-allowed"
+                    : "cursor-pointer shadow-md hover:shadow-xl hover:brightness-105"
+                  }
                 `}
               >
                 <span className="text-lg">{block.icon}</span>
@@ -74,15 +84,18 @@ const BlockLibrary = ({ onDragBlock, canvasBlocks }: BlockLibraryProps) => {
             return (
               <motion.button
                 key={block.id}
-                whileHover={disabled ? {} : { scale: 1.03 }}
-                whileTap={disabled ? {} : { scale: 0.97 }}
-                onClick={() => !disabled && onDragBlock(block)}
+                whileHover={disabled ? {} : { scale: 1.05, y: -2 }}
+                whileTap={disabled ? {} : { scale: 0.95 }}
+                onClick={() => handleClick(block, disabled)}
                 disabled={disabled}
                 className={`
-                  flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-left text-sm font-semibold font-display
+                  flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-left text-sm font-semibold font-display
                   transition-all select-none
                   bg-am-action text-am-action-foreground
-                  ${disabled ? "opacity-40 cursor-not-allowed" : "cursor-pointer shadow-md hover:shadow-lg"}
+                  ${disabled
+                    ? "opacity-40 cursor-not-allowed"
+                    : "cursor-pointer shadow-md hover:shadow-xl hover:brightness-105"
+                  }
                 `}
               >
                 <span className="text-lg">{block.icon}</span>
