@@ -1,0 +1,338 @@
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { DragDropContext, Droppable, Draggable, DropResult } from "@hello-pangea/dnd";
+import { motion, AnimatePresence } from "framer-motion";
+import { ArrowLeft, ArrowRight, Lightbulb, RotateCcw, CheckCircle2, Trophy } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { challenges, type Block } from "@/data/challenges";
+
+const blockColorMap: Record<string, string> = {
+  trigger: "bg-block-trigger",
+  action: "bg-block-action",
+  condition: "bg-block-condition",
+  data: "bg-block-data",
+  output: "bg-block-output",
+};
+
+const Playground = () => {
+  const navigate = useNavigate();
+  const [currentChallenge, setCurrentChallenge] = useState(0);
+  const [availableBlocks, setAvailableBlocks] = useState<Block[]>(challenges[0].availableBlocks);
+  const [placedBlocks, setPlacedBlocks] = useState<Block[]>([]);
+  const [showHint, setShowHint] = useState(false);
+  const [solved, setSolved] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [solvedChallenges, setSolvedChallenges] = useState<Set<number>>(new Set());
+
+  const challenge = challenges[currentChallenge];
+
+  const resetPuzzle = () => {
+    setAvailableBlocks([...challenge.availableBlocks]);
+    setPlacedBlocks([]);
+    setShowHint(false);
+    setSolved(false);
+    setShowSuccess(false);
+  };
+
+  const loadChallenge = (index: number) => {
+    setCurrentChallenge(index);
+    const c = challenges[index];
+    setAvailableBlocks([...c.availableBlocks]);
+    setPlacedBlocks([]);
+    setShowHint(false);
+    setSolved(false);
+    setShowSuccess(false);
+  };
+
+  const checkSolution = (placed: Block[]) => {
+    const correct = challenge.correctOrder;
+    if (placed.length !== correct.length) return;
+    const isCorrect = placed.every((b, i) => b.id === correct[i]);
+    if (isCorrect) {
+      setSolved(true);
+      setShowSuccess(true);
+      setSolvedChallenges((prev) => new Set([...prev, currentChallenge]));
+    }
+  };
+
+  const onDragEnd = (result: DropResult) => {
+    if (!result.destination) return;
+
+    const { source, destination } = result;
+
+    if (source.droppableId === "available" && destination.droppableId === "workspace") {
+      const block = availableBlocks[source.index];
+      const newAvailable = [...availableBlocks];
+      newAvailable.splice(source.index, 1);
+      const newPlaced = [...placedBlocks];
+      newPlaced.splice(destination.index, 0, block);
+      setAvailableBlocks(newAvailable);
+      setPlacedBlocks(newPlaced);
+      checkSolution(newPlaced);
+    } else if (source.droppableId === "workspace" && destination.droppableId === "workspace") {
+      const newPlaced = [...placedBlocks];
+      const [moved] = newPlaced.splice(source.index, 1);
+      newPlaced.splice(destination.index, 0, moved);
+      setPlacedBlocks(newPlaced);
+      checkSolution(newPlaced);
+    } else if (source.droppableId === "workspace" && destination.droppableId === "available") {
+      const block = placedBlocks[source.index];
+      const newPlaced = [...placedBlocks];
+      newPlaced.splice(source.index, 1);
+      const newAvailable = [...availableBlocks];
+      newAvailable.splice(destination.index, 0, block);
+      setPlacedBlocks(newPlaced);
+      setAvailableBlocks(newAvailable);
+    }
+  };
+
+  const allSolved = solvedChallenges.size === challenges.length;
+
+  return (
+    <div className="min-h-screen bg-background flex flex-col">
+      {/* Header */}
+      <header className="border-b border-border px-4 py-3 flex items-center justify-between bg-card">
+        <div className="flex items-center gap-3">
+          <Button variant="ghost" size="sm" onClick={() => navigate("/")} className="gap-1">
+            <ArrowLeft className="w-4 h-4" /> Back
+          </Button>
+          <div className="h-5 w-px bg-border" />
+          <h1 className="font-display font-bold text-foreground">AutoFlow Puzzles</h1>
+        </div>
+        <div className="flex items-center gap-2">
+          {challenges.map((_, i) => (
+            <button
+              key={i}
+              onClick={() => loadChallenge(i)}
+              className={`
+                w-8 h-8 rounded-lg font-display font-bold text-sm transition-all
+                ${currentChallenge === i
+                  ? "bg-primary text-primary-foreground"
+                  : solvedChallenges.has(i)
+                    ? "bg-success text-success-foreground"
+                    : "bg-muted text-muted-foreground hover:bg-muted/80"
+                }
+              `}
+            >
+              {solvedChallenges.has(i) ? "✓" : i + 1}
+            </button>
+          ))}
+        </div>
+      </header>
+
+      <div className="flex-1 flex flex-col lg:flex-row">
+        {/* Sidebar: Challenge info */}
+        <div className="w-full lg:w-80 border-b lg:border-b-0 lg:border-r border-border bg-card p-6 flex flex-col gap-4">
+          <div>
+            <span className={`
+              inline-block px-2 py-0.5 rounded text-xs font-semibold uppercase tracking-wider mb-2
+              ${challenge.difficulty === "beginner" ? "bg-success/15 text-success" : "bg-accent/30 text-accent-foreground"}
+            `}>
+              {challenge.difficulty}
+            </span>
+            <h2 className="font-display text-xl font-bold text-card-foreground">{challenge.title}</h2>
+            <p className="text-sm text-muted-foreground mt-1">{challenge.description}</p>
+          </div>
+
+          <div className="bg-muted rounded-lg p-4">
+            <h3 className="font-display font-semibold text-sm text-foreground mb-1">📋 Scenario</h3>
+            <p className="text-sm text-muted-foreground leading-relaxed">{challenge.scenario}</p>
+          </div>
+
+          <div className="flex gap-2 mt-auto">
+            <Button variant="outline" size="sm" onClick={() => setShowHint(!showHint)} className="gap-1 flex-1">
+              <Lightbulb className="w-4 h-4" /> {showHint ? "Hide Hint" : "Show Hint"}
+            </Button>
+            <Button variant="outline" size="sm" onClick={resetPuzzle} className="gap-1 flex-1">
+              <RotateCcw className="w-4 h-4" /> Reset
+            </Button>
+          </div>
+
+          <AnimatePresence>
+            {showHint && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                className="bg-accent/20 rounded-lg p-3 text-sm text-accent-foreground"
+              >
+                💡 {challenge.hint}
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+
+        {/* Main workspace */}
+        <div className="flex-1 flex flex-col">
+          <DragDropContext onDragEnd={onDragEnd}>
+            {/* Available blocks */}
+            <div className="bg-card border-b border-border p-4">
+              <h3 className="font-display text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">
+                Available Blocks — Drag them down ↓
+              </h3>
+              <Droppable droppableId="available" direction="horizontal">
+                {(provided) => (
+                  <div
+                    ref={provided.innerRef}
+                    {...provided.droppableProps}
+                    className="flex flex-wrap gap-3 min-h-[56px]"
+                  >
+                    {availableBlocks.map((block, index) => (
+                      <Draggable key={block.id} draggableId={block.id} index={index}>
+                        {(provided, snapshot) => (
+                          <div
+                            ref={provided.innerRef}
+                            {...provided.draggableProps}
+                            {...provided.dragHandleProps}
+                            className={`
+                              ${blockColorMap[block.type]}
+                              rounded-lg px-4 py-2.5 text-primary-foreground font-display font-semibold text-sm
+                              select-none cursor-grab active:cursor-grabbing transition-shadow
+                              ${snapshot.isDragging ? "shadow-2xl scale-105" : "shadow-md hover:shadow-lg"}
+                            `}
+                          >
+                            <span className="mr-1.5">{block.icon}</span>
+                            {block.label}
+                          </div>
+                        )}
+                      </Draggable>
+                    ))}
+                    {provided.placeholder}
+                    {availableBlocks.length === 0 && (
+                      <div className="text-sm text-muted-foreground italic">All blocks placed!</div>
+                    )}
+                  </div>
+                )}
+              </Droppable>
+            </div>
+
+            {/* Drop workspace */}
+            <div className="flex-1 bg-workspace workspace-grid p-6 relative">
+              <Droppable droppableId="workspace">
+                {(provided, snapshot) => (
+                  <div
+                    ref={provided.innerRef}
+                    {...provided.droppableProps}
+                    className={`
+                      min-h-[300px] max-w-md mx-auto rounded-xl border-2 border-dashed p-4 transition-colors
+                      ${snapshot.isDraggingOver
+                        ? "border-primary/50 bg-primary/5"
+                        : solved
+                          ? "border-success/50 bg-success/5"
+                          : "border-workspace-foreground/20"
+                      }
+                    `}
+                  >
+                    {placedBlocks.length === 0 && !snapshot.isDraggingOver && (
+                      <div className="flex items-center justify-center h-[280px] text-workspace-foreground/30 font-display text-center">
+                        Drop blocks here in the right order<br />to build your automation flow
+                      </div>
+                    )}
+
+                    {placedBlocks.map((block, index) => (
+                      <Draggable key={block.id} draggableId={block.id} index={index}>
+                        {(provided, snapshot) => (
+                          <div
+                            ref={provided.innerRef}
+                            {...provided.draggableProps}
+                            {...provided.dragHandleProps}
+                          >
+                            <motion.div
+                              layout
+                              initial={{ opacity: 0, scale: 0.8 }}
+                              animate={{ opacity: 1, scale: 1 }}
+                              className={`
+                                ${blockColorMap[block.type]}
+                                rounded-lg px-5 py-3 text-primary-foreground font-display font-semibold text-sm
+                                select-none cursor-grab active:cursor-grabbing mb-2 transition-shadow
+                                ${snapshot.isDragging ? "shadow-2xl" : "shadow-md"}
+                                ${solved ? "ring-2 ring-success/40" : ""}
+                              `}
+                            >
+                              <div className="flex items-center gap-2">
+                                <span className="text-lg">{block.icon}</span>
+                                <div>
+                                  <div className="text-[10px] uppercase tracking-wider opacity-70">
+                                    {block.type}
+                                  </div>
+                                  <div>{block.label}</div>
+                                </div>
+                                {solved && (
+                                  <CheckCircle2 className="w-4 h-4 ml-auto opacity-80" />
+                                )}
+                              </div>
+                            </motion.div>
+                            {index < placedBlocks.length - 1 && (
+                              <div className="flex justify-center my-1">
+                                <div className="w-0.5 h-4 bg-workspace-foreground/20 rounded" />
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </Draggable>
+                    ))}
+                    {provided.placeholder}
+                  </div>
+                )}
+              </Droppable>
+
+              {/* Success overlay */}
+              <AnimatePresence>
+                {showSuccess && (
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0 }}
+                    className="absolute inset-0 flex items-center justify-center bg-workspace/80 backdrop-blur-sm z-10"
+                  >
+                    <div className="bg-card rounded-2xl p-8 max-w-sm text-center shadow-2xl border border-border">
+                      <motion.div
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        transition={{ type: "spring", delay: 0.2 }}
+                      >
+                        <Trophy className="w-16 h-16 text-accent mx-auto mb-4" />
+                      </motion.div>
+                      <h3 className="font-display text-xl font-bold text-card-foreground mb-2">
+                        Puzzle Solved!
+                      </h3>
+                      <p className="text-sm text-muted-foreground mb-6">
+                        {challenge.successMessage}
+                      </p>
+                      <div className="flex gap-3">
+                        <Button
+                          variant="outline"
+                          onClick={() => setShowSuccess(false)}
+                          className="flex-1"
+                        >
+                          Review
+                        </Button>
+                        {currentChallenge < challenges.length - 1 ? (
+                          <Button
+                            onClick={() => loadChallenge(currentChallenge + 1)}
+                            className="flex-1 bg-primary text-primary-foreground gap-1"
+                          >
+                            Next Puzzle <ArrowRight className="w-4 h-4" />
+                          </Button>
+                        ) : (
+                          <Button
+                            onClick={() => setShowSuccess(false)}
+                            className="flex-1 bg-success text-success-foreground"
+                          >
+                            {allSolved ? "🎉 All Complete!" : "Continue"}
+                          </Button>
+                        )}
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          </DragDropContext>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Playground;
