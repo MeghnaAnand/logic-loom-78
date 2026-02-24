@@ -4,7 +4,7 @@ import { DragDropContext, Droppable, Draggable, DropResult } from "@hello-pangea
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, ArrowRight, Lightbulb, RotateCcw, CheckCircle2, Trophy } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { challenges, type Block } from "@/data/challenges";
+import { pickSessionChallenges, type Block, type Challenge } from "@/data/challenges";
 import JumpingCharacter from "@/components/puzzle/JumpingCharacter";
 import PuzzleTimer from "@/components/puzzle/PuzzleTimer";
 import WrongAnswerOverlay from "@/components/puzzle/WrongAnswerOverlay";
