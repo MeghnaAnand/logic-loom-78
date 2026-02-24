@@ -94,6 +94,7 @@ const Playground = () => {
     if (isCorrect) {
       setSolved(true);
       setShowSuccess(true);
+      setShowWrong(false);
       setTimerRunning(false);
       setCharacterState("celebrating");
       setSolvedChallenges((prev) => new Set([...prev, currentChallenge]));
