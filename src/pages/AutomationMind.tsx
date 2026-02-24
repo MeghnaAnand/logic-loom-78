@@ -32,6 +32,10 @@ const AutomationMind = () => {
   const [codeView, setCodeView] = useState(false);
   const levelStartRef = useRef<number>(Date.now());
 
+  useEffect(() => {
+    localStorage.setItem("automationmind-completed", JSON.stringify([...completedLevels]));
+  }, [completedLevels]);
+
   const level = LEVELS[currentLevelIndex];
 
   const resetState = useCallback(() => {
