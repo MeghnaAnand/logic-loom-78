@@ -211,6 +211,7 @@ const Playground = () => {
     if (isCorrect) {
       setSolved(true);
       setShowSuccess(true);
+      playDing();
       setShowWrong(false);
       setTimerRunning(false);
       setCharacterState("celebrating");
