@@ -110,6 +110,7 @@ export const LEVELS: LevelConfig[] = [
     newConcept: "Decision Making",
     learningGoal: "Conditional logic (IF/ELSE)",
     estimatedTime: "~5 minutes",
+    averageTime: "5:30",
     layout: "branch",
     challenge:
       "Your shop gets orders of all sizes. Large orders over $500 need manager approval before shipping. Smaller orders can be approved automatically.",
