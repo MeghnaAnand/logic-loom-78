@@ -34,6 +34,7 @@ const InstructionPanel = ({
   onTest,
   onReset,
   onNextLevel,
+  onReplay,
   hasMinBlocks,
   isFullyConnected,
   isBusy,
