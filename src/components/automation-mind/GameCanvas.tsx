@@ -589,6 +589,15 @@ const GameCanvas = ({
 
   return (
     <div className="flex-1 bg-am-canvas workspace-grid flex flex-col items-center justify-center p-8 relative overflow-auto">
+      {/* Email Preview Window for Level 3 */}
+      {level.layout === "chain" && level.dataPreview && (
+        <EmailPreviewWindow
+          level={level}
+          currentTestItem={currentTestItem}
+          currentExtractionStep={currentExtractionStep}
+          testingPhase={testingPhase}
+        />
+      )}
       {/* Connecting tooltip banner */}
       <AnimatePresence>
         {connectingFrom && (
