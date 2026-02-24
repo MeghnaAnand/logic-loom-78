@@ -289,6 +289,7 @@ const Playground = () => {
           <Button variant="ghost" size="sm" onClick={() => navigate(user ? "/history" : "/auth")} className="gap-1 text-xs">
             <History className="w-3.5 h-3.5" /> {user ? "History" : "Sign In"}
           </Button>
+        </div>
         <div className="flex items-center gap-3">
           <Button
             variant="outline"
