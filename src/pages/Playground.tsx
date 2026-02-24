@@ -157,6 +157,7 @@ const Playground = () => {
 
   const fetchLearningTips = useCallback(async (allStats: { attempts: number; time: number }[]) => {
     setIsLoadingTips(true);
+    let tipsData: typeof learningTips = null;
     try {
       const payload = allStats.map((s, i) => ({
         level: i + 1,
@@ -171,13 +172,34 @@ const Playground = () => {
       if (error) throw error;
       if (data?.summary && data?.tips) {
         setLearningTips(data);
+        tipsData = data;
       }
     } catch (e) {
       console.error("Learning tips failed:", e);
     } finally {
       setIsLoadingTips(false);
     }
-  }, [sessionChallenges]);
+
+    // Save session to history if user is logged in
+    if (user) {
+      try {
+        const levelStatsPayload = allStats.map((s, i) => ({
+          level: i + 1,
+          difficulty: sessionChallenges[i]?.difficulty ?? "beginner",
+          attempts: s.attempts,
+          time: s.time,
+        }));
+        await supabase.from("session_history").insert({
+          user_id: user.id,
+          level_stats: levelStatsPayload,
+          ai_learning_tips: tipsData,
+        });
+        toast.success("Session saved to your history!");
+      } catch (e) {
+        console.error("Failed to save session:", e);
+      }
+    }
+  }, [sessionChallenges, user]);
 
   const checkSolution = useCallback((placed: Block[]) => {
     const correct = challenge.correctOrder;
