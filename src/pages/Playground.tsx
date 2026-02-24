@@ -153,6 +153,30 @@ const Playground = () => {
     }, 1000);
   }, []);
 
+  const fetchLearningTips = useCallback(async (allStats: { attempts: number; time: number }[]) => {
+    setIsLoadingTips(true);
+    try {
+      const payload = allStats.map((s, i) => ({
+        level: i + 1,
+        difficulty: sessionChallenges[i]?.difficulty ?? "beginner",
+        attempts: s.attempts,
+        timeSec: s.time,
+        solved: true,
+      }));
+      const { data, error } = await supabase.functions.invoke("learning-tips", {
+        body: { stats: payload },
+      });
+      if (error) throw error;
+      if (data?.summary && data?.tips) {
+        setLearningTips(data);
+      }
+    } catch (e) {
+      console.error("Learning tips failed:", e);
+    } finally {
+      setIsLoadingTips(false);
+    }
+  }, [sessionChallenges]);
+
   const checkSolution = useCallback((placed: Block[]) => {
     const correct = challenge.correctOrder;
     if (placed.length !== correct.length) return;
@@ -164,11 +188,23 @@ const Playground = () => {
       setShowWrong(false);
       setTimerRunning(false);
       setCharacterState("celebrating");
-      setSolvedChallenges((prev) => new Set([...prev, currentChallenge]));
+
+      // Record stats for this level
+      const updatedStats = [...levelStats];
+      updatedStats[currentChallenge] = { attempts, time: finalTime };
+      setLevelStats(updatedStats);
+
+      const newSolved = new Set([...solvedChallenges, currentChallenge]);
+      setSolvedChallenges(newSolved);
+
+      // If all levels done, fetch AI tips
+      if (newSolved.size === sessionChallenges.length) {
+        fetchLearningTips(updatedStats);
+      }
     } else {
       triggerWrongAnswer();
     }
-  }, [challenge, currentChallenge, triggerWrongAnswer]);
+  }, [challenge, currentChallenge, triggerWrongAnswer, levelStats, attempts, finalTime, solvedChallenges, sessionChallenges, fetchLearningTips]);
 
   const onDragEnd = (result: DropResult) => {
     if (!result.destination) return;
