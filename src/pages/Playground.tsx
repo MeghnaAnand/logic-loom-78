@@ -1,10 +1,12 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { DragDropContext, Droppable, Draggable, DropResult } from "@hello-pangea/dnd";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, ArrowRight, Lightbulb, RotateCcw, CheckCircle2, Trophy } from "lucide-react";
+import { ArrowLeft, ArrowRight, Lightbulb, RotateCcw, CheckCircle2, Trophy, Sparkles, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { pickSessionChallenges, type Block, type Challenge } from "@/data/challenges";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 import JumpingCharacter from "@/components/puzzle/JumpingCharacter";
 import PuzzleTimer from "@/components/puzzle/PuzzleTimer";
 import WrongAnswerOverlay from "@/components/puzzle/WrongAnswerOverlay";
@@ -43,8 +45,51 @@ const Playground = () => {
   const [timerRunning, setTimerRunning] = useState(false);
   const [finalTime, setFinalTime] = useState(0);
   const [attempts, setAttempts] = useState(0);
+  const [isLoadingAI, setIsLoadingAI] = useState(false);
 
   const challenge = sessionChallenges[currentChallenge];
+
+  const applyNewChallenges = useCallback((newChallenges: Challenge[]) => {
+    setSessionChallenges(newChallenges);
+    setCurrentChallenge(0);
+    setAvailableBlocks([...newChallenges[0].availableBlocks]);
+    setPlacedBlocks([]);
+    setShowHint(false);
+    setSolved(false);
+    setShowSuccess(false);
+    setSolvedChallenges(new Set());
+    setCharacterState("idle");
+    setShowWrong(false);
+    setTimerResetKey((k) => k + 1);
+    setTimerRunning(false);
+    setAttempts(0);
+  }, []);
+
+  const fetchAIChallenges = useCallback(async () => {
+    setIsLoadingAI(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("generate-challenges");
+      if (error) throw error;
+      const challenges = data?.challenges;
+      if (!challenges || !Array.isArray(challenges) || challenges.length === 0) {
+        throw new Error("Invalid AI response");
+      }
+      // Validate structure
+      for (const c of challenges) {
+        if (!c.id || !c.availableBlocks || !c.correctOrder || c.availableBlocks.length === 0) {
+          throw new Error("Malformed challenge from AI");
+        }
+      }
+      applyNewChallenges(challenges);
+      toast.success("🤖 Fresh AI-generated puzzles loaded!");
+    } catch (e) {
+      console.error("AI challenge generation failed:", e);
+      toast.error("AI generation failed — loading random puzzles instead");
+      applyNewChallenges(pickSessionChallenges());
+    } finally {
+      setIsLoadingAI(false);
+    }
+  }, [applyNewChallenges]);
 
   const resetPuzzle = () => {
     setAvailableBlocks([...challenge.availableBlocks]);
@@ -147,20 +192,7 @@ const Playground = () => {
   const allSolved = solvedChallenges.size === sessionChallenges.length;
 
   const startNewSession = () => {
-    const newChallenges = pickSessionChallenges();
-    setSessionChallenges(newChallenges);
-    setCurrentChallenge(0);
-    setAvailableBlocks([...newChallenges[0].availableBlocks]);
-    setPlacedBlocks([]);
-    setShowHint(false);
-    setSolved(false);
-    setShowSuccess(false);
-    setSolvedChallenges(new Set());
-    setCharacterState("idle");
-    setShowWrong(false);
-    setTimerResetKey((k) => k + 1);
-    setTimerRunning(false);
-    setAttempts(0);
+    applyNewChallenges(pickSessionChallenges());
   };
 
   return (
@@ -174,7 +206,21 @@ const Playground = () => {
           <div className="h-5 w-px bg-border" />
           <h1 className="font-display font-bold text-foreground">AutoFlow Puzzles</h1>
         </div>
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={fetchAIChallenges}
+            disabled={isLoadingAI}
+            className="gap-1.5 text-xs"
+          >
+            {isLoadingAI ? (
+              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+            ) : (
+              <Sparkles className="w-3.5 h-3.5" />
+            )}
+            {isLoadingAI ? "Generating..." : "AI Puzzles"}
+          </Button>
           <PuzzleTimer
             isRunning={timerRunning}
             onTimeUpdate={setFinalTime}
@@ -297,6 +343,17 @@ const Playground = () => {
 
             {/* Drop workspace - right side */}
             <div className="flex-1 bg-workspace workspace-grid p-6 relative overflow-auto">
+              {/* AI loading overlay */}
+              {isLoadingAI && (
+                <div className="absolute inset-0 flex items-center justify-center bg-workspace/80 backdrop-blur-sm z-20">
+                  <div className="bg-card rounded-2xl p-8 text-center shadow-2xl border border-border">
+                    <Loader2 className="w-10 h-10 animate-spin text-primary mx-auto mb-3" />
+                    <p className="font-display font-bold text-card-foreground">Generating AI Puzzles...</p>
+                    <p className="text-xs text-muted-foreground mt-1">Creating unique scenarios just for you</p>
+                  </div>
+                </div>
+              )}
+
               {/* Wrong answer overlay */}
               <WrongAnswerOverlay
                 show={showWrong}
@@ -420,12 +477,23 @@ const Playground = () => {
                             Next Puzzle <ArrowRight className="w-4 h-4" />
                           </Button>
                         ) : (
-                          <Button
-                            onClick={startNewSession}
-                            className="flex-1 bg-success text-success-foreground gap-1"
-                          >
-                            🔀 New Puzzles
-                          </Button>
+                          <div className="flex flex-1 gap-2">
+                            <Button
+                              onClick={startNewSession}
+                              variant="outline"
+                              className="flex-1 gap-1"
+                            >
+                              🔀 Random
+                            </Button>
+                            <Button
+                              onClick={() => { setShowSuccess(false); fetchAIChallenges(); }}
+                              disabled={isLoadingAI}
+                              className="flex-1 bg-success text-success-foreground gap-1"
+                            >
+                              {isLoadingAI ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
+                              AI Puzzles
+                            </Button>
+                          </div>
                         )}
                       </div>
                     </div>
