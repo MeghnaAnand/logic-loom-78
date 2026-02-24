@@ -268,6 +268,7 @@ const AutomationMind = () => {
           onTest={runTest}
           onReset={resetState}
           onNextLevel={goToNextLevel}
+          onReplay={level.layout === "chain" ? replayTest : undefined}
           hasMinBlocks={hasMinBlocks}
           isFullyConnected={isFullyConnected}
           isBusy={isBusy}
