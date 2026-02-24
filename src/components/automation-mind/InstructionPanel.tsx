@@ -12,6 +12,7 @@ interface InstructionPanelProps {
   onTest: () => void;
   onReset: () => void;
   onNextLevel: () => void;
+  onReplay?: () => void;
   hasMinBlocks: boolean;
   isFullyConnected: boolean;
   isBusy: boolean;
