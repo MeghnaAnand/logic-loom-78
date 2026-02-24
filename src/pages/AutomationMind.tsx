@@ -241,7 +241,7 @@ const AutomationMind = () => {
                   resetState();
                 }
               }}
-              disabled={i > 0 && !completedLevels.has(i - 1) && i !== currentLevelIndex}
+              disabled={false}
               className={`
                 w-7 h-7 rounded-lg text-xs font-bold font-display transition-all
                 ${currentLevelIndex === i
