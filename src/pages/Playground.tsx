@@ -8,6 +8,7 @@ import { pickSessionChallenges, type Block, type Challenge } from "@/data/challe
 import { LANGUAGE_META, type CodeLanguage, getFullCode } from "@/data/puzzle-code-translations";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { useAuth } from "@/hooks/useAuth";
 import JumpingCharacter from "@/components/puzzle/JumpingCharacter";
 import PuzzleTimer from "@/components/puzzle/PuzzleTimer";
 import WrongAnswerOverlay from "@/components/puzzle/WrongAnswerOverlay";
