@@ -343,6 +343,17 @@ const Playground = () => {
 
             {/* Drop workspace - right side */}
             <div className="flex-1 bg-workspace workspace-grid p-6 relative overflow-auto">
+              {/* AI loading overlay */}
+              {isLoadingAI && (
+                <div className="absolute inset-0 flex items-center justify-center bg-workspace/80 backdrop-blur-sm z-20">
+                  <div className="bg-card rounded-2xl p-8 text-center shadow-2xl border border-border">
+                    <Loader2 className="w-10 h-10 animate-spin text-primary mx-auto mb-3" />
+                    <p className="font-display font-bold text-card-foreground">Generating AI Puzzles...</p>
+                    <p className="text-xs text-muted-foreground mt-1">Creating unique scenarios just for you</p>
+                  </div>
+                </div>
+              )}
+
               {/* Wrong answer overlay */}
               <WrongAnswerOverlay
                 show={showWrong}
