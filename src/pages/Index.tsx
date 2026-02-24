@@ -1,7 +1,8 @@
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ArrowRight, Zap, Puzzle, Sparkles } from "lucide-react";
+import { ArrowRight, Zap, Puzzle, Sparkles, History } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/hooks/useAuth";
 
 const floatingBlocks = [
   { label: "📬 Email Received", color: "bg-block-trigger", delay: 0 },
