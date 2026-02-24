@@ -278,7 +278,7 @@ const Playground = () => {
             </div>
 
             {/* Drop workspace - right side */}
-            <div className="flex-1 bg-workspace workspace-grid p-6 relative overflow-hidden">
+            <div className="flex-1 bg-workspace workspace-grid p-6 relative overflow-auto">
               {/* Wrong answer overlay */}
               <WrongAnswerOverlay
                 show={showWrong}
