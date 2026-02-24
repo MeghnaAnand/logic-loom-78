@@ -8,10 +8,11 @@ interface BlockCodeSnippetProps {
   language: CodeLanguage;
   index: number;
   show: boolean;
+  level?: number;
 }
 
-const BlockCodeSnippet = memo(({ block, language, index, show }: BlockCodeSnippetProps) => {
-  const code = getBlockCode(block, language, index);
+const BlockCodeSnippet = memo(({ block, language, index, show, level = 1 }: BlockCodeSnippetProps) => {
+  const code = getBlockCode(block, language, index, level);
 
   return (
     <AnimatePresence>
