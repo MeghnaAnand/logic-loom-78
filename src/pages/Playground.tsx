@@ -32,6 +32,7 @@ const WRONG_MESSAGES = [
 
 const Playground = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [sessionChallenges, setSessionChallenges] = useState<Challenge[]>(() => pickSessionChallenges());
   const [currentChallenge, setCurrentChallenge] = useState(0);
   const [availableBlocks, setAvailableBlocks] = useState<Block[]>(sessionChallenges[0].availableBlocks);
