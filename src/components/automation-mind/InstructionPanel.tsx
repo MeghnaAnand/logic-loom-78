@@ -456,7 +456,24 @@ const InstructionPanel = ({
         </motion.div>
       )}
 
-      {/* Action buttons */}
+      {/* Bonus challenge after success */}
+      {testingPhase === "success" && level.bonusChallenge && (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 1.8 }}
+          className="bg-primary/5 border border-primary/20 rounded-xl p-3 text-xs text-foreground leading-relaxed"
+        >
+          <div className="flex items-start gap-1.5">
+            <Sparkles className="w-3.5 h-3.5 shrink-0 mt-0.5 text-primary" />
+            <div>
+              <span className="font-display font-bold text-primary">Bonus Challenge:</span>{" "}
+              <span className="text-muted-foreground">{level.bonusChallenge}</span>
+            </div>
+          </div>
+        </motion.div>
+      )}
+
       <div className="mt-auto flex flex-col gap-2">
         {testingPhase === "success" ? (
           <>
