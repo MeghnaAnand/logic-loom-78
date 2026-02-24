@@ -45,6 +45,8 @@ const InstructionPanel = ({
   totalLevels,
   completedLevels,
   timeTaken,
+  codeView,
+  onToggleCodeView,
 }: InstructionPanelProps) => {
   const [dataPreviewOpen, setDataPreviewOpen] = useState(false);
   const testData = level.testData;
