@@ -272,6 +272,11 @@ const AutomationMind = () => {
             </button>
           ))}
         </div>
+        {completedLevels.size > 0 && (
+          <Button variant="ghost" size="sm" onClick={resetProgress} className="ml-auto gap-1 text-muted-foreground hover:text-destructive text-xs">
+            <RotateCcw className="w-3.5 h-3.5" /> Reset Progress
+          </Button>
+        )}
       </header>
 
       <div className="flex-1 flex min-h-0">
