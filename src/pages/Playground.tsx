@@ -2,12 +2,13 @@ import { useState, useCallback, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { DragDropContext, Droppable, Draggable, DropResult } from "@hello-pangea/dnd";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, ArrowRight, Lightbulb, RotateCcw, CheckCircle2, Trophy, Sparkles, Loader2, Code2, Brain } from "lucide-react";
+import { ArrowLeft, ArrowRight, Lightbulb, RotateCcw, CheckCircle2, Trophy, Sparkles, Loader2, Code2, Brain, History } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { pickSessionChallenges, type Block, type Challenge } from "@/data/challenges";
 import { LANGUAGE_META, type CodeLanguage, getFullCode } from "@/data/puzzle-code-translations";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { useAuth } from "@/hooks/useAuth";
 import JumpingCharacter from "@/components/puzzle/JumpingCharacter";
 import PuzzleTimer from "@/components/puzzle/PuzzleTimer";
 import WrongAnswerOverlay from "@/components/puzzle/WrongAnswerOverlay";
@@ -31,6 +32,7 @@ const WRONG_MESSAGES = [
 
 const Playground = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [sessionChallenges, setSessionChallenges] = useState<Challenge[]>(() => pickSessionChallenges());
   const [currentChallenge, setCurrentChallenge] = useState(0);
   const [availableBlocks, setAvailableBlocks] = useState<Block[]>(sessionChallenges[0].availableBlocks);
@@ -155,6 +157,7 @@ const Playground = () => {
 
   const fetchLearningTips = useCallback(async (allStats: { attempts: number; time: number }[]) => {
     setIsLoadingTips(true);
+    let tipsData: typeof learningTips = null;
     try {
       const payload = allStats.map((s, i) => ({
         level: i + 1,
@@ -169,13 +172,34 @@ const Playground = () => {
       if (error) throw error;
       if (data?.summary && data?.tips) {
         setLearningTips(data);
+        tipsData = data;
       }
     } catch (e) {
       console.error("Learning tips failed:", e);
     } finally {
       setIsLoadingTips(false);
     }
-  }, [sessionChallenges]);
+
+    // Save session to history if user is logged in
+    if (user) {
+      try {
+        const levelStatsPayload = allStats.map((s, i) => ({
+          level: i + 1,
+          difficulty: sessionChallenges[i]?.difficulty ?? "beginner",
+          attempts: s.attempts,
+          time: s.time,
+        }));
+        await supabase.from("session_history").insert({
+          user_id: user.id,
+          level_stats: levelStatsPayload,
+          ai_learning_tips: tipsData,
+        });
+        toast.success("Session saved to your history!");
+      } catch (e) {
+        console.error("Failed to save session:", e);
+      }
+    }
+  }, [sessionChallenges, user]);
 
   const checkSolution = useCallback((placed: Block[]) => {
     const correct = challenge.correctOrder;
@@ -262,6 +286,9 @@ const Playground = () => {
           </Button>
           <div className="h-5 w-px bg-border" />
           <h1 className="font-display font-bold text-foreground">AutoFlow Puzzles</h1>
+          <Button variant="ghost" size="sm" onClick={() => navigate(user ? "/history" : "/auth")} className="gap-1 text-xs">
+            <History className="w-3.5 h-3.5" /> {user ? "History" : "Sign In"}
+          </Button>
         </div>
         <div className="flex items-center gap-3">
           <Button

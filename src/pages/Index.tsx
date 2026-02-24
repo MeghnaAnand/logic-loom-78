@@ -1,7 +1,8 @@
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ArrowRight, Zap, Puzzle, Sparkles } from "lucide-react";
+import { ArrowRight, Zap, Puzzle, Sparkles, History } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/hooks/useAuth";
 
 const floatingBlocks = [
   { label: "📬 Email Received", color: "bg-block-trigger", delay: 0 },
@@ -30,9 +31,22 @@ const features = [
 
 const Index = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   return (
     <div className="min-h-screen bg-background overflow-hidden">
+      {/* Top nav */}
+      <nav className="absolute top-0 right-0 p-4 z-20">
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => navigate(user ? "/history" : "/auth")}
+          className="gap-1.5 font-display"
+        >
+          <History className="w-4 h-4" />
+          {user ? "My History" : "Sign In"}
+        </Button>
+      </nav>
       {/* Hero Section */}
       <section className="relative min-h-screen flex items-center justify-center px-4">
         {/* Background decoration */}
