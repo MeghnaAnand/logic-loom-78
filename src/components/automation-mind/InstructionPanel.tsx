@@ -80,8 +80,8 @@ const InstructionPanel = ({
 
         {/* New concept badge */}
         {level.newConcept && (
-          <div className="inline-flex items-center gap-1.5 bg-am-condition/15 text-am-condition-foreground text-xs font-bold px-2.5 py-1 rounded-lg font-display mb-2">
-            <Sparkles className="w-3 h-3" /> New Concept: {level.newConcept}
+          <div className="inline-flex items-center gap-1.5 bg-am-condition/15 text-foreground text-xs font-bold px-2.5 py-1 rounded-lg font-display mb-2">
+            <Sparkles className="w-3 h-3 text-am-condition" /> New Concept: {level.newConcept}
           </div>
         )}
 
