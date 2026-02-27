@@ -10,6 +10,7 @@ import AutomationMind from "./pages/AutomationMind";
 import Auth from "./pages/Auth";
 import History from "./pages/History";
 import ChallengeMode from "./pages/ChallengeMode";
+import Glossary from "./pages/Glossary";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
