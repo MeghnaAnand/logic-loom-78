@@ -9,7 +9,8 @@ import { LANGUAGE_META, type CodeLanguage, getFullCode } from "@/data/puzzle-cod
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
-import { playDing, playError, playWhoosh } from "@/lib/sounds";
+import { playDing, playError, playWhoosh, playCelebration } from "@/lib/sounds";
+import confetti from "canvas-confetti";
 import JumpingCharacter from "@/components/puzzle/JumpingCharacter";
 import PuzzleTimer from "@/components/puzzle/PuzzleTimer";
 import WrongAnswerOverlay from "@/components/puzzle/WrongAnswerOverlay";

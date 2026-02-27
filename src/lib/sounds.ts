@@ -38,6 +38,25 @@ export function playDing() {
   osc.stop(c.currentTime + 0.4);
 }
 
+export function playCelebration() {
+  const c = getCtx();
+  if (!c) return;
+  // Play a triumphant 3-note fanfare
+  const notes = [523.25, 659.25, 783.99]; // C5, E5, G5
+  notes.forEach((freq, i) => {
+    const osc = c.createOscillator();
+    const gain = c.createGain();
+    osc.type = "sine";
+    const startTime = c.currentTime + i * 0.15;
+    osc.frequency.setValueAtTime(freq, startTime);
+    gain.gain.setValueAtTime(0.15, startTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, startTime + 0.5);
+    osc.connect(gain).connect(c.destination);
+    osc.start(startTime);
+    osc.stop(startTime + 0.5);
+  });
+}
+
 export function playError() {
   const c = getCtx();
   if (!c) return;
