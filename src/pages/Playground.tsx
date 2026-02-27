@@ -684,6 +684,24 @@ const Playground = () => {
                 )}
               </Droppable>
 
+              {/* Pre-puzzle micro-lesson */}
+              <AnimatePresence>
+                {showMicroLesson && !solved && (() => {
+                  const blockTypes = challenge.availableBlocks.map(b => b.type);
+                  const { primaryConcept, secondaryConcepts } = getChallengeLesson(blockTypes);
+                  return (
+                    <MicroLessonCard
+                      lessonNumber={currentChallenge + 1}
+                      totalLessons={sessionChallenges.length}
+                      primaryConcept={primaryConcept}
+                      secondaryConcepts={secondaryConcepts}
+                      challengeTitle={challenge.title}
+                      onReady={() => setShowMicroLesson(false)}
+                    />
+                  );
+                })()}
+              </AnimatePresence>
+
               {/* Success overlay */}
               <AnimatePresence>
                 {showSuccess && (
