@@ -98,16 +98,16 @@ const Index = () => {
             transition={{ duration: 0.7 }}
             className="text-center lg:text-left"
           >
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-sm font-medium mb-6">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-sm font-medium mb-4">
               <Sparkles className="w-4 h-4" />
               No experience needed
             </div>
-            <h1 className="font-display text-5xl lg:text-6xl font-bold leading-tight mb-6 text-foreground">
+            <h1 className="font-display text-5xl lg:text-6xl font-bold leading-tight mb-4 text-foreground">
               Learn automation
               <br />
               <span className="text-primary">by solving puzzles</span>
             </h1>
-            <p className="text-lg text-muted-foreground mb-8 max-w-lg leading-relaxed mx-auto lg:mx-0">
+            <p className="text-lg text-muted-foreground mb-6 max-w-lg leading-relaxed mx-auto lg:mx-0">
               Drag blocks. Solve real problems. Build skills employers actually want — 
               no manuals, no code, no boring tutorials. Just puzzles that click.
             </p>
