@@ -10,6 +10,7 @@ import AutomationMind from "./pages/AutomationMind";
 import Auth from "./pages/Auth";
 import History from "./pages/History";
 import ChallengeMode from "./pages/ChallengeMode";
+import Glossary from "./pages/Glossary";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -28,6 +29,7 @@ const App = () => (
             <Route path="/auth" element={<Auth />} />
             <Route path="/history" element={<History />} />
             <Route path="/challenge" element={<ChallengeMode />} />
+            <Route path="/glossary" element={<Glossary />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

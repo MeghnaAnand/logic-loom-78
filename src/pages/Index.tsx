@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ArrowRight, Zap, Puzzle, Sparkles, History } from "lucide-react";
+import { ArrowRight, Zap, Puzzle, Sparkles, History, BookOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 
@@ -40,15 +40,26 @@ const Index = () => {
         <span className="font-display text-xl font-bold text-foreground tracking-tight">
           AutomationMind
         </span>
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => navigate(user ? "/history" : "/auth")}
-          className="gap-1.5 font-display"
-        >
-          <History className="w-4 h-4" />
-          {user ? "My History" : "Sign In"}
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => navigate("/glossary")}
+            className="gap-1.5 font-display"
+          >
+            <BookOpen className="w-4 h-4" />
+            Glossary
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => navigate(user ? "/history" : "/auth")}
+            className="gap-1.5 font-display"
+          >
+            <History className="w-4 h-4" />
+            {user ? "My History" : "Sign In"}
+          </Button>
+        </div>
       </nav>
       {/* Hero Section */}
       <section className="relative min-h-screen flex items-center justify-center px-4">
