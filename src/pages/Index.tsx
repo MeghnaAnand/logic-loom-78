@@ -188,7 +188,7 @@ const Index = () => {
             className="text-center mb-10"
           >
             <h2 className="font-display text-3xl lg:text-4xl font-bold mb-4 text-foreground">
-              Three steps. Zero confusion.
+              How it works
             </h2>
             <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
               Each puzzle teaches you a real automation concept used by tools like Zapier, Make, and Power Automate.
