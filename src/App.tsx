@@ -29,8 +29,7 @@ const App = () => (
             <Route path="/automation-mind" element={<ProtectedRoute><AutomationMind /></ProtectedRoute>} />
             <Route path="/history" element={<ProtectedRoute><History /></ProtectedRoute>} />
             <Route path="/auth" element={<Auth />} />
-            <Route path="/history" element={<History />} />
-            <Route path="/challenge" element={<ChallengeMode />} />
+            <Route path="/challenge" element={<ProtectedRoute><ChallengeMode /></ProtectedRoute>} />
             <Route path="/glossary" element={<Glossary />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
