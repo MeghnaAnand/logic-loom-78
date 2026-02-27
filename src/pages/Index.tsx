@@ -188,7 +188,7 @@ const Index = () => {
             className="text-center mb-10"
           >
             <h2 className="font-display text-3xl lg:text-4xl font-bold mb-4 text-foreground">
-              Three steps. Zero confusion.
+              How it works
             </h2>
             <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
               Each puzzle teaches you a real automation concept used by tools like Zapier, Make, and Power Automate.
@@ -229,7 +229,7 @@ const Index = () => {
               Ready to think like an automator?
             </h2>
             <p className="text-workspace-foreground/70 mb-8">
-              3 puzzles. 10 minutes. A whole new skill.
+              5 puzzles. 15 minutes. A whole new skill.
             </p>
             <Button
               size="lg"
