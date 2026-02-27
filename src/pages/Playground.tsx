@@ -15,6 +15,9 @@ import JumpingCharacter from "@/components/puzzle/JumpingCharacter";
 import PuzzleTimer from "@/components/puzzle/PuzzleTimer";
 import WrongAnswerOverlay from "@/components/puzzle/WrongAnswerOverlay";
 import BlockCodeSnippet from "@/components/puzzle/BlockCodeSnippet";
+import MicroLessonCard from "@/components/puzzle/MicroLessonCard";
+import PostPuzzleBreakdown from "@/components/puzzle/PostPuzzleBreakdown";
+import { getChallengeLesson, getBreakdownSteps } from "@/data/micro-lessons";
 
 const blockColorMap: Record<string, string> = {
   trigger: "bg-block-trigger",
@@ -56,6 +59,7 @@ const Playground = () => {
   const [showCode, setShowCode] = useState(false);
   const [isFirstPuzzleSolve, setIsFirstPuzzleSolve] = useState(false);
   const hasEverSolved = useRef(false);
+  const [showMicroLesson, setShowMicroLesson] = useState(true); // show before first puzzle
 
   // Struggle tracking per level
   const [levelStats, setLevelStats] = useState<{ attempts: number; time: number }[]>(
@@ -87,6 +91,7 @@ const Playground = () => {
     setAttempts(0);
     setLevelStats(newChallenges.map(() => ({ attempts: 0, time: 0 })));
     setLearningTips(null);
+    setShowMicroLesson(true);
   }, []);
 
   const fetchAIChallenges = useCallback(async () => {
@@ -144,6 +149,9 @@ const Playground = () => {
     setTimerResetKey((k) => k + 1);
     setTimerRunning(false);
     setAttempts(0);
+    if (!solvedChallenges.has(index)) {
+      setShowMicroLesson(true);
+    }
   };
 
   const triggerWrongAnswer = useCallback(() => {
@@ -676,6 +684,24 @@ const Playground = () => {
                 )}
               </Droppable>
 
+              {/* Pre-puzzle micro-lesson */}
+              <AnimatePresence>
+                {showMicroLesson && !solved && (() => {
+                  const blockTypes = challenge.availableBlocks.map(b => b.type);
+                  const { primaryConcept, secondaryConcepts } = getChallengeLesson(blockTypes);
+                  return (
+                    <MicroLessonCard
+                      lessonNumber={currentChallenge + 1}
+                      totalLessons={sessionChallenges.length}
+                      primaryConcept={primaryConcept}
+                      secondaryConcepts={secondaryConcepts}
+                      challengeTitle={challenge.title}
+                      onReady={() => setShowMicroLesson(false)}
+                    />
+                  );
+                })()}
+              </AnimatePresence>
+
               {/* Success overlay */}
               <AnimatePresence>
                 {showSuccess && (
@@ -713,6 +739,15 @@ const Playground = () => {
                         <span>⏱ {Math.floor(finalTime / 60)}:{String(finalTime % 60).padStart(2, "0")}</span>
                         <span>🔄 {attempts} wrong {attempts === 1 ? "attempt" : "attempts"}</span>
                       </div>
+
+                      {/* Post-puzzle breakdown */}
+                      <PostPuzzleBreakdown
+                        steps={getBreakdownSteps(
+                          challenge.correctOrder.map(id =>
+                            challenge.availableBlocks.find(b => b.id === id)!
+                          )
+                        )}
+                      />
 
                       {/* AI Learning Tips */}
                       {allSolved && (isLoadingTips || learningTips) && (
