@@ -255,9 +255,23 @@ const Playground = () => {
       const newSolved = new Set([...solvedChallenges, currentChallenge]);
       setSolvedChallenges(newSolved);
 
-      // If all levels done, fetch AI tips
+      // If all levels done — MASSIVE FINALE
       if (newSolved.size === sessionChallenges.length) {
         fetchLearningTips(updatedStats);
+        playCelebration();
+        // Rapid-fire confetti barrage
+        const duration = 2000;
+        const end = Date.now() + duration;
+        const interval = setInterval(() => {
+          if (Date.now() > end) { clearInterval(interval); return; }
+          confetti({
+            particleCount: 30,
+            spread: 120,
+            startVelocity: 35,
+            origin: { x: Math.random(), y: Math.random() * 0.4 },
+            colors: ['#FFD700', '#FF6B6B', '#4ECDC4', '#45B7D1', '#96E6A1', '#FF69B4', '#FFA500'],
+          });
+        }, 100);
       }
     } else {
       triggerWrongAnswer();
