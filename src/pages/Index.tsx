@@ -195,7 +195,7 @@ const Index = () => {
             </p>
           </motion.div>
 
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid md:grid-cols-3 gap-6">
             {features.map((f, i) => (
               <motion.div
                 key={f.title}
