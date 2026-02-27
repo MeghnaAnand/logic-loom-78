@@ -740,6 +740,15 @@ const Playground = () => {
                         <span>🔄 {attempts} wrong {attempts === 1 ? "attempt" : "attempts"}</span>
                       </div>
 
+                      {/* Post-puzzle breakdown */}
+                      <PostPuzzleBreakdown
+                        steps={getBreakdownSteps(
+                          challenge.correctOrder.map(id =>
+                            challenge.availableBlocks.find(b => b.id === id)!
+                          )
+                        )}
+                      />
+
                       {/* AI Learning Tips */}
                       {allSolved && (isLoadingTips || learningTips) && (
                         <div className="mb-4 text-left">
