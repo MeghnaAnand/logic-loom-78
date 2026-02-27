@@ -14,18 +14,18 @@ const floatingBlocks = [
 const features = [
   {
     icon: <Puzzle className="w-6 h-6" />,
-    title: "Drag & Drop Blocks",
-    description: "No code, no jargon. Just drag visual blocks into the right order to solve real automation puzzles.",
+    title: "Drag & Drop Puzzles",
+    description: "Arrange visual blocks in the right order to solve real automation scenarios — from email sorting to sales reports.",
   },
   {
     icon: <Zap className="w-6 h-6" />,
-    title: "Real-World Problems",
-    description: "Automate job applications, sort emails, build reports — skills that actually get you hired.",
+    title: "Real-World Scenarios",
+    description: "Practice with tasks professionals automate daily using Zapier, Make, and Power Automate. Learn concepts that transfer to any tool.",
   },
   {
     icon: <Sparkles className="w-6 h-6" />,
-    title: "Instant Feedback",
-    description: "See your logic work immediately. No waiting, no guessing. Build confidence with every puzzle solved.",
+    title: "AI-Powered Learning",
+    description: "Get personalized feedback, AI-generated challenges, and a learning path tailored to how you solve each puzzle.",
   },
 ];
 
