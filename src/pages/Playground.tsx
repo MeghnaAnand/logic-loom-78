@@ -214,10 +214,39 @@ const Playground = () => {
     if (isCorrect) {
       setSolved(true);
       setShowSuccess(true);
-      playDing();
       setShowWrong(false);
       setTimerRunning(false);
       setCharacterState("celebrating");
+
+      // First puzzle ever solved — big celebration!
+      const isFirst = !hasEverSolved.current;
+      if (isFirst) {
+        hasEverSolved.current = true;
+        setIsFirstPuzzleSolve(true);
+        playCelebration();
+        // Fire confetti burst
+        confetti({
+          particleCount: 150,
+          spread: 80,
+          origin: { y: 0.6 },
+          colors: ['#FFD700', '#FF6B6B', '#4ECDC4', '#45B7D1', '#96E6A1'],
+        });
+        setTimeout(() => {
+          confetti({
+            particleCount: 80,
+            spread: 100,
+            origin: { y: 0.5, x: 0.3 },
+          });
+          confetti({
+            particleCount: 80,
+            spread: 100,
+            origin: { y: 0.5, x: 0.7 },
+          });
+        }, 300);
+      } else {
+        setIsFirstPuzzleSolve(false);
+        playDing();
+      }
 
       // Record stats for this level
       const updatedStats = [...levelStats];
