@@ -4,7 +4,7 @@ import { DragDropContext, Droppable, Draggable, DropResult } from "@hello-pangea
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, ArrowRight, Lightbulb, RotateCcw, CheckCircle2, Trophy, Sparkles, Loader2, Code2, Brain, History, Share2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { pickSessionChallenges, type Block, type Challenge } from "@/data/challenges";
+import { pickSessionChallenges, type Block, type Challenge, getBlockIndent } from "@/data/challenges";
 import { LANGUAGE_META, type CodeLanguage, getFullCode } from "@/data/puzzle-code-translations";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
