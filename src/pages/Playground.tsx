@@ -398,7 +398,7 @@ const Playground = () => {
                         : "bg-muted text-muted-foreground hover:bg-muted/80"
                     }
                   `}
-                  title={`Level ${i + 1} — ${c.difficulty}`}
+                  title={`Tier ${c.tier} — ${c.difficulty}`}
                 >
                   {solvedChallenges.has(i) ? "✓" : i + 1}
                 </button>
