@@ -224,7 +224,6 @@ const Playground = () => {
         hasEverSolved.current = true;
         setIsFirstPuzzleSolve(true);
         playCelebration();
-        // Fire confetti burst
         confetti({
           particleCount: 150,
           spread: 80,
@@ -232,20 +231,20 @@ const Playground = () => {
           colors: ['#FFD700', '#FF6B6B', '#4ECDC4', '#45B7D1', '#96E6A1'],
         });
         setTimeout(() => {
-          confetti({
-            particleCount: 80,
-            spread: 100,
-            origin: { y: 0.5, x: 0.3 },
-          });
-          confetti({
-            particleCount: 80,
-            spread: 100,
-            origin: { y: 0.5, x: 0.7 },
-          });
+          confetti({ particleCount: 80, spread: 100, origin: { y: 0.5, x: 0.3 } });
+          confetti({ particleCount: 80, spread: 100, origin: { y: 0.5, x: 0.7 } });
         }, 300);
       } else {
         setIsFirstPuzzleSolve(false);
         playDing();
+        // Subtle confetti for subsequent solves
+        confetti({
+          particleCount: 40,
+          spread: 55,
+          origin: { y: 0.65 },
+          colors: ['#FFD700', '#4ECDC4', '#96E6A1'],
+          gravity: 1.2,
+        });
       }
 
       // Record stats for this level
@@ -256,9 +255,23 @@ const Playground = () => {
       const newSolved = new Set([...solvedChallenges, currentChallenge]);
       setSolvedChallenges(newSolved);
 
-      // If all levels done, fetch AI tips
+      // If all levels done — MASSIVE FINALE
       if (newSolved.size === sessionChallenges.length) {
         fetchLearningTips(updatedStats);
+        playCelebration();
+        // Rapid-fire confetti barrage
+        const duration = 2000;
+        const end = Date.now() + duration;
+        const interval = setInterval(() => {
+          if (Date.now() > end) { clearInterval(interval); return; }
+          confetti({
+            particleCount: 30,
+            spread: 120,
+            startVelocity: 35,
+            origin: { x: Math.random(), y: Math.random() * 0.4 },
+            colors: ['#FFD700', '#FF6B6B', '#4ECDC4', '#45B7D1', '#96E6A1', '#FF69B4', '#FFA500'],
+          });
+        }, 100);
       }
     } else {
       triggerWrongAnswer();
