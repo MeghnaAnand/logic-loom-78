@@ -54,6 +54,8 @@ const Playground = () => {
   const [isLoadingAI, setIsLoadingAI] = useState(false);
   const [selectedLanguage, setSelectedLanguage] = useState<CodeLanguage>("pseudocode");
   const [showCode, setShowCode] = useState(false);
+  const [isFirstPuzzleSolve, setIsFirstPuzzleSolve] = useState(false);
+  const hasEverSolved = useRef(false);
 
   // Struggle tracking per level
   const [levelStats, setLevelStats] = useState<{ attempts: number; time: number }[]>(
