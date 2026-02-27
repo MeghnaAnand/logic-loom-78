@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ArrowRight, Zap, Puzzle, Sparkles, History, BookOpen } from "lucide-react";
+import { ArrowRight, Zap, Puzzle, Sparkles, History, BookOpen, LogIn } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 
@@ -33,6 +33,14 @@ const Index = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
 
+  const handleStartPuzzling = () => {
+    if (user) {
+      navigate("/play");
+    } else {
+      navigate("/auth?redirect=/play");
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background overflow-hidden">
       {/* Top nav */}
@@ -50,17 +58,30 @@ const Index = () => {
             <BookOpen className="w-4 h-4" />
             Glossary
           </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => navigate(user ? "/history" : "/auth")}
-            className="gap-1.5 font-display"
-          >
-            <History className="w-4 h-4" />
-            {user ? "My History" : "Sign In"}
-          </Button>
+          {user ? (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => navigate("/history")}
+              className="gap-1.5 font-display"
+            >
+              <History className="w-4 h-4" />
+              My History
+            </Button>
+          ) : (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => navigate("/auth")}
+              className="gap-1.5 font-display"
+            >
+              <LogIn className="w-4 h-4" />
+              Sign In
+            </Button>
+          )}
         </div>
       </nav>
+
       {/* Hero Section */}
       <section className="relative min-h-screen flex items-center justify-center px-4">
         {/* Background decoration */}
@@ -75,6 +96,7 @@ const Index = () => {
             initial={{ opacity: 0, x: -30 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.7 }}
+            className="text-center lg:text-left"
           >
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-sm font-medium mb-6">
               <Sparkles className="w-4 h-4" />
@@ -85,17 +107,19 @@ const Index = () => {
               <br />
               <span className="text-primary">by solving puzzles</span>
             </h1>
-            <p className="text-lg text-muted-foreground mb-8 max-w-lg leading-relaxed">
+            <p className="text-lg text-muted-foreground mb-8 max-w-lg leading-relaxed mx-auto lg:mx-0">
               Drag blocks. Solve real problems. Build skills employers actually want — 
               no manuals, no code, no boring tutorials. Just puzzles that click.
             </p>
-            <Button
-              size="lg"
-              onClick={() => navigate("/play")}
-              className="bg-primary text-primary-foreground hover:bg-primary/90 glow-primary font-display text-base px-8 gap-2"
-            >
-              Start Puzzling <ArrowRight className="w-4 h-4" />
-            </Button>
+            <div className="flex justify-center lg:justify-start">
+              <Button
+                size="lg"
+                onClick={handleStartPuzzling}
+                className="bg-primary text-primary-foreground hover:bg-primary/90 glow-primary font-display text-base px-8 gap-2"
+              >
+                {user ? "Start Puzzling" : "Sign In & Start Puzzling"} <ArrowRight className="w-4 h-4" />
+              </Button>
+            </div>
           </motion.div>
 
           {/* Right: Floating blocks demo */}
@@ -209,10 +233,10 @@ const Index = () => {
             </p>
             <Button
               size="lg"
-              onClick={() => navigate("/play")}
+              onClick={handleStartPuzzling}
               className="bg-primary text-primary-foreground hover:bg-primary/90 glow-primary font-display text-base px-8 gap-2"
             >
-              Start Your First Puzzle <ArrowRight className="w-4 h-4" />
+              {user ? "Start Your First Puzzle" : "Sign In & Start"} <ArrowRight className="w-4 h-4" />
             </Button>
           </div>
         </motion.div>
