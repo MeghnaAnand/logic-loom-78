@@ -639,21 +639,37 @@ const Playground = () => {
                       </div>
                     )}
 
-                    {placedBlocks.map((block, index) => (
+                    {placedBlocks.map((block, index) => {
+                      const indent = getBlockIndent(placedBlocks, index);
+                      const isStructural = block.structure && block.structure !== "step";
+                      const isOpener = block.structure === "if" || block.structure === "loop-start" || block.structure === "try";
+                      const isCloser = block.structure === "endif" || block.structure === "loop-end" || block.structure === "end-try";
+                      const isBranch = block.structure === "else" || block.structure === "catch";
+
+                      return (
                       <Draggable key={block.id} draggableId={block.id} index={index}>
                         {(provided, snapshot) => (
                           <div
                             ref={provided.innerRef}
                             {...provided.draggableProps}
                             {...provided.dragHandleProps}
+                            style={{
+                              ...provided.draggableProps.style,
+                              marginLeft: `${indent * 24}px`,
+                            }}
                           >
                             <motion.div
                               layout
                               initial={{ opacity: 0, scale: 0.8 }}
                               animate={{ opacity: 1, scale: 1 }}
                               className={`
-                                ${blockColorMap[block.type]}
-                                rounded-lg px-5 py-3 text-primary-foreground font-display font-semibold text-sm
+                                ${isStructural ? (
+                                  isOpener ? "bg-primary/20 border-2 border-primary/40 text-primary" :
+                                  isCloser ? "bg-muted border-2 border-border text-muted-foreground" :
+                                  isBranch ? "bg-accent/20 border-2 border-accent/40 text-accent-foreground" :
+                                  blockColorMap[block.type] + " text-primary-foreground"
+                                ) : blockColorMap[block.type] + " text-primary-foreground"}
+                                rounded-lg px-5 py-3 font-display font-semibold text-sm
                                 select-none cursor-grab active:cursor-grabbing mb-2 transition-shadow
                                 ${snapshot.isDragging ? "shadow-2xl" : "shadow-md"}
                                 ${solved ? "ring-2 ring-success/40" : ""}
@@ -663,7 +679,7 @@ const Playground = () => {
                                 <span className="text-lg">{block.icon}</span>
                                 <div>
                                   <div className="text-[10px] uppercase tracking-wider opacity-70">
-                                    {block.type}
+                                    {isStructural ? (block.structure ?? block.type) : block.type}
                                   </div>
                                   <div>{block.label}</div>
                                 </div>
@@ -680,14 +696,17 @@ const Playground = () => {
                               level={currentChallenge + 1}
                             />
                             {index < placedBlocks.length - 1 && (
-                              <div className="flex justify-center my-1">
-                                <div className="w-0.5 h-4 bg-workspace-foreground/20 rounded" />
+                              <div className="flex my-1" style={{ marginLeft: `${Math.min(indent, getBlockIndent(placedBlocks, index + 1)) * 24}px` }}>
+                                <div className={`w-0.5 h-4 rounded ${
+                                  isOpener || isBranch ? "bg-primary/30" : "bg-workspace-foreground/20"
+                                }`} style={{ marginLeft: "20px" }} />
                               </div>
                             )}
                           </div>
                         )}
                       </Draggable>
-                    ))}
+                      );
+                    })}
                     {provided.placeholder}
                   </motion.div>
                 )}
