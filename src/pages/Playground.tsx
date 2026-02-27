@@ -414,9 +414,11 @@ const Playground = () => {
           <div>
             <span className={`
               inline-block px-2 py-0.5 rounded text-xs font-semibold uppercase tracking-wider mb-2
-              ${challenge.difficulty === "beginner" ? "bg-success/15 text-success" : "bg-accent/30 text-accent-foreground"}
+              ${challenge.difficulty === "beginner" ? "bg-success/15 text-success" : 
+                challenge.difficulty === "intermediate" ? "bg-accent/30 text-accent-foreground" :
+                "bg-destructive/15 text-destructive"}
             `}>
-              {challenge.difficulty}
+              {challenge.difficulty} — Tier {challenge.tier}
             </span>
             <h2 className="font-display text-xl font-bold text-card-foreground">{challenge.title}</h2>
             <p className="text-sm text-muted-foreground mt-1">{challenge.description}</p>
@@ -430,26 +432,20 @@ const Playground = () => {
           {/* Level concepts info panel */}
           <div className="bg-primary/5 border border-primary/20 rounded-lg p-3">
             <h3 className="font-display font-semibold text-xs text-primary mb-1.5 uppercase tracking-wider">
-              🧠 Level {currentChallenge + 1} Concepts
+              🧠 Tier {challenge.tier} Concepts
             </h3>
             <p className="text-xs text-muted-foreground leading-relaxed">
               {[
-                "Simple linear code — function calls in sequence, no branching.",
-                "If/else branching — conditional logic to choose different paths.",
-                "Data operations — variables, transformations & validation steps.",
-                "Error handling — try/catch blocks, loops & retry logic.",
-                "Production-grade — async/await, classes, caching & rate limiting.",
-              ][Math.min(currentChallenge, 4)]}
+                "Simple linear flow — trigger → actions → output, no branching.",
+                "IF / ELSE branching — conditional logic to choose different paths.",
+                "FOR EACH loops — iterate over collections to process items in batch.",
+                "Nested logic — loops containing conditions for complex routing.",
+                "Error handling — TRY / CATCH blocks for resilient, production-grade flows.",
+              ][Math.min(challenge.tier - 1, 4)]}
             </p>
-            {currentChallenge > 0 && (
+            {challenge.newConcept && (
               <p className="text-[10px] text-primary/70 mt-1.5 font-display font-semibold">
-                ✨ New: {[
-                  "",
-                  "if/else conditionals",
-                  "variables & transform()",
-                  "try/except, for loops",
-                  "async/await, classes, caching",
-                ][Math.min(currentChallenge, 4)]}
+                ✨ New concept: {challenge.newConcept}
               </p>
             )}
           </div>
