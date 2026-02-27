@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { DragDropContext, Droppable, Draggable, DropResult } from "@hello-pangea/dnd";
 import { motion, AnimatePresence } from "framer-motion";
@@ -9,7 +9,8 @@ import { LANGUAGE_META, type CodeLanguage, getFullCode } from "@/data/puzzle-cod
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
-import { playDing, playError, playWhoosh } from "@/lib/sounds";
+import { playDing, playError, playWhoosh, playCelebration } from "@/lib/sounds";
+import confetti from "canvas-confetti";
 import JumpingCharacter from "@/components/puzzle/JumpingCharacter";
 import PuzzleTimer from "@/components/puzzle/PuzzleTimer";
 import WrongAnswerOverlay from "@/components/puzzle/WrongAnswerOverlay";
@@ -53,6 +54,8 @@ const Playground = () => {
   const [isLoadingAI, setIsLoadingAI] = useState(false);
   const [selectedLanguage, setSelectedLanguage] = useState<CodeLanguage>("pseudocode");
   const [showCode, setShowCode] = useState(false);
+  const [isFirstPuzzleSolve, setIsFirstPuzzleSolve] = useState(false);
+  const hasEverSolved = useRef(false);
 
   // Struggle tracking per level
   const [levelStats, setLevelStats] = useState<{ attempts: number; time: number }[]>(
@@ -211,10 +214,39 @@ const Playground = () => {
     if (isCorrect) {
       setSolved(true);
       setShowSuccess(true);
-      playDing();
       setShowWrong(false);
       setTimerRunning(false);
       setCharacterState("celebrating");
+
+      // First puzzle ever solved — big celebration!
+      const isFirst = !hasEverSolved.current;
+      if (isFirst) {
+        hasEverSolved.current = true;
+        setIsFirstPuzzleSolve(true);
+        playCelebration();
+        // Fire confetti burst
+        confetti({
+          particleCount: 150,
+          spread: 80,
+          origin: { y: 0.6 },
+          colors: ['#FFD700', '#FF6B6B', '#4ECDC4', '#45B7D1', '#96E6A1'],
+        });
+        setTimeout(() => {
+          confetti({
+            particleCount: 80,
+            spread: 100,
+            origin: { y: 0.5, x: 0.3 },
+          });
+          confetti({
+            particleCount: 80,
+            spread: 100,
+            origin: { y: 0.5, x: 0.7 },
+          });
+        }, 300);
+      } else {
+        setIsFirstPuzzleSolve(false);
+        playDing();
+      }
 
       // Record stats for this level
       const updatedStats = [...levelStats];
@@ -649,8 +681,18 @@ const Playground = () => {
                         <Trophy className="w-16 h-16 text-accent mx-auto mb-4" />
                       </motion.div>
                       <h3 className="font-display text-xl font-bold text-card-foreground mb-2">
-                        Puzzle Solved!
+                        {isFirstPuzzleSolve ? "🎉 You just built your first automation!" : "Puzzle Solved!"}
                       </h3>
+                      {isFirstPuzzleSolve && (
+                        <motion.p
+                          initial={{ opacity: 0, y: 5 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: 0.4 }}
+                          className="text-sm font-display font-semibold text-primary mb-2"
+                        >
+                          You're thinking like an automator already. Keep going! 🚀
+                        </motion.p>
+                      )}
                       <p className="text-sm text-muted-foreground mb-2">
                         {challenge.successMessage}
                       </p>
