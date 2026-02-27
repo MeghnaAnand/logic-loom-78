@@ -681,8 +681,18 @@ const Playground = () => {
                         <Trophy className="w-16 h-16 text-accent mx-auto mb-4" />
                       </motion.div>
                       <h3 className="font-display text-xl font-bold text-card-foreground mb-2">
-                        Puzzle Solved!
+                        {isFirstPuzzleSolve ? "🎉 You just built your first automation!" : "Puzzle Solved!"}
                       </h3>
+                      {isFirstPuzzleSolve && (
+                        <motion.p
+                          initial={{ opacity: 0, y: 5 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: 0.4 }}
+                          className="text-sm font-display font-semibold text-primary mb-2"
+                        >
+                          You're thinking like an automator already. Keep going! 🚀
+                        </motion.p>
+                      )}
                       <p className="text-sm text-muted-foreground mb-2">
                         {challenge.successMessage}
                       </p>
