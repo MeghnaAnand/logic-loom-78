@@ -261,6 +261,14 @@ const Playground = () => {
       updatedStats[currentChallenge] = { attempts, time: finalTime };
       setLevelStats(updatedStats);
 
+      // Update skill map
+      if (user) {
+        const blockTypes = challenge.availableBlocks
+          .filter((b) => challenge.correctOrder.includes(b.id))
+          .map((b) => b.type);
+        updateUserSkills(user.id, blockTypes, challenge.difficulty, attempts).catch(console.error);
+      }
+
       const newSolved = new Set([...solvedChallenges, currentChallenge]);
       setSolvedChallenges(newSolved);
 
