@@ -15,6 +15,9 @@ import JumpingCharacter from "@/components/puzzle/JumpingCharacter";
 import PuzzleTimer from "@/components/puzzle/PuzzleTimer";
 import WrongAnswerOverlay from "@/components/puzzle/WrongAnswerOverlay";
 import BlockCodeSnippet from "@/components/puzzle/BlockCodeSnippet";
+import MicroLessonCard from "@/components/puzzle/MicroLessonCard";
+import PostPuzzleBreakdown from "@/components/puzzle/PostPuzzleBreakdown";
+import { getChallengeLesson, getBreakdownSteps } from "@/data/micro-lessons";
 
 const blockColorMap: Record<string, string> = {
   trigger: "bg-block-trigger",
