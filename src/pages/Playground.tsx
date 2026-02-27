@@ -91,6 +91,7 @@ const Playground = () => {
     setAttempts(0);
     setLevelStats(newChallenges.map(() => ({ attempts: 0, time: 0 })));
     setLearningTips(null);
+    setShowMicroLesson(true);
   }, []);
 
   const fetchAIChallenges = useCallback(async () => {
