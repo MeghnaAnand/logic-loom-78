@@ -1,25 +1,28 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
 import { ArrowLeft, Loader2 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
-import { useEffect } from "react";
 
 const Auth = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const redirect = searchParams.get("redirect") || "/play";
   const { user, loading: authLoading } = useAuth();
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [rememberMe, setRememberMe] = useState(false);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (!authLoading && user) navigate("/history");
-  }, [user, authLoading, navigate]);
+    if (!authLoading && user) navigate(redirect);
+  }, [user, authLoading, navigate, redirect]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -28,8 +31,16 @@ const Auth = () => {
       if (isLogin) {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
+
+        // If "Remember me" is unchecked, store a flag so we can clear session on tab close
+        if (!rememberMe) {
+          sessionStorage.setItem("automind_ephemeral", "true");
+        } else {
+          sessionStorage.removeItem("automind_ephemeral");
+        }
+
         toast.success("Welcome back!");
-        navigate("/history");
+        navigate(redirect);
       } else {
         const { error } = await supabase.auth.signUp({
           email,
@@ -70,7 +81,7 @@ const Auth = () => {
           </h1>
           <p className="text-sm text-muted-foreground mb-6">
             {isLogin
-              ? "Sign in to view your learning history"
+              ? "Sign in to start solving puzzles"
               : "Sign up to save your progress"}
           </p>
 
@@ -90,6 +101,23 @@ const Auth = () => {
               required
               minLength={6}
             />
+
+            {isLogin && (
+              <div className="flex items-center gap-2">
+                <Checkbox
+                  id="remember-me"
+                  checked={rememberMe}
+                  onCheckedChange={(checked) => setRememberMe(checked === true)}
+                />
+                <label
+                  htmlFor="remember-me"
+                  className="text-sm text-muted-foreground cursor-pointer select-none"
+                >
+                  Remember me
+                </label>
+              </div>
+            )}
+
             <Button type="submit" className="w-full" disabled={loading}>
               {loading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
               {isLogin ? "Sign In" : "Sign Up"}
