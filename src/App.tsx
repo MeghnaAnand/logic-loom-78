@@ -25,8 +25,9 @@ const App = () => (
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Index />} />
-            <Route path="/play" element={<Playground />} />
-            <Route path="/automation-mind" element={<AutomationMind />} />
+            <Route path="/play" element={<ProtectedRoute><Playground /></ProtectedRoute>} />
+            <Route path="/automation-mind" element={<ProtectedRoute><AutomationMind /></ProtectedRoute>} />
+            <Route path="/history" element={<ProtectedRoute><History /></ProtectedRoute>} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/history" element={<History />} />
             <Route path="/challenge" element={<ChallengeMode />} />
