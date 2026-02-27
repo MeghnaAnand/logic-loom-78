@@ -229,7 +229,7 @@ const Index = () => {
               Ready to think like an automator?
             </h2>
             <p className="text-workspace-foreground/70 mb-8">
-              3 puzzles. 10 minutes. A whole new skill.
+              5 puzzles. 15 minutes. A whole new skill.
             </p>
             <Button
               size="lg"
