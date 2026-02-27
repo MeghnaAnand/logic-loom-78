@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ArrowRight, Zap, Puzzle, Sparkles, History, BookOpen, LogIn } from "lucide-react";
+import { ArrowRight, Zap, Puzzle, Sparkles, History, BookOpen, LogIn, Radar } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 
