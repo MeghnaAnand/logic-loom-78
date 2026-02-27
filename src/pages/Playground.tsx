@@ -2,7 +2,7 @@ import { useState, useCallback, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { DragDropContext, Droppable, Draggable, DropResult } from "@hello-pangea/dnd";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, ArrowRight, Lightbulb, RotateCcw, CheckCircle2, Trophy, Sparkles, Loader2, Code2, Brain, History } from "lucide-react";
+import { ArrowLeft, ArrowRight, Lightbulb, RotateCcw, CheckCircle2, Trophy, Sparkles, Loader2, Code2, Brain, History, Share2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { pickSessionChallenges, type Block, type Challenge } from "@/data/challenges";
 import { LANGUAGE_META, type CodeLanguage, getFullCode } from "@/data/puzzle-code-translations";
@@ -766,6 +766,47 @@ const Playground = () => {
                           </Button>
                         ) : (
                           <div className="flex flex-col flex-1 gap-2">
+                            {/* Social Sharing */}
+                            <div className="flex gap-2 mb-1">
+                              {(() => {
+                                const shareText = `🧩 I just completed all 5 AutomationMind puzzles! Think you can beat my time? Try it out!`;
+                                const shareUrl = "https://logic-loom-78.lovable.app";
+                                return (
+                                  <>
+                                    <a
+                                      href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="flex-1"
+                                    >
+                                      <Button variant="outline" size="sm" className="w-full gap-1.5 text-xs">
+                                        𝕏 Post
+                                      </Button>
+                                    </a>
+                                    <a
+                                      href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="flex-1"
+                                    >
+                                      <Button variant="outline" size="sm" className="w-full gap-1.5 text-xs">
+                                        💼 LinkedIn
+                                      </Button>
+                                    </a>
+                                    <a
+                                      href={`https://wa.me/?text=${encodeURIComponent(shareText + " " + shareUrl)}`}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="flex-1"
+                                    >
+                                      <Button variant="outline" size="sm" className="w-full gap-1.5 text-xs">
+                                        💬 WhatsApp
+                                      </Button>
+                                    </a>
+                                  </>
+                                );
+                              })()}
+                            </div>
                             <Button
                               onClick={() => {
                                 const context = sessionChallenges.map(c => c.title).join(", ");
