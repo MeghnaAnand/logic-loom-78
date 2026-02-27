@@ -4,7 +4,7 @@ import { DragDropContext, Droppable, Draggable, DropResult } from "@hello-pangea
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, ArrowRight, Lightbulb, RotateCcw, CheckCircle2, Trophy, Sparkles, Loader2, Code2, Brain, History, Share2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { pickSessionChallenges, type Block, type Challenge } from "@/data/challenges";
+import { pickSessionChallenges, type Block, type Challenge, getBlockIndent } from "@/data/challenges";
 import { LANGUAGE_META, type CodeLanguage, getFullCode } from "@/data/puzzle-code-translations";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -398,7 +398,7 @@ const Playground = () => {
                         : "bg-muted text-muted-foreground hover:bg-muted/80"
                     }
                   `}
-                  title={`Level ${i + 1} — ${c.difficulty}`}
+                  title={`Tier ${c.tier} — ${c.difficulty}`}
                 >
                   {solvedChallenges.has(i) ? "✓" : i + 1}
                 </button>
@@ -414,9 +414,11 @@ const Playground = () => {
           <div>
             <span className={`
               inline-block px-2 py-0.5 rounded text-xs font-semibold uppercase tracking-wider mb-2
-              ${challenge.difficulty === "beginner" ? "bg-success/15 text-success" : "bg-accent/30 text-accent-foreground"}
+              ${challenge.difficulty === "beginner" ? "bg-success/15 text-success" : 
+                challenge.difficulty === "intermediate" ? "bg-accent/30 text-accent-foreground" :
+                "bg-destructive/15 text-destructive"}
             `}>
-              {challenge.difficulty}
+              {challenge.difficulty} — Tier {challenge.tier}
             </span>
             <h2 className="font-display text-xl font-bold text-card-foreground">{challenge.title}</h2>
             <p className="text-sm text-muted-foreground mt-1">{challenge.description}</p>
@@ -430,26 +432,20 @@ const Playground = () => {
           {/* Level concepts info panel */}
           <div className="bg-primary/5 border border-primary/20 rounded-lg p-3">
             <h3 className="font-display font-semibold text-xs text-primary mb-1.5 uppercase tracking-wider">
-              🧠 Level {currentChallenge + 1} Concepts
+              🧠 Tier {challenge.tier} Concepts
             </h3>
             <p className="text-xs text-muted-foreground leading-relaxed">
               {[
-                "Simple linear code — function calls in sequence, no branching.",
-                "If/else branching — conditional logic to choose different paths.",
-                "Data operations — variables, transformations & validation steps.",
-                "Error handling — try/catch blocks, loops & retry logic.",
-                "Production-grade — async/await, classes, caching & rate limiting.",
-              ][Math.min(currentChallenge, 4)]}
+                "Simple linear flow — trigger → actions → output, no branching.",
+                "IF / ELSE branching — conditional logic to choose different paths.",
+                "FOR EACH loops — iterate over collections to process items in batch.",
+                "Nested logic — loops containing conditions for complex routing.",
+                "Error handling — TRY / CATCH blocks for resilient, production-grade flows.",
+              ][Math.min(challenge.tier - 1, 4)]}
             </p>
-            {currentChallenge > 0 && (
+            {challenge.newConcept && (
               <p className="text-[10px] text-primary/70 mt-1.5 font-display font-semibold">
-                ✨ New: {[
-                  "",
-                  "if/else conditionals",
-                  "variables & transform()",
-                  "try/except, for loops",
-                  "async/await, classes, caching",
-                ][Math.min(currentChallenge, 4)]}
+                ✨ New concept: {challenge.newConcept}
               </p>
             )}
           </div>
@@ -639,21 +635,37 @@ const Playground = () => {
                       </div>
                     )}
 
-                    {placedBlocks.map((block, index) => (
+                    {placedBlocks.map((block, index) => {
+                      const indent = getBlockIndent(placedBlocks, index);
+                      const isStructural = block.structure && block.structure !== "step";
+                      const isOpener = block.structure === "if" || block.structure === "loop-start" || block.structure === "try";
+                      const isCloser = block.structure === "endif" || block.structure === "loop-end" || block.structure === "end-try";
+                      const isBranch = block.structure === "else" || block.structure === "catch";
+
+                      return (
                       <Draggable key={block.id} draggableId={block.id} index={index}>
                         {(provided, snapshot) => (
                           <div
                             ref={provided.innerRef}
                             {...provided.draggableProps}
                             {...provided.dragHandleProps}
+                            style={{
+                              ...provided.draggableProps.style,
+                              marginLeft: `${indent * 24}px`,
+                            }}
                           >
                             <motion.div
                               layout
                               initial={{ opacity: 0, scale: 0.8 }}
                               animate={{ opacity: 1, scale: 1 }}
                               className={`
-                                ${blockColorMap[block.type]}
-                                rounded-lg px-5 py-3 text-primary-foreground font-display font-semibold text-sm
+                                ${isStructural ? (
+                                  isOpener ? "bg-primary/20 border-2 border-primary/40 text-primary" :
+                                  isCloser ? "bg-muted border-2 border-border text-muted-foreground" :
+                                  isBranch ? "bg-accent/20 border-2 border-accent/40 text-accent-foreground" :
+                                  blockColorMap[block.type] + " text-primary-foreground"
+                                ) : blockColorMap[block.type] + " text-primary-foreground"}
+                                rounded-lg px-5 py-3 font-display font-semibold text-sm
                                 select-none cursor-grab active:cursor-grabbing mb-2 transition-shadow
                                 ${snapshot.isDragging ? "shadow-2xl" : "shadow-md"}
                                 ${solved ? "ring-2 ring-success/40" : ""}
@@ -663,7 +675,7 @@ const Playground = () => {
                                 <span className="text-lg">{block.icon}</span>
                                 <div>
                                   <div className="text-[10px] uppercase tracking-wider opacity-70">
-                                    {block.type}
+                                    {isStructural ? (block.structure ?? block.type) : block.type}
                                   </div>
                                   <div>{block.label}</div>
                                 </div>
@@ -680,14 +692,17 @@ const Playground = () => {
                               level={currentChallenge + 1}
                             />
                             {index < placedBlocks.length - 1 && (
-                              <div className="flex justify-center my-1">
-                                <div className="w-0.5 h-4 bg-workspace-foreground/20 rounded" />
+                              <div className="flex my-1" style={{ marginLeft: `${Math.min(indent, getBlockIndent(placedBlocks, index + 1)) * 24}px` }}>
+                                <div className={`w-0.5 h-4 rounded ${
+                                  isOpener || isBranch ? "bg-primary/30" : "bg-workspace-foreground/20"
+                                }`} style={{ marginLeft: "20px" }} />
                               </div>
                             )}
                           </div>
                         )}
                       </Draggable>
-                    ))}
+                      );
+                    })}
                     {provided.placeholder}
                   </motion.div>
                 )}
