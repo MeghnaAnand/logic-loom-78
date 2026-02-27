@@ -38,6 +38,42 @@ export type Database = {
         }
         Relationships: []
       }
+      user_skills: {
+        Row: {
+          actions: number
+          conditions: number
+          data: number
+          id: string
+          outputs: number
+          total_puzzles: number
+          triggers: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          actions?: number
+          conditions?: number
+          data?: number
+          id?: string
+          outputs?: number
+          total_puzzles?: number
+          triggers?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          actions?: number
+          conditions?: number
+          data?: number
+          id?: string
+          outputs?: number
+          total_puzzles?: number
+          triggers?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

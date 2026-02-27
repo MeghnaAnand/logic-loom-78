@@ -11,6 +11,7 @@ import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
 import { playDing, playError, playWhoosh, playCelebration } from "@/lib/sounds";
 import confetti from "canvas-confetti";
+import { updateUserSkills } from "@/lib/updateSkills";
 import JumpingCharacter from "@/components/puzzle/JumpingCharacter";
 import PuzzleTimer from "@/components/puzzle/PuzzleTimer";
 import WrongAnswerOverlay from "@/components/puzzle/WrongAnswerOverlay";
@@ -259,6 +260,14 @@ const Playground = () => {
       const updatedStats = [...levelStats];
       updatedStats[currentChallenge] = { attempts, time: finalTime };
       setLevelStats(updatedStats);
+
+      // Update skill map
+      if (user) {
+        const blockTypes = challenge.availableBlocks
+          .filter((b) => challenge.correctOrder.includes(b.id))
+          .map((b) => b.type);
+        updateUserSkills(user.id, blockTypes, challenge.difficulty, attempts).catch(console.error);
+      }
 
       const newSolved = new Set([...solvedChallenges, currentChallenge]);
       setSolvedChallenges(newSolved);
