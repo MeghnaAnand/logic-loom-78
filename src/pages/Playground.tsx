@@ -149,6 +149,9 @@ const Playground = () => {
     setTimerResetKey((k) => k + 1);
     setTimerRunning(false);
     setAttempts(0);
+    if (!solvedChallenges.has(index)) {
+      setShowMicroLesson(true);
+    }
   };
 
   const triggerWrongAnswer = useCallback(() => {
