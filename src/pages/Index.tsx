@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ArrowRight, Zap, Puzzle, Sparkles, History, BookOpen, LogIn, Radar } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import WhySection from "@/components/landing/WhySection";
 import { useAuth } from "@/hooks/useAuth";
 
 const floatingBlocks = [
