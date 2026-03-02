@@ -228,6 +228,9 @@ const Index = () => {
         </div>
       </section>
 
+      {/* Why AutomationMind */}
+      <WhySection />
+
       {/* CTA */}
       <section className="py-16 px-4">
         <motion.div
