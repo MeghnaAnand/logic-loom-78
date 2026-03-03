@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ArrowRight, Zap, Puzzle, Sparkles, History, BookOpen, LogIn, Radar } from "lucide-react";
+import { ArrowRight, Zap, Puzzle, Sparkles, History, BookOpen, LogIn, Radar, Hammer } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 import { useAuth } from "@/hooks/useAuth";
@@ -50,6 +50,15 @@ const Index = () => {
           AutomationMind
         </span>
         <div className="flex items-center gap-2">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => navigate("/build")}
+            className="gap-1.5 font-display"
+          >
+            <Hammer className="w-4 h-4" />
+            Build
+          </Button>
           <Button
             variant="ghost"
             size="sm"
