@@ -190,6 +190,44 @@ const Index = () => {
         </div>
       </section>
 
+      {/* How It Works */}
+      <section id="how-it-works" className="py-16 px-4">
+        <div className="max-w-5xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center mb-10"
+          >
+            <h2 className="font-display text-3xl lg:text-4xl font-bold mb-4 text-foreground">
+              How it works
+            </h2>
+            <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+              Each puzzle teaches you a real automation concept used by tools like Zapier, Make, and Power Automate.
+            </p>
+          </motion.div>
+
+          <div className="grid md:grid-cols-3 gap-6">
+            {features.map((f, i) => (
+              <motion.div
+                key={f.title}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.15 }}
+                className="bg-card rounded-xl p-6 border border-border shadow-sm hover:shadow-md transition-shadow"
+              >
+                <div className="w-12 h-12 rounded-lg bg-primary/10 text-primary flex items-center justify-center mb-4">
+                  {f.icon}
+                </div>
+                <h3 className="font-display text-lg font-semibold mb-2 text-card-foreground">{f.title}</h3>
+                <p className="text-muted-foreground text-sm leading-relaxed">{f.description}</p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
 
       {/* CTA */}
       <section className="py-16 px-4">
