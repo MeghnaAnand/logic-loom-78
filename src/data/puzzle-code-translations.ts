@@ -32,31 +32,26 @@ const level1: Record<BlockType, Record<CodeLanguage, CodeGen>> = {
   trigger: {
     python:     (b) => `# Start: ${b.label}\nstart()`,
     javascript: (b) => `// Start: ${b.label}\nstart();`,
-    n8n:        (b) => `{ "name": "${b.label}", "type": "trigger" }`,
     pseudocode: (b) => `WHEN ${b.label.toLowerCase()}`,
   },
   condition: {
     python:     (b) => `check_${toFuncName(b.label, "snake")}()`,
     javascript: (b) => `${toFuncName(b.label, "camel")}();`,
-    n8n:        (b) => `{ "name": "${b.label}", "type": "filter" }`,
     pseudocode: (b) => `CHECK ${b.label.toLowerCase()}`,
   },
   action: {
     python:     (b) => `${toFuncName(b.label, "snake")}()`,
     javascript: (b) => `${toFuncName(b.label, "camel")}();`,
-    n8n:        (b) => `{ "name": "${b.label}", "type": "action" }`,
     pseudocode: (b) => `DO ${b.label.toLowerCase()}`,
   },
   data: {
     python:     (b) => `data = get_${toFuncName(b.label, "snake")}()`,
     javascript: (b) => `const data = ${toFuncName(b.label, "camel")}();`,
-    n8n:        (b) => `{ "name": "${b.label}", "type": "set" }`,
     pseudocode: (b) => `GET ${b.label.toLowerCase()}`,
   },
   output: {
     python:     (b) => `${toFuncName(b.label, "snake")}()`,
     javascript: (b) => `${toFuncName(b.label, "camel")}();`,
-    n8n:        (b) => `{ "name": "${b.label}", "type": "output" }`,
     pseudocode: (b) => `OUTPUT ${b.label.toLowerCase()}`,
   },
 };
@@ -67,7 +62,6 @@ const level2: Record<BlockType, Record<CodeLanguage, CodeGen>> = {
   condition: {
     python:     (b) => `if ${toFuncName(b.label, "snake")}(data):\n    handle_yes(data)\nelse:\n    handle_no(data)`,
     javascript: (b) => `if (${toFuncName(b.label, "camel")}(data)) {\n  handleYes(data);\n} else {\n  handleNo(data);\n}`,
-    n8n:        (b) => `{ "name": "IF", "type": "n8n-nodes-base.if",\n  "parameters": { "condition": "${b.label}" } }`,
     pseudocode: (b) => `IF ${b.label.toLowerCase()} THEN\n  YES → continue\nELSE\n  NO → alternate path\nEND IF`,
   },
 };
@@ -78,13 +72,11 @@ const level3: Record<BlockType, Record<CodeLanguage, CodeGen>> = {
   data: {
     python:     (b) => `raw = fetch_${toFuncName(b.label, "snake")}()\ndata = transform(raw)\nvalidate(data)`,
     javascript: (b) => `const raw = ${toFuncName(b.label, "camel")}();\nconst data = transform(raw);\nvalidate(data);`,
-    n8n:        (b) => `{ "name": "${b.label}", "type": "n8n-nodes-base.set",\n  "parameters": { "values": { "field": "data", "transform": true } } }`,
     pseudocode: (b) => `FETCH ${b.label.toLowerCase()}\nTRANSFORM raw data → structured data\nVALIDATE data integrity`,
   },
   action: {
     python:     (b) => `result = ${toFuncName(b.label, "snake")}(data)\nlog("Action complete", result)`,
     javascript: (b) => `const result = ${toFuncName(b.label, "camel")}(data);\nconsole.log("Action complete", result);`,
-    n8n:        (b) => `{ "name": "${b.label}", "type": "n8n-nodes-base.action",\n  "parameters": { "input": "={{$json}}" } }`,
     pseudocode: (b) => `DO ${b.label.toLowerCase()} WITH data\nLOG result`,
   },
 };
