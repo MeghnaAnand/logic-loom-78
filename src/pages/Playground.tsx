@@ -434,22 +434,33 @@ const Playground = () => {
             <p className="text-sm text-muted-foreground leading-relaxed">{challenge.scenario}</p>
           </div>
 
-          {/* Level concepts info panel */}
+          {/* Level concepts as clickable buttons */}
           <div className="bg-primary/5 border border-primary/20 rounded-lg p-3">
-            <h3 className="font-display font-semibold text-xs text-primary mb-1.5 uppercase tracking-wider">
+            <h3 className="font-display font-semibold text-xs text-primary mb-2 uppercase tracking-wider">
               🧠 Tier {challenge.tier} Concepts
             </h3>
-            <p className="text-xs text-muted-foreground leading-relaxed">
-              {[
-                "Simple linear flow — trigger → actions → output, no branching.",
-                "IF / ELSE branching — conditional logic to choose different paths.",
-                "FOR EACH loops — iterate over collections to process items in batch.",
-                "Nested logic — loops containing conditions for complex routing.",
-                "Error handling — TRY / CATCH blocks for resilient, production-grade flows.",
-              ][Math.min(challenge.tier - 1, 4)]}
-            </p>
+            <div className="flex flex-wrap gap-1.5">
+              {(() => {
+                const tierConcepts: { key: string; label: string; emoji: string }[] = [
+                  [{ key: "linear", label: "Linear Flow", emoji: "➡️" }],
+                  [{ key: "linear", label: "Linear Flow", emoji: "➡️" }, { key: "ifelse", label: "IF / ELSE", emoji: "🔀" }],
+                  [{ key: "linear", label: "Linear Flow", emoji: "➡️" }, { key: "ifelse", label: "IF / ELSE", emoji: "🔀" }, { key: "foreach", label: "FOR EACH", emoji: "🔁" }],
+                  [{ key: "linear", label: "Linear Flow", emoji: "➡️" }, { key: "ifelse", label: "IF / ELSE", emoji: "🔀" }, { key: "foreach", label: "FOR EACH", emoji: "🔁" }, { key: "nested", label: "Nested Logic", emoji: "🧩" }],
+                  [{ key: "linear", label: "Linear Flow", emoji: "➡️" }, { key: "ifelse", label: "IF / ELSE", emoji: "🔀" }, { key: "foreach", label: "FOR EACH", emoji: "🔁" }, { key: "nested", label: "Nested Logic", emoji: "🧩" }, { key: "trycatch", label: "TRY / CATCH", emoji: "🛡️" }],
+                ][Math.min(challenge.tier - 1, 4)];
+                return tierConcepts.map(c => (
+                  <button
+                    key={c.key}
+                    onClick={() => setConceptModal(c.key)}
+                    className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-primary/10 hover:bg-primary/20 text-xs font-display font-semibold text-primary transition-colors cursor-pointer"
+                  >
+                    {c.emoji} {c.label}
+                  </button>
+                ));
+              })()}
+            </div>
             {challenge.newConcept && (
-              <p className="text-[10px] text-primary/70 mt-1.5 font-display font-semibold">
+              <p className="text-[10px] text-primary/70 mt-2 font-display font-semibold">
                 ✨ New concept: {challenge.newConcept}
               </p>
             )}
