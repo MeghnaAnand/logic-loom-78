@@ -158,8 +158,8 @@ export function getFullCode(blocks: Block[], language: CodeLanguage, level: numb
   const levelLabel = ["Simple Linear", "Branching", "Data Operations", "Error Handling", "Production-Grade"][Math.min(level - 1, 4)];
 
   const header: Record<CodeLanguage, string> = {
-    python: `# Automation Flow — ${levelLabel}\n# Generated from AutoFlow Puzzles\n`,
-    javascript: `// Automation Flow — ${levelLabel}\n// Generated from AutoFlow Puzzles\n`,
+    python: `# Automation Flow — ${levelLabel}\n# Generated from AutomationMind Puzzles\n`,
+    javascript: `// Automation Flow — ${levelLabel}\n// Generated from AutomationMind Puzzles\n`,
     pseudocode: `// Automation Flow — ${levelLabel} (Pseudocode)\n`,
   };
 

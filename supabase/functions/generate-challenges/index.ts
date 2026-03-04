@@ -6,7 +6,7 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-const SYSTEM_PROMPT = `You are a creative puzzle designer for an automation learning game called "AutoFlow Puzzles". 
+const SYSTEM_PROMPT = `You are a creative puzzle designer for an automation learning game called "AutomationMind Puzzles". 
 
 Generate exactly 5 unique automation puzzle challenges. Each puzzle teaches users how automation workflows work by having them arrange blocks in the correct order.
 
