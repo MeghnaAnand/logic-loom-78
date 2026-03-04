@@ -533,6 +533,71 @@ const Playground = () => {
                   </div>
                 )}
               </Droppable>
+
+              {/* Code View - integrated in block library */}
+              <div className="border-t border-border mt-4 pt-3">
+                <div className="flex items-center justify-between mb-2">
+                  <h3 className="font-display text-xs font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-1">
+                    <Code2 className="w-3.5 h-3.5" /> Code View
+                  </h3>
+                  <Button
+                    variant={showCode ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => setShowCode(!showCode)}
+                    className="h-6 px-2 text-[10px]"
+                  >
+                    {showCode ? "Hide" : "Show"}
+                  </Button>
+                </div>
+                <div className="flex gap-1">
+                  {(Object.keys(LANGUAGE_META) as CodeLanguage[]).map((lang) => (
+                    <button
+                      key={lang}
+                      onClick={() => { setSelectedLanguage(lang); setShowCode(true); }}
+                      className={`
+                        flex-1 px-2 py-1.5 rounded-md text-[10px] font-display font-semibold transition-all
+                        ${selectedLanguage === lang
+                          ? "bg-primary text-primary-foreground shadow-sm"
+                          : "bg-muted text-muted-foreground hover:bg-muted/80"
+                        }
+                      `}
+                    >
+                      <span className="block">{LANGUAGE_META[lang].icon}</span>
+                      <span className="block mt-0.5">{LANGUAGE_META[lang].label}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Full code preview when solved */}
+              <AnimatePresence>
+                {showCode && solved && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                    className="border-t border-border pt-2 mt-2"
+                  >
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="text-[10px] font-display font-semibold text-muted-foreground uppercase">Full Code</span>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-5 px-1.5 text-[10px]"
+                        onClick={() => {
+                          navigator.clipboard.writeText(getFullCode(placedBlocks, selectedLanguage, currentChallenge + 1));
+                          toast.success("Code copied!");
+                        }}
+                      >
+                        📋 Copy
+                      </Button>
+                    </div>
+                    <pre className="bg-workspace text-workspace-foreground text-[10px] leading-relaxed rounded-md px-3 py-2 font-mono overflow-x-auto whitespace-pre-wrap border border-border/30 max-h-48 overflow-y-auto">
+                      {getFullCode(placedBlocks, selectedLanguage, currentChallenge + 1)}
+                    </pre>
+                  </motion.div>
+                )}
+              </AnimatePresence>
               </div>
             </div>
 
