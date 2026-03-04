@@ -19,6 +19,7 @@ import WrongAnswerOverlay from "@/components/puzzle/WrongAnswerOverlay";
 import BlockCodeSnippet from "@/components/puzzle/BlockCodeSnippet";
 import MicroLessonCard from "@/components/puzzle/MicroLessonCard";
 import PostPuzzleBreakdown from "@/components/puzzle/PostPuzzleBreakdown";
+import ConceptModal from "@/components/puzzle/ConceptModal";
 import { getChallengeLesson, getBreakdownSteps } from "@/data/micro-lessons";
 
 const blockColorMap: Record<string, string> = {
