@@ -19,6 +19,7 @@ import WrongAnswerOverlay from "@/components/puzzle/WrongAnswerOverlay";
 import BlockCodeSnippet from "@/components/puzzle/BlockCodeSnippet";
 import MicroLessonCard from "@/components/puzzle/MicroLessonCard";
 import PostPuzzleBreakdown from "@/components/puzzle/PostPuzzleBreakdown";
+import ConceptModal from "@/components/puzzle/ConceptModal";
 import { getChallengeLesson, getBreakdownSteps } from "@/data/micro-lessons";
 
 const blockColorMap: Record<string, string> = {
@@ -64,6 +65,7 @@ const Playground = () => {
   const [isFirstPuzzleSolve, setIsFirstPuzzleSolve] = useState(false);
   const hasEverSolved = useRef(false);
   const [showMicroLesson, setShowMicroLesson] = useState(true); // show before first puzzle
+  const [conceptModal, setConceptModal] = useState<string | null>(null);
 
   // Struggle tracking per level
   const [levelStats, setLevelStats] = useState<{ attempts: number; time: number }[]>(
@@ -432,22 +434,33 @@ const Playground = () => {
             <p className="text-sm text-muted-foreground leading-relaxed">{challenge.scenario}</p>
           </div>
 
-          {/* Level concepts info panel */}
+          {/* Level concepts as clickable buttons */}
           <div className="bg-primary/5 border border-primary/20 rounded-lg p-3">
-            <h3 className="font-display font-semibold text-xs text-primary mb-1.5 uppercase tracking-wider">
+            <h3 className="font-display font-semibold text-xs text-primary mb-2 uppercase tracking-wider">
               🧠 Tier {challenge.tier} Concepts
             </h3>
-            <p className="text-xs text-muted-foreground leading-relaxed">
-              {[
-                "Simple linear flow — trigger → actions → output, no branching.",
-                "IF / ELSE branching — conditional logic to choose different paths.",
-                "FOR EACH loops — iterate over collections to process items in batch.",
-                "Nested logic — loops containing conditions for complex routing.",
-                "Error handling — TRY / CATCH blocks for resilient, production-grade flows.",
-              ][Math.min(challenge.tier - 1, 4)]}
-            </p>
+            <div className="flex flex-wrap gap-1.5">
+              {(() => {
+                const tierConcepts: { key: string; label: string; emoji: string }[] = [
+                  [{ key: "linear", label: "Linear Flow", emoji: "➡️" }],
+                  [{ key: "linear", label: "Linear Flow", emoji: "➡️" }, { key: "ifelse", label: "IF / ELSE", emoji: "🔀" }],
+                  [{ key: "linear", label: "Linear Flow", emoji: "➡️" }, { key: "ifelse", label: "IF / ELSE", emoji: "🔀" }, { key: "foreach", label: "FOR EACH", emoji: "🔁" }],
+                  [{ key: "linear", label: "Linear Flow", emoji: "➡️" }, { key: "ifelse", label: "IF / ELSE", emoji: "🔀" }, { key: "foreach", label: "FOR EACH", emoji: "🔁" }, { key: "nested", label: "Nested Logic", emoji: "🧩" }],
+                  [{ key: "linear", label: "Linear Flow", emoji: "➡️" }, { key: "ifelse", label: "IF / ELSE", emoji: "🔀" }, { key: "foreach", label: "FOR EACH", emoji: "🔁" }, { key: "nested", label: "Nested Logic", emoji: "🧩" }, { key: "trycatch", label: "TRY / CATCH", emoji: "🛡️" }],
+                ][Math.min(challenge.tier - 1, 4)];
+                return tierConcepts.map(c => (
+                  <button
+                    key={c.key}
+                    onClick={() => setConceptModal(c.key)}
+                    className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-primary/10 hover:bg-primary/20 text-xs font-display font-semibold text-primary transition-colors cursor-pointer"
+                  >
+                    {c.emoji} {c.label}
+                  </button>
+                ));
+              })()}
+            </div>
             {challenge.newConcept && (
-              <p className="text-[10px] text-primary/70 mt-1.5 font-display font-semibold">
+              <p className="text-[10px] text-primary/70 mt-2 font-display font-semibold">
                 ✨ New concept: {challenge.newConcept}
               </p>
             )}
@@ -915,6 +928,20 @@ const Playground = () => {
           </DragDropContext>
         </div>
       </div>
+      <ConceptModal
+        open={conceptModal !== null}
+        onClose={() => setConceptModal(null)}
+        {...(() => {
+          const concepts: Record<string, { title: string; emoji: string; description: string; details: string[]; realWorldTool: string }> = {
+            linear: { title: "Linear Flow", emoji: "➡️", description: "A linear flow runs steps one after another — no decisions, no loops.", details: ["Each step waits for the previous one to finish.", "Great for: form submitted → save to spreadsheet → send email.", "Think of it like a recipe: step 1, step 2, step 3 — done."], realWorldTool: "In Zapier, a simple Zap with a Trigger and Actions. In Make, modules connected in a straight line." },
+            ifelse: { title: "IF / ELSE Branching", emoji: "🔀", description: "IF / ELSE lets your automation make decisions based on conditions.", details: ["IF true → run one set of actions.", "ELSE → run different actions.", "Example: IF order > $500 → manager approval. ELSE → auto-approve.", "You can nest multiple IF/ELSE for complex decision trees."], realWorldTool: "In Zapier: 'Filter' or 'Paths'. In Make: 'Router' with conditions." },
+            foreach: { title: "FOR EACH Loop", emoji: "🔁", description: "FOR EACH processes a list of items one at a time — iteration.", details: ["Takes a collection and runs the same steps for each item.", "Example: FOR EACH spreadsheet row → send personalized email.", "Repeats until every item is processed.", "Handle 1,000 tasks with zero extra effort."], realWorldTool: "In Zapier: 'Looping by Zapier'. In Make: scenarios naturally iterate over arrays." },
+            nested: { title: "Nested Logic", emoji: "🧩", description: "Conditions or loops inside other conditions or loops — multi-layered logic.", details: ["FOR EACH order → IF amount > $500 → manager, ELSE → auto-approve.", "Combines iteration with decision-making.", "This is how real-world automations handle complex business rules."], realWorldTool: "In Make: Routers inside Iterator loops. In Zapier: Paths + Looping actions." },
+            trycatch: { title: "TRY / CATCH Error Handling", emoji: "🛡️", description: "TRY runs steps normally. If something fails, CATCH runs a fallback.", details: ["TRY: Run the main steps.", "CATCH: If TRY fails, run fallback steps instead.", "Example: TRY save to DB → CATCH: log error + send alert.", "Production-grade automations always have error handling."], realWorldTool: "In Make: 'Error Handler' module. In Zapier: Paths for error checking or Code steps." },
+          };
+          return concepts[conceptModal || "linear"];
+        })()}
+      />
     </div>
   );
 };
