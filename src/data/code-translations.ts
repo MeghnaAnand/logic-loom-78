@@ -1,7 +1,6 @@
 export interface CodeTranslation {
   python: string;
   javascript: string;
-  n8n: string;
   pseudocode: string;
 }
 
@@ -39,30 +38,6 @@ function saveToSpreadsheet(data) {
         email: data.email,
         message: data.message
     });
-}
-`,
-    n8n: `{
-  "name": "Level 1 Automation",
-  "nodes": [
-    {
-      "name": "Form Trigger",
-      "type": "n8n-nodes-base.formTrigger",
-      "position": [250, 300]
-    },
-    {
-      "name": "Google Sheets",
-      "type": "n8n-nodes-base.googleSheets",
-      "parameters": {
-        "operation": "append"
-      },
-      "position": [450, 300]
-    }
-  ],
-  "connections": {
-    "Form Trigger": {
-      "main": [[ { "node": "Google Sheets" } ]]
-    }
-  }
 }
 `,
     pseudocode: `WHEN form is submitted
