@@ -6,10 +6,10 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 
 const floatingBlocks = [
-  { label: "📬 Email Received", color: "bg-block-trigger", delay: 0 },
-  { label: "🎯 Filter Results", color: "bg-block-condition", delay: 0.5 },
-  { label: "📄 Format Data", color: "bg-block-action", delay: 1 },
-  { label: "📊 Send Report", color: "bg-block-output", delay: 1.5 },
+  { label: "📬 Email Received", delay: 0 },
+  { label: "🎯 Filter Results", delay: 0.5 },
+  { label: "📄 Format Data", delay: 1 },
+  { label: "📊 Send Report", delay: 1.5 },
 ];
 
 const features = [
@@ -99,7 +99,7 @@ const Index = () => {
         {/* Background decoration */}
         <div className="absolute inset-0 overflow-hidden">
           <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/5 rounded-full blur-3xl" />
-          <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-secondary/5 rounded-full blur-3xl" />
+          <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-primary/3 rounded-full blur-3xl" />
         </div>
 
         <div className="relative max-w-6xl mx-auto grid lg:grid-cols-2 gap-8 items-center">
@@ -157,12 +157,7 @@ const Index = () => {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.5 + block.delay * 0.3, duration: 0.5 }}
-                  className={`
-                    absolute left-1/2 -translate-x-1/2
-                    ${block.color} text-primary-foreground
-                    rounded-lg px-5 py-3 font-display font-semibold text-sm
-                    shadow-lg
-                  `}
+                  className="absolute left-1/2 -translate-x-1/2 bg-primary text-primary-foreground rounded-lg px-5 py-3 font-display font-semibold text-sm shadow-lg"
                   style={{ top: `${70 + i * 85}px` }}
                 >
                   <motion.div
