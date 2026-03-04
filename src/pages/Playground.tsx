@@ -552,8 +552,16 @@ const Playground = () => {
         <div className="flex-1 flex flex-col lg:flex-row">
           <DragDropContext onDragEnd={onDragEnd}>
             {/* Available blocks - left side */}
-            <div className="bg-card border-b lg:border-b-0 lg:border-r border-border p-4 lg:w-72 flex flex-col shrink-0">
-              <h3 className="font-display text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">
+            <div className="bg-card border-b lg:border-b-0 lg:border-r border-border lg:w-72 flex flex-col shrink-0">
+              <button
+                onClick={() => setBlockLibraryOpen(!blockLibraryOpen)}
+                className="lg:hidden flex items-center justify-between p-4 font-display text-xs font-semibold uppercase tracking-wider text-muted-foreground"
+              >
+                Available Blocks ({availableBlocks.length})
+                {blockLibraryOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+              </button>
+              <div className={`${isMobile && !blockLibraryOpen ? "hidden" : ""} p-4 pt-0 lg:pt-4 flex flex-col`}>
+              <h3 className="font-display text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3 hidden lg:block">
                 Available Blocks — Drag to workspace →
               </h3>
               <Droppable droppableId="available" direction="vertical">
