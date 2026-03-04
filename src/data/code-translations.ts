@@ -93,39 +93,6 @@ function autoApprove(order) {
     processOrder(order);
 }
 `,
-    n8n: `{
-  "name": "Level 2 Automation",
-  "nodes": [
-    {
-      "name": "Order Trigger",
-      "type": "n8n-nodes-base.webhook"
-    },
-    {
-      "name": "IF Amount > 500",
-      "type": "n8n-nodes-base.if",
-      "parameters": {
-        "conditions": {
-          "number": [
-            {
-              "value1": "={{$json.amount}}",
-              "operation": "larger",
-              "value2": 500
-            }
-          ]
-        }
-      }
-    },
-    {
-      "name": "Send to Manager",
-      "type": "n8n-nodes-base.slack"
-    },
-    {
-      "name": "Auto Approve",
-      "type": "n8n-nodes-base.set"
-    }
-  ]
-}
-`,
     pseudocode: `WHEN order is received
   IF order.amount > 500 THEN
     send order to manager
@@ -222,72 +189,6 @@ function extractAmount(text) {
 function saveToDatabase(data) {
     // Insert into database
     db.insert('orders', data);
-}
-`,
-    n8n: `{
-  "name": "Level 3 Automation",
-  "nodes": [
-    {
-      "name": "Email Trigger",
-      "type": "n8n-nodes-base.emailReadImap"
-    },
-    {
-      "name": "Extract Order Number",
-      "type": "n8n-nodes-base.set",
-      "parameters": {
-        "values": {
-          "string": [
-            {
-              "name": "order_number",
-              "value": "={{$json.body.match(/ORD-\\\\d{4}/)[0]}}"
-            }
-          ]
-        }
-      }
-    },
-    {
-      "name": "Extract Customer Name",
-      "type": "n8n-nodes-base.set",
-      "parameters": {
-        "values": {
-          "string": [
-            {
-              "name": "customer_name",
-              "value": "={{$json.body.match(/I'm ([A-Z][a-z]+ [A-Z][a-z]+)/)[1]}}"
-            }
-          ]
-        }
-      }
-    },
-    {
-      "name": "Extract Amount",
-      "type": "n8n-nodes-base.set",
-      "parameters": {
-        "values": {
-          "number": [
-            {
-              "name": "amount",
-              "value": "={{parseInt($json.body.match(/\\\\$(\\\\d+)/)[1])}}"
-            }
-          ]
-        }
-      }
-    },
-    {
-      "name": "Save to Database",
-      "type": "n8n-nodes-base.postgres",
-      "parameters": {
-        "operation": "insert",
-        "table": "orders"
-      }
-    }
-  ],
-  "connections": {
-    "Email Trigger": { "main": [[ { "node": "Extract Order Number" } ]] },
-    "Extract Order Number": { "main": [[ { "node": "Extract Customer Name" } ]] },
-    "Extract Customer Name": { "main": [[ { "node": "Extract Amount" } ]] },
-    "Extract Amount": { "main": [[ { "node": "Save to Database" } ]] }
-  }
 }
 `,
     pseudocode: `WHEN email arrives
