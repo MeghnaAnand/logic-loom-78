@@ -1,11 +1,10 @@
 import type { Block, BlockType } from "@/data/challenges";
 
-export type CodeLanguage = "python" | "javascript" | "n8n" | "pseudocode";
+export type CodeLanguage = "python" | "javascript" | "pseudocode";
 
 export const LANGUAGE_META: Record<CodeLanguage, { label: string; icon: string; color: string }> = {
   python: { label: "Python", icon: "🐍", color: "text-blue-400" },
   javascript: { label: "JavaScript", icon: "⚡", color: "text-yellow-400" },
-  n8n: { label: "n8n", icon: "🔗", color: "text-purple-400" },
   pseudocode: { label: "Pseudocode", icon: "📝", color: "text-muted-foreground" },
 };
 
