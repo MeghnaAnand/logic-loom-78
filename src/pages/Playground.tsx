@@ -928,6 +928,20 @@ const Playground = () => {
           </DragDropContext>
         </div>
       </div>
+      <ConceptModal
+        open={conceptModal !== null}
+        onClose={() => setConceptModal(null)}
+        {...(() => {
+          const concepts: Record<string, { title: string; emoji: string; description: string; details: string[]; realWorldTool: string }> = {
+            linear: { title: "Linear Flow", emoji: "➡️", description: "A linear flow runs steps one after another — no decisions, no loops.", details: ["Each step waits for the previous one to finish.", "Great for: form submitted → save to spreadsheet → send email.", "Think of it like a recipe: step 1, step 2, step 3 — done."], realWorldTool: "In Zapier, a simple Zap with a Trigger and Actions. In Make, modules connected in a straight line." },
+            ifelse: { title: "IF / ELSE Branching", emoji: "🔀", description: "IF / ELSE lets your automation make decisions based on conditions.", details: ["IF true → run one set of actions.", "ELSE → run different actions.", "Example: IF order > $500 → manager approval. ELSE → auto-approve.", "You can nest multiple IF/ELSE for complex decision trees."], realWorldTool: "In Zapier: 'Filter' or 'Paths'. In Make: 'Router' with conditions." },
+            foreach: { title: "FOR EACH Loop", emoji: "🔁", description: "FOR EACH processes a list of items one at a time — iteration.", details: ["Takes a collection and runs the same steps for each item.", "Example: FOR EACH spreadsheet row → send personalized email.", "Repeats until every item is processed.", "Handle 1,000 tasks with zero extra effort."], realWorldTool: "In Zapier: 'Looping by Zapier'. In Make: scenarios naturally iterate over arrays." },
+            nested: { title: "Nested Logic", emoji: "🧩", description: "Conditions or loops inside other conditions or loops — multi-layered logic.", details: ["FOR EACH order → IF amount > $500 → manager, ELSE → auto-approve.", "Combines iteration with decision-making.", "This is how real-world automations handle complex business rules."], realWorldTool: "In Make: Routers inside Iterator loops. In Zapier: Paths + Looping actions." },
+            trycatch: { title: "TRY / CATCH Error Handling", emoji: "🛡️", description: "TRY runs steps normally. If something fails, CATCH runs a fallback.", details: ["TRY: Run the main steps.", "CATCH: If TRY fails, run fallback steps instead.", "Example: TRY save to DB → CATCH: log error + send alert.", "Production-grade automations always have error handling."], realWorldTool: "In Make: 'Error Handler' module. In Zapier: Paths for error checking or Code steps." },
+          };
+          return concepts[conceptModal || "linear"];
+        })()}
+      />
     </div>
   );
 };
