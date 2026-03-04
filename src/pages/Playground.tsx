@@ -598,6 +598,7 @@ const Playground = () => {
                   </div>
                 )}
               </Droppable>
+              </div>
             </div>
 
             {/* Drop workspace - right side */}
