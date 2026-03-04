@@ -14,7 +14,6 @@ interface CodeViewPanelProps {
 const TAB_CONFIG = [
   { key: "python", label: "Python", lang: "python", icon: "🐍", ext: ".py" },
   { key: "javascript", label: "JavaScript", lang: "javascript", icon: "📜", ext: ".js" },
-  { key: "n8n", label: "n8n Workflow", lang: "json", icon: "⚡", ext: ".json" },
   { key: "pseudocode", label: "Pseudocode", lang: "text", icon: "📝", ext: ".txt" },
 ] as const;
 

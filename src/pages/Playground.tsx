@@ -571,7 +571,7 @@ const Playground = () => {
 
               {/* Full code preview when solved */}
               <AnimatePresence>
-                {showCode && solved && (
+                {showCode && (
                   <motion.div
                     initial={{ opacity: 0, height: 0 }}
                     animate={{ opacity: 1, height: "auto" }}
