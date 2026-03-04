@@ -65,6 +65,7 @@ const Playground = () => {
   const [isFirstPuzzleSolve, setIsFirstPuzzleSolve] = useState(false);
   const hasEverSolved = useRef(false);
   const [showMicroLesson, setShowMicroLesson] = useState(true); // show before first puzzle
+  const [conceptModal, setConceptModal] = useState<string | null>(null);
 
   // Struggle tracking per level
   const [levelStats, setLevelStats] = useState<{ attempts: number; time: number }[]>(
