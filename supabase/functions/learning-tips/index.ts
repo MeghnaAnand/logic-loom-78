@@ -6,7 +6,7 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-const SYSTEM_PROMPT = `You are a friendly automation-learning coach for a puzzle game called "AutoFlow Puzzles".
+const SYSTEM_PROMPT = `You are a friendly automation-learning coach for a puzzle game called "AutomationMind Puzzles".
 
 Given data about a student's performance across 5 levels of increasing difficulty, provide:
 1. A short encouraging summary of their performance (1-2 sentences).
