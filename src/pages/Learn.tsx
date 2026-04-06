@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, ArrowRight, CheckCircle, XCircle, BookOpen, ChevronRight } from "lucide-react";
+import { ArrowLeft, ArrowRight, CheckCircle, XCircle, BookOpen, ChevronRight, RotateCcw, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { chapters, type Chapter, type QuizQuestion } from "@/data/learn-chapters";
+import { chapters, PASS_THRESHOLD, type Chapter, type QuizQuestion } from "@/data/learn-chapters";
 
 type View = "list" | "reading" | "quiz" | "results";
 
@@ -16,15 +16,24 @@ const Learn = () => {
   const [selected, setSelected] = useState<number | null>(null);
   const [answered, setAnswered] = useState(false);
   const [score, setScore] = useState(0);
+  const [wrongConcepts, setWrongConcepts] = useState<string[]>([]);
   const [completedChapters, setCompletedChapters] = useState<Set<string>>(new Set());
 
+  const isChapterUnlocked = (ch: Chapter) => {
+    if (ch.number === 1) return true;
+    const prev = chapters.find((c) => c.number === ch.number - 1);
+    return prev ? completedChapters.has(prev.id) : true;
+  };
+
   const openChapter = (ch: Chapter) => {
+    if (!isChapterUnlocked(ch)) return;
     setActiveChapter(ch);
     setView("reading");
     setCurrentQ(0);
     setScore(0);
     setSelected(null);
     setAnswered(false);
+    setWrongConcepts([]);
   };
 
   const startQuiz = () => {
@@ -33,14 +42,18 @@ const Learn = () => {
     setScore(0);
     setSelected(null);
     setAnswered(false);
+    setWrongConcepts([]);
   };
 
   const handleSelect = (idx: number) => {
     if (answered) return;
     setSelected(idx);
     setAnswered(true);
-    if (idx === activeChapter!.questions[currentQ].correctIndex) {
+    const q = activeChapter!.questions[currentQ];
+    if (idx === q.correctIndex) {
       setScore((s) => s + 1);
+    } else {
+      setWrongConcepts((prev) => [...prev, q.concept]);
     }
   };
 
@@ -50,16 +63,21 @@ const Learn = () => {
       setSelected(null);
       setAnswered(false);
     } else {
-      setCompletedChapters((prev) => new Set(prev).add(activeChapter!.id));
+      const total = activeChapter!.questions.length;
+      const passed = score / total >= PASS_THRESHOLD;
+      if (passed) {
+        setCompletedChapters((prev) => new Set(prev).add(activeChapter!.id));
+      }
       setView("results");
     }
   };
 
   const q: QuizQuestion | undefined = activeChapter?.questions[currentQ];
+  const passed = activeChapter ? score / activeChapter.questions.length >= PASS_THRESHOLD : false;
+  const requiredScore = activeChapter ? Math.ceil(activeChapter.questions.length * PASS_THRESHOLD) : 0;
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      {/* Header */}
       <header className="border-b border-border bg-card/80 backdrop-blur-sm sticky top-0 z-20">
         <div className="max-w-3xl mx-auto flex items-center gap-3 px-4 py-3">
           <Button variant="ghost" size="icon" onClick={() => (view === "list" ? navigate("/") : setView("list"))}>
@@ -76,36 +94,36 @@ const Learn = () => {
           {view === "list" && (
             <motion.div key="list" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-3">
               <p className="text-sm text-muted-foreground mb-4">
-                {chapters.length} chapters · One concept per chapter · Quiz at the end of each
+                {chapters.length} chapters · 5 questions each · Score 60% to unlock the next
               </p>
-              {chapters.map((ch) => (
-                <Card
-                  key={ch.id}
-                  className="cursor-pointer hover:border-primary/40 transition-colors"
-                  onClick={() => openChapter(ch)}
-                >
-                  <CardContent className="flex items-center gap-4 p-4">
-                    <span className="text-2xl">{ch.emoji}</span>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2">
-                        <span className="text-xs font-display text-muted-foreground">Chapter {ch.number}</span>
-                        {completedChapters.has(ch.id) && <CheckCircle className="w-3.5 h-3.5 text-primary" />}
+              {chapters.map((ch) => {
+                const unlocked = isChapterUnlocked(ch);
+                const done = completedChapters.has(ch.id);
+                return (
+                  <Card
+                    key={ch.id}
+                    className={`transition-colors ${unlocked ? "cursor-pointer hover:border-primary/40" : "opacity-50 cursor-not-allowed"}`}
+                    onClick={() => unlocked && openChapter(ch)}
+                  >
+                    <CardContent className="flex items-center gap-4 p-4">
+                      <span className="text-2xl">{ch.emoji}</span>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs font-display text-muted-foreground">Chapter {ch.number}</span>
+                          {done && <CheckCircle className="w-3.5 h-3.5 text-primary" />}
+                          {!unlocked && <Lock className="w-3 h-3 text-muted-foreground" />}
+                        </div>
+                        <h3 className="font-display font-semibold text-sm text-card-foreground">{ch.title}</h3>
+                        <p className="text-xs text-muted-foreground truncate">{ch.description}</p>
                       </div>
-                      <h3 className="font-display font-semibold text-sm text-card-foreground">{ch.title}</h3>
-                      <p className="text-xs text-muted-foreground truncate">{ch.description}</p>
-                    </div>
-                    <ChevronRight className="w-4 h-4 text-muted-foreground shrink-0" />
-                  </CardContent>
-                </Card>
-              ))}
+                      <ChevronRight className="w-4 h-4 text-muted-foreground shrink-0" />
+                    </CardContent>
+                  </Card>
+                );
+              })}
 
-              {/* CTA to puzzles */}
               <div className="pt-4">
-                <Button
-                  variant="outline"
-                  className="w-full gap-2"
-                  onClick={() => navigate("/play")}
-                >
+                <Button variant="outline" className="w-full gap-2" onClick={() => navigate("/play")}>
                   Ready to Puzzle? Start Solving <ArrowRight className="w-4 h-4" />
                 </Button>
               </div>
@@ -122,15 +140,13 @@ const Learn = () => {
                   <h2 className="font-display text-xl font-bold text-foreground">{activeChapter.title}</h2>
                 </div>
               </div>
-
               <div className="space-y-4 mb-8">
                 {activeChapter.content.map((para, i) => (
                   <p key={i} className="text-sm text-muted-foreground leading-relaxed">{para}</p>
                 ))}
               </div>
-
               <Button onClick={startQuiz} className="w-full gap-2">
-                Take the Quiz <ArrowRight className="w-4 h-4" />
+                Take the Quiz ({activeChapter.questions.length} questions) <ArrowRight className="w-4 h-4" />
               </Button>
             </motion.div>
           )}
@@ -138,11 +154,18 @@ const Learn = () => {
           {/* Quiz View */}
           {view === "quiz" && activeChapter && q && (
             <motion.div key={`quiz-${currentQ}`} initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0 }}>
-              <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center justify-between mb-2">
                 <p className="text-xs font-display text-muted-foreground">
-                  {activeChapter.emoji} Chapter {activeChapter.number} · Question {currentQ + 1}/{activeChapter.questions.length}
+                  {activeChapter.emoji} Chapter {activeChapter.number} · Q{currentQ + 1}/{activeChapter.questions.length}
                 </p>
                 <span className="text-xs font-display text-primary">{score} correct</span>
+              </div>
+              {/* Progress bar */}
+              <div className="w-full h-1.5 bg-muted rounded-full mb-6">
+                <div
+                  className="h-full bg-primary rounded-full transition-all"
+                  style={{ width: `${((currentQ + (answered ? 1 : 0)) / activeChapter.questions.length) * 100}%` }}
+                />
               </div>
 
               <h3 className="font-display font-semibold text-base text-foreground mb-5">{q.question}</h3>
@@ -160,9 +183,7 @@ const Learn = () => {
                       key={i}
                       onClick={() => handleSelect(i)}
                       disabled={answered}
-                      className={`w-full text-left p-3.5 rounded-lg border text-sm transition-colors ${borderClass} ${
-                        !answered ? "hover:border-primary/40 cursor-pointer" : "cursor-default"
-                      }`}
+                      className={`w-full text-left p-3.5 rounded-lg border text-sm transition-colors ${borderClass} ${!answered ? "hover:border-primary/40 cursor-pointer" : "cursor-default"}`}
                     >
                       <div className="flex items-start gap-3">
                         <span className="font-display font-semibold text-muted-foreground shrink-0 mt-0.5">
@@ -187,8 +208,7 @@ const Learn = () => {
 
               {answered && (
                 <Button onClick={nextQuestion} className="w-full gap-2">
-                  {currentQ < activeChapter.questions.length - 1 ? "Next Question" : "See Results"}{" "}
-                  <ArrowRight className="w-4 h-4" />
+                  {currentQ < activeChapter.questions.length - 1 ? "Next Question" : "See Results"} <ArrowRight className="w-4 h-4" />
                 </Button>
               )}
             </motion.div>
@@ -196,21 +216,86 @@ const Learn = () => {
 
           {/* Results View */}
           {view === "results" && activeChapter && (
-            <motion.div key="results" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }} className="text-center py-8">
-              <span className="text-5xl mb-4 block">{score === activeChapter.questions.length ? "🎉" : "📝"}</span>
-              <h2 className="font-display text-2xl font-bold text-foreground mb-2">
-                {score === activeChapter.questions.length ? "Perfect!" : "Chapter Complete!"}
-              </h2>
-              <p className="text-sm text-muted-foreground mb-6">
-                You got <span className="text-primary font-semibold">{score}</span> out of{" "}
-                <span className="font-semibold">{activeChapter.questions.length}</span> correct
-              </p>
+            <motion.div key="results" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }} className="py-8">
+              <div className="text-center mb-6">
+                <span className="text-5xl mb-4 block">
+                  {passed ? (score === activeChapter.questions.length ? "🎉" : "✅") : "📖"}
+                </span>
+                <h2 className="font-display text-2xl font-bold text-foreground mb-2">
+                  {passed
+                    ? score === activeChapter.questions.length
+                      ? "Perfect Score!"
+                      : "Chapter Passed!"
+                    : "Not Quite Yet"}
+                </h2>
+                <p className="text-sm text-muted-foreground">
+                  You got <span className={`font-semibold ${passed ? "text-primary" : "text-destructive"}`}>{score}</span> out of{" "}
+                  <span className="font-semibold">{activeChapter.questions.length}</span> correct
+                  {!passed && (
+                    <span> — you need at least <span className="font-semibold">{requiredScore}</span> to pass</span>
+                  )}
+                </p>
+              </div>
+
+              {/* Concepts to revisit */}
+              {!passed && wrongConcepts.length > 0 && (
+                <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mb-6">
+                  <div className="bg-destructive/5 border border-destructive/20 rounded-xl p-4">
+                    <h3 className="font-display font-semibold text-sm text-foreground mb-3 flex items-center gap-2">
+                      <BookOpen className="w-4 h-4 text-destructive" />
+                      Concepts to revisit
+                    </h3>
+                    <p className="text-xs text-muted-foreground mb-3">
+                      Re-read the chapter and focus on these areas before retaking the quiz:
+                    </p>
+                    <ul className="space-y-2">
+                      {[...new Set(wrongConcepts)].map((concept, i) => (
+                        <li key={i} className="flex items-start gap-2 text-sm text-foreground">
+                          <XCircle className="w-3.5 h-3.5 text-destructive shrink-0 mt-0.5" />
+                          <span>{concept}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </motion.div>
+              )}
+
+              {/* Passed feedback with wrong concepts */}
+              {passed && wrongConcepts.length > 0 && (
+                <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mb-6">
+                  <div className="bg-primary/5 border border-primary/20 rounded-xl p-4">
+                    <h3 className="font-display font-semibold text-sm text-foreground mb-2">
+                      💡 Quick review
+                    </h3>
+                    <p className="text-xs text-muted-foreground mb-2">
+                      You passed, but consider revisiting:
+                    </p>
+                    <ul className="space-y-1">
+                      {[...new Set(wrongConcepts)].map((concept, i) => (
+                        <li key={i} className="text-xs text-muted-foreground flex items-center gap-2">
+                          <span className="text-primary">•</span> {concept}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </motion.div>
+              )}
 
               <div className="flex flex-col gap-3 max-w-xs mx-auto">
-                {activeChapter.number < chapters.length && (
+                {passed && activeChapter.number < chapters.length && (
                   <Button onClick={() => openChapter(chapters[activeChapter.number])} className="gap-2">
                     Next Chapter <ArrowRight className="w-4 h-4" />
                   </Button>
+                )}
+                {!passed && (
+                  <>
+                    <Button onClick={() => openChapter(activeChapter)} className="gap-2">
+                      <RotateCcw className="w-4 h-4" /> Re-read & Retry
+                    </Button>
+                    <Button variant="outline" onClick={startQuiz} className="gap-2">
+                      Retry Quiz Only <ArrowRight className="w-4 h-4" />
+                    </Button>
+                  </>
                 )}
                 <Button variant="outline" onClick={() => setView("list")}>
                   Back to Chapters
