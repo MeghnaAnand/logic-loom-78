@@ -36,6 +36,12 @@ export const chapters: Chapter[] = [
       "In the workplace, automation handles things like sending follow-up emails, moving data between apps, generating reports, and updating spreadsheets. Instead of doing these tasks manually every day, you build a workflow once and let it run.",
       "You don't need to be a programmer to automate. Tools like Zapier, Make, and Power Automate use visual builders — you drag blocks, connect them, and set rules. If you can describe a task step-by-step, you can automate it.",
     ],
+    diagram: [
+      { label: "Form Submitted", type: "trigger" },
+      { label: "Save to Spreadsheet", type: "action" },
+      { label: "Send Confirmation Email", type: "action" },
+    ],
+    diagramCaption: "A simple 3-step automation: trigger → action → action",
     questions: [
       {
         question: "What is the best way to describe automation?",
