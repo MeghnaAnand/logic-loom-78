@@ -53,15 +53,6 @@ const Index = () => {
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => navigate("/glossary")}
-            className="gap-1.5 font-display"
-          >
-            <BookOpen className="w-4 h-4" />
-            Glossary
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
             onClick={() => navigate("/learn")}
             className="gap-1.5 font-display"
           >
@@ -70,15 +61,6 @@ const Index = () => {
           </Button>
           {user ? (
             <>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => navigate("/skills")}
-                className="gap-1.5 font-display"
-              >
-                <Radar className="w-4 h-4" />
-                Skill Map
-              </Button>
               <Button
                 variant="ghost"
                 size="sm"
