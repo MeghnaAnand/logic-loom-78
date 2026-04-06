@@ -12,6 +12,7 @@ import History from "./pages/History";
 import Learn from "./pages/Learn";
 import Certificate from "./pages/Certificate";
 import SpeedChallenge from "./pages/SpeedChallenge";
+import BuildZap from "./pages/BuildZap";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
