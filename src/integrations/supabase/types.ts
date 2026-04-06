@@ -14,6 +14,33 @@ export type Database = {
   }
   public: {
     Tables: {
+      chapter_progress: {
+        Row: {
+          chapter_id: string
+          completed_at: string
+          id: string
+          passed: boolean
+          score: number
+          user_id: string
+        }
+        Insert: {
+          chapter_id: string
+          completed_at?: string
+          id?: string
+          passed?: boolean
+          score?: number
+          user_id: string
+        }
+        Update: {
+          chapter_id?: string
+          completed_at?: string
+          id?: string
+          passed?: boolean
+          score?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
       session_history: {
         Row: {
           ai_learning_tips: Json | null
