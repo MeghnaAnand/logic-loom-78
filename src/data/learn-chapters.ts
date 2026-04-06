@@ -252,9 +252,13 @@ export const chapters: Chapter[] = [
       "Think of it like filling out a form template. The trigger says 'a new customer signed up' and provides their name, email, and company. Your action (send welcome email) maps those fields: 'To' = customer email, 'Name' = customer name.",
       "Getting data mapping wrong is the #1 reason automations fail. If you map the wrong field — like putting the customer's company name in the 'email' field — the step will error. Always double-check which fields you're connecting.",
     ],
-    questions: [
-      {
-        question: "What is data mapping in automation?",
+    diagram: [
+      { label: "New Customer Signs Up", type: "trigger" },
+      { label: "Extract Name & Email", type: "data" },
+      { label: "Map to Email Template", type: "data" },
+      { label: "Send Welcome Email", type: "action" },
+    ],
+    diagramCaption: "Data from the trigger is mapped into the email action fields",
         options: ["Drawing a map of your office", "Connecting output data from one step to input fields of the next step", "Deleting unnecessary data", "Creating a new database table"],
         correctIndex: 1,
         explanation: "Data mapping connects the dots — it tells each step which data from previous steps to use in its fields.",
