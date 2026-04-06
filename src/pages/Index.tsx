@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ArrowRight, Zap, Puzzle, Sparkles, History, BookOpen, LogIn } from "lucide-react";
+import { ArrowRight, Zap, Puzzle, Sparkles, History, BookOpen, LogIn, Award, Clock, TrendingUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 import { useAuth } from "@/hooks/useAuth";
@@ -14,19 +14,19 @@ const floatingBlocks = [
 
 const features = [
   {
+    icon: <BookOpen className="w-6 h-6" />,
+    title: "Learn by Chapters",
+    description: "9 bite-sized chapters teach you triggers, actions, conditions, loops, and more — with quizzes to lock in the knowledge.",
+  },
+  {
     icon: <Puzzle className="w-6 h-6" />,
-    title: "Drag & Drop Puzzles",
-    description: "Arrange visual blocks in the right order to solve real automation scenarios — from email sorting to sales reports.",
+    title: "Practice with Puzzles",
+    description: "Drag-and-drop real automation workflows. Build the skills Zapier, Make, and Power Automate users need — without touching the tools yet.",
   },
   {
-    icon: <Zap className="w-6 h-6" />,
-    title: "Real-World Scenarios",
-    description: "Practice with tasks professionals automate daily using Zapier, Make, and Power Automate. Learn concepts that transfer to any tool.",
-  },
-  {
-    icon: <Sparkles className="w-6 h-6" />,
-    title: "AI-Powered Learning",
-    description: "Get personalized feedback, AI-generated challenges, and a learning path tailored to how you solve each puzzle.",
+    icon: <Award className="w-6 h-6" />,
+    title: "Earn a Certificate",
+    description: "Complete all chapters and puzzles to earn a shareable certificate you can add to LinkedIn and your resume.",
   },
 ];
 
@@ -102,17 +102,17 @@ const Index = () => {
             className="text-center lg:text-left"
           >
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-sm font-medium mb-4">
-              <Sparkles className="w-4 h-4" />
-              No experience needed
+              <TrendingUp className="w-4 h-4" />
+              The #1 skill employers want in 2026
             </div>
             <h1 className="font-display text-5xl lg:text-6xl font-bold leading-tight mb-4 text-foreground">
-              Learn automation
+              Automation skills
               <br />
-              <span className="text-primary">by solving puzzles</span>
+              <span className="text-primary">that get you hired</span>
             </h1>
             <p className="text-lg text-muted-foreground mb-6 max-w-lg leading-relaxed mx-auto lg:mx-0">
-              Drag blocks. Solve real problems. Build skills employers actually want — 
-              no manuals, no code, no boring tutorials. Just puzzles that click.
+              Learn Zapier, Make & Power Automate concepts in 30 minutes. 
+              Earn a certificate. Stand out in your next interview.
             </p>
             <div className="flex justify-center lg:justify-start">
               <Button
@@ -120,8 +120,9 @@ const Index = () => {
                 onClick={handleStartPuzzling}
                 className="bg-primary text-primary-foreground hover:bg-primary/90 glow-primary font-display text-base px-8 gap-2"
               >
-                {user ? "Start Puzzling" : "Sign In & Start Puzzling"} <ArrowRight className="w-4 h-4" />
+                {user ? "Start Learning — Free" : "Sign Up Free"} <ArrowRight className="w-4 h-4" />
               </Button>
+              <p className="text-xs text-muted-foreground mt-2">No credit card · Takes 30 minutes · Certificate included</p>
             </div>
           </motion.div>
 
@@ -225,17 +226,17 @@ const Index = () => {
         >
           <div className="relative z-10">
             <h2 className="font-display text-3xl font-bold text-workspace-foreground mb-4">
-              Ready to think like an automator?
+              Your next interview edge starts here
             </h2>
             <p className="text-workspace-foreground/70 mb-8">
-              5 puzzles. 15 minutes. A whole new skill.
+              9 chapters. 5 puzzles. 1 certificate. 30 minutes.
             </p>
             <Button
               size="lg"
               onClick={handleStartPuzzling}
               className="bg-primary text-primary-foreground hover:bg-primary/90 glow-primary font-display text-base px-8 gap-2"
             >
-              {user ? "Start Your First Puzzle" : "Sign In & Start"} <ArrowRight className="w-4 h-4" />
+              {user ? "Continue Learning" : "Get Started Free"} <ArrowRight className="w-4 h-4" />
             </Button>
           </div>
         </motion.div>
