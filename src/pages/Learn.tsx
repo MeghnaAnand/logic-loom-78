@@ -206,7 +206,6 @@ const Learn = () => {
               <p className="text-sm text-muted-foreground mb-4">
                 {chapters.length} chapters · 5 questions each · Score 60% to unlock the next
               </p>
-              </p>
               {chapters.map((ch) => {
                 const unlocked = isChapterUnlocked(ch);
                 const done = completedChapters.has(ch.id);
