@@ -411,9 +411,13 @@ export const chapters: Chapter[] = [
       "Think of webhooks like a doorbell. Instead of checking the door every few minutes (polling), the doorbell rings when someone arrives (webhook). It's faster, more efficient, and gives you instant updates.",
       "Webhooks are used for things like: Stripe notifying your app about a new payment, GitHub alerting your workflow about a new commit, or a form tool sending submission data the instant someone clicks 'Submit.'",
     ],
-    questions: [
-      {
-        question: "How is a webhook different from polling?",
+    diagram: [
+      { label: "Stripe Payment Received", type: "trigger" },
+      { label: "Webhook Sends Data Instantly", type: "data" },
+      { label: "Update Order Status", type: "action" },
+      { label: "Send Receipt Email", type: "action" },
+    ],
+    diagramCaption: "Webhook delivers payment data instantly — no polling needed",
         options: ["Webhooks check for data every 5 minutes", "Webhooks send data instantly when an event happens, instead of checking periodically", "Webhooks only work with email", "There is no difference"],
         correctIndex: 1,
         explanation: "Polling checks repeatedly on a schedule. Webhooks push data instantly when something happens — faster and more efficient.",
