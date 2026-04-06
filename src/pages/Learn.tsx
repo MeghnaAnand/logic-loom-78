@@ -1,12 +1,68 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, ArrowRight, CheckCircle, XCircle, BookOpen, ChevronRight, RotateCcw, Lock, Award } from "lucide-react";
+import { ArrowLeft, ArrowRight, CheckCircle, XCircle, BookOpen, ChevronRight, RotateCcw, Lock, Award, Send, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { toast } from "sonner";
+import FlowDiagram from "@/components/learn/FlowDiagram";
 import { chapters, PASS_THRESHOLD, type Chapter, type QuizQuestion } from "@/data/learn-chapters";
 
 type View = "list" | "reading" | "quiz" | "results";
+
+const WebhookTester = () => {
+  const [webhookUrl, setWebhookUrl] = useState("");
+  const [isSending, setIsSending] = useState(false);
+
+  const handleTest = async () => {
+    if (!webhookUrl) {
+      toast.error("Please enter your Zapier webhook URL");
+      return;
+    }
+    setIsSending(true);
+    try {
+      await fetch(webhookUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        mode: "no-cors",
+        body: JSON.stringify({
+          message: "Hello from AutomationMind!",
+          timestamp: new Date().toISOString(),
+          source: "AutomationMind Learn Chapter 10",
+        }),
+      });
+      toast.success("Request sent! Check your Zap history to confirm it triggered.");
+    } catch {
+      toast.error("Failed to send. Check the URL and try again.");
+    } finally {
+      setIsSending(false);
+    }
+  };
+
+  return (
+    <div className="bg-muted border border-border rounded-xl p-4 my-6">
+      <h3 className="font-display font-semibold text-sm text-foreground mb-2 flex items-center gap-2">
+        <Send className="w-4 h-4 text-primary" /> Test Your Webhook
+      </h3>
+      <p className="text-xs text-muted-foreground mb-3">
+        Paste your Zapier "Catch Hook" URL below and click Test to trigger your Zap.
+      </p>
+      <div className="flex gap-2">
+        <Input
+          placeholder="https://hooks.zapier.com/hooks/catch/..."
+          value={webhookUrl}
+          onChange={(e) => setWebhookUrl(e.target.value)}
+          className="text-xs"
+        />
+        <Button size="sm" onClick={handleTest} disabled={isSending} className="shrink-0 gap-1.5">
+          {isSending ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Send className="w-3.5 h-3.5" />}
+          Test
+        </Button>
+      </div>
+    </div>
+  );
+};
 
 const Learn = () => {
   const navigate = useNavigate();
@@ -161,12 +217,21 @@ const Learn = () => {
                   <h2 className="font-display text-xl font-bold text-foreground">{activeChapter.title}</h2>
                 </div>
               </div>
-              <div className="space-y-4 mb-8">
+              <div className="space-y-4 mb-4">
                 {activeChapter.content.map((para, i) => (
                   <p key={i} className="text-sm text-muted-foreground leading-relaxed">{para}</p>
                 ))}
               </div>
-              <Button onClick={startQuiz} className="w-full gap-2">
+
+              {/* Visual flow diagram */}
+              {activeChapter.diagram && (
+                <FlowDiagram blocks={activeChapter.diagram} caption={activeChapter.diagramCaption} />
+              )}
+
+              {/* Webhook tester for walkthrough chapter */}
+              {activeChapter.isWalkthrough && <WebhookTester />}
+
+              <Button onClick={startQuiz} className="w-full gap-2 mt-6">
                 Take the Quiz ({activeChapter.questions.length} questions) <ArrowRight className="w-4 h-4" />
               </Button>
             </motion.div>
