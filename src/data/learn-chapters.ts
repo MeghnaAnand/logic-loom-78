@@ -464,9 +464,13 @@ export const chapters: Chapter[] = [
       "Scheduled automations use time as the trigger. You set the frequency (every hour, every day, every week) and the automation runs at that interval. It's like setting an alarm clock for your workflow.",
       "Scheduling is especially useful for: batch processing (handle all new records at end of day), maintenance tasks (archive old files weekly), reporting (send metrics every Monday morning), and syncing data between systems on a regular basis.",
     ],
-    questions: [
-      {
-        question: "When would you use a scheduled automation instead of an event trigger?",
+    diagram: [
+      { label: "Every Monday at 9 AM", type: "trigger" },
+      { label: "Query Sales Database", type: "data" },
+      { label: "Generate Report", type: "action" },
+      { label: "Email to Team", type: "output" },
+    ],
+    diagramCaption: "Time-based trigger runs the workflow on a fixed schedule",
         options: ["When you need instant responses", "When tasks should run at regular intervals regardless of events", "When you only have one item to process", "When you don't know what data to expect"],
         correctIndex: 1,
         explanation: "Scheduled automations are ideal for recurring tasks — like daily reports or weekly cleanups — that should run at set times.",
