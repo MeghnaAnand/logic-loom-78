@@ -197,8 +197,15 @@ const Learn = () => {
           {/* Chapter List */}
           {view === "list" && (
             <motion.div key="list" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-3">
+              {loadingProgress ? (
+                <div className="flex justify-center py-16">
+                  <Loader2 className="w-6 h-6 animate-spin text-primary" />
+                </div>
+              ) : (
+              <>
               <p className="text-sm text-muted-foreground mb-4">
                 {chapters.length} chapters · 5 questions each · Score 60% to unlock the next
+              </p>
               </p>
               {chapters.map((ch) => {
                 const unlocked = isChapterUnlocked(ch);
