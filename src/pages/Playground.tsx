@@ -448,6 +448,24 @@ const Playground = () => {
                 <h3 className="font-display text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-3 hidden lg:block">
                   Drag blocks →
                 </h3>
+                {isMobile ? (
+                  <div className="flex flex-col gap-2 min-h-[56px]">
+                    {availableBlocks.map((block, index) => (
+                      <button
+                        key={block.id}
+                        onClick={() => handleTapAvailable(index)}
+                        className={`${blockColorMap[block.type]} rounded-lg px-3 py-2 text-primary-foreground font-display font-semibold text-xs
+                          select-none text-left shadow-md hover:shadow-lg active:scale-95 transition-all`}
+                      >
+                        <span className="mr-1.5">{block.icon}</span>{block.label}
+                        <span className="ml-2 text-primary-foreground/60 text-[10px]">tap to add →</span>
+                      </button>
+                    ))}
+                    {availableBlocks.length === 0 && (
+                      <div className="text-xs text-muted-foreground italic">All blocks placed!</div>
+                    )}
+                  </div>
+                ) : (
                 <Droppable droppableId="available" direction="vertical">
                   {(provided) => (
                     <div ref={provided.innerRef} {...provided.droppableProps} className="flex flex-col gap-2 min-h-[56px]">
@@ -474,6 +492,7 @@ const Playground = () => {
                     </div>
                   )}
                 </Droppable>
+                )}
 
                 {/* Code View */}
                 <div className="border-t border-border mt-4 pt-3">
