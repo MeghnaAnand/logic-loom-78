@@ -262,6 +262,8 @@ const Learn = () => {
                   </Button>
                 </div>
               )}
+              </>
+              )}
             </motion.div>
           )}
 
