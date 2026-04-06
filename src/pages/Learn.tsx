@@ -68,6 +68,7 @@ const WebhookTester = () => {
 
 const Learn = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [view, setView] = useState<View>("list");
   const [activeChapter, setActiveChapter] = useState<Chapter | null>(null);
   const [currentQ, setCurrentQ] = useState(0);
@@ -76,6 +77,49 @@ const Learn = () => {
   const [score, setScore] = useState(0);
   const [wrongConcepts, setWrongConcepts] = useState<string[]>([]);
   const [completedChapters, setCompletedChapters] = useState<Set<string>>(new Set());
+  const [loadingProgress, setLoadingProgress] = useState(true);
+
+  // Load progress from database
+  useEffect(() => {
+    if (!user) { setLoadingProgress(false); return; }
+    const load = async () => {
+      const { data } = await supabase
+        .from("chapter_progress")
+        .select("chapter_id")
+        .eq("passed", true);
+      if (data) {
+        setCompletedChapters(new Set(data.map((r: any) => r.chapter_id)));
+      }
+      setLoadingProgress(false);
+    };
+    load();
+  }, [user]);
+
+  // Save progress to database
+  const saveProgress = useCallback(async (chapterId: string, quizScore: number) => {
+    if (!user) return;
+    const total = chapters.find(c => c.id === chapterId)?.questions.length ?? 5;
+    const didPass = quizScore / total >= PASS_THRESHOLD;
+    
+    const { data: existing } = await supabase
+      .from("chapter_progress")
+      .select("id, score")
+      .eq("chapter_id", chapterId)
+      .maybeSingle();
+
+    if (existing) {
+      if (quizScore > (existing.score ?? 0)) {
+        await supabase
+          .from("chapter_progress")
+          .update({ score: quizScore, passed: didPass, completed_at: new Date().toISOString() })
+          .eq("id", existing.id);
+      }
+    } else {
+      await supabase
+        .from("chapter_progress")
+        .insert({ user_id: user.id, chapter_id: chapterId, score: quizScore, passed: didPass });
+    }
+  }, [user]);
 
   const isChapterUnlocked = (ch: Chapter) => {
     if (ch.number === 1) return true;
