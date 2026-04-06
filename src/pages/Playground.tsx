@@ -567,6 +567,69 @@ const Playground = () => {
 
               <WrongAnswerOverlay show={showWrong} message={wrongMessage} onDismiss={() => setShowWrong(false)} />
 
+              {isMobile ? (
+                /* Mobile: tap-to-remove placed blocks */
+                <motion.div
+                  animate={wrongShake ? { x: [0, -6, 6, -4, 4, 0] } : { x: 0 }}
+                  transition={{ duration: 0.4 }}
+                  className={`min-h-[300px] max-w-md mx-auto rounded-xl border-2 border-dashed p-4 transition-colors
+                    ${solved ? "border-success/50 bg-success/5" :
+                      wrongShake ? "border-destructive/50 bg-destructive/5" : "border-workspace-foreground/20"}`}
+                >
+                  {placedBlocks.length === 0 && (
+                    <div className="flex items-center justify-center h-[280px] text-workspace-foreground/30 font-display text-center text-sm">
+                      Tap blocks above to place them here
+                    </div>
+                  )}
+                  {placedBlocks.map((block, index) => {
+                    const indent = getBlockIndent(placedBlocks, index);
+                    const isStructural = block.structure && block.structure !== "step";
+                    const isOpener = block.structure === "if" || block.structure === "loop-start" || block.structure === "try";
+                    const isCloser = block.structure === "endif" || block.structure === "loop-end" || block.structure === "end-try";
+                    const isBranch = block.structure === "else" || block.structure === "catch";
+                    return (
+                      <div key={block.id} style={{ marginLeft: `${indent * 24}px` }}>
+                        <motion.button
+                          layout
+                          initial={{ opacity: 0, scale: 0.8 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          onClick={() => handleTapPlaced(index)}
+                          className={`w-full text-left
+                            ${isStructural ? (
+                              isOpener ? "bg-primary/20 border-2 border-primary/40 text-primary" :
+                              isCloser ? "bg-muted border-2 border-border text-muted-foreground" :
+                              isBranch ? "bg-accent/20 border-2 border-accent/40 text-accent-foreground" :
+                              blockColorMap[block.type] + " text-primary-foreground"
+                            ) : blockColorMap[block.type] + " text-primary-foreground"}
+                            rounded-lg px-4 py-2.5 font-display font-semibold text-xs
+                            select-none mb-2 shadow-md active:scale-95 transition-all
+                            ${solved ? "ring-2 ring-success/40" : ""}`}
+                        >
+                          <div className="flex items-center gap-2">
+                            <span className="text-base">{block.icon}</span>
+                            <div>
+                              <div className="text-[9px] uppercase tracking-wider opacity-70">
+                                {isStructural ? (block.structure ?? block.type) : block.type}
+                              </div>
+                              <div>{block.label}</div>
+                            </div>
+                            {solved ? (
+                              <CheckCircle2 className="w-3.5 h-3.5 ml-auto opacity-80" />
+                            ) : (
+                              <span className="ml-auto text-[10px] opacity-50">✕</span>
+                            )}
+                          </div>
+                        </motion.button>
+                        {index < placedBlocks.length - 1 && (
+                          <div className="flex my-0.5" style={{ marginLeft: `${Math.min(indent, getBlockIndent(placedBlocks, index + 1)) * 24}px` }}>
+                            <div className={`w-0.5 h-3 rounded ${isOpener || isBranch ? "bg-primary/30" : "bg-workspace-foreground/20"}`} style={{ marginLeft: "20px" }} />
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </motion.div>
+              ) : (
               <Droppable droppableId="workspace">
                 {(provided, snapshot) => (
                   <motion.div
@@ -642,6 +705,7 @@ const Playground = () => {
                   </motion.div>
                 )}
               </Droppable>
+              )}
 
               {/* Simplified success overlay */}
               <AnimatePresence>
