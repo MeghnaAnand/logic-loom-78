@@ -3,103 +3,104 @@
 @tailwind utilities;
 
 @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap');
+@import url('https://fonts.cdnfonts.com/css/opendyslexic');
 
 @layer base {
   :root {
-    --background: 220 20% 97%;
-    --foreground: 220 30% 12%;
+    --background: 260 20% 97%;
+    --foreground: 260 25% 12%;
 
     --card: 0 0% 100%;
-    --card-foreground: 220 30% 12%;
+    --card-foreground: 260 25% 12%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 220 30% 12%;
+    --popover-foreground: 260 25% 12%;
 
-    --primary: 14 90% 58%;
+    --primary: 262 60% 58%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 174 60% 42%;
+    --secondary: 280 40% 72%;
     --secondary-foreground: 0 0% 100%;
 
-    --muted: 220 15% 92%;
-    --muted-foreground: 220 10% 50%;
+    --muted: 260 15% 92%;
+    --muted-foreground: 260 10% 46%;
 
-    --accent: 45 95% 60%;
-    --accent-foreground: 220 30% 12%;
+    --accent: 280 50% 88%;
+    --accent-foreground: 260 25% 12%;
 
-    --destructive: 0 84% 60%;
+    --destructive: 0 72% 55%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 220 15% 88%;
-    --input: 220 15% 88%;
-    --ring: 14 90% 58%;
+    --border: 260 15% 88%;
+    --input: 260 15% 88%;
+    --ring: 262 60% 58%;
 
     --radius: 0.75rem;
 
     /* Puzzle-specific tokens */
-    --workspace: 222 40% 14%;
-    --workspace-foreground: 220 20% 90%;
-    --block-trigger: 14 90% 58%;
-    --block-action: 174 60% 42%;
-    --block-condition: 262 60% 55%;
-    --block-data: 45 95% 55%;
-    --block-output: 200 75% 50%;
-    --glow-primary: 14 90% 58%;
-    --success: 145 65% 42%;
+    --workspace: 262 35% 14%;
+    --workspace-foreground: 260 20% 90%;
+    --block-trigger: 262 60% 58%;
+    --block-action: 200 65% 50%;
+    --block-condition: 320 55% 55%;
+    --block-data: 38 80% 55%;
+    --block-output: 180 55% 45%;
+    --glow-primary: 262 60% 58%;
+    --success: 155 60% 42%;
     --success-foreground: 0 0% 100%;
 
     /* AutomationMind tokens */
-    --am-trigger: 43 96% 56%;
+    --am-trigger: 43 85% 56%;
     --am-trigger-foreground: 30 50% 15%;
-    --am-action: 217 91% 60%;
+    --am-action: 220 75% 58%;
     --am-action-foreground: 0 0% 100%;
-    --am-condition: 271 81% 56%;
+    --am-condition: 280 65% 56%;
     --am-condition-foreground: 0 0% 100%;
-    --am-data: 24 94% 50%;
+    --am-data: 24 80% 50%;
     --am-data-foreground: 0 0% 100%;
-    --am-canvas: 220 15% 95%;
-    --am-canvas-foreground: 220 20% 40%;
-    --am-yes: 160 84% 39%;
-    --am-no: 0 84% 60%;
+    --am-canvas: 260 15% 95%;
+    --am-canvas-foreground: 260 15% 40%;
+    --am-yes: 160 70% 39%;
+    --am-no: 0 72% 55%;
 
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-background: 260 15% 98%;
+    --sidebar-foreground: 260 10% 26%;
+    --sidebar-primary: 262 60% 50%;
     --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 240 4.8% 95.9%;
-    --sidebar-accent-foreground: 240 5.9% 10%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-accent: 260 12% 95%;
+    --sidebar-accent-foreground: 260 10% 15%;
+    --sidebar-border: 260 13% 91%;
+    --sidebar-ring: 262 60% 58%;
   }
 
   .dark {
-    --background: 222 40% 8%;
-    --foreground: 220 20% 92%;
-    --card: 222 35% 12%;
-    --card-foreground: 220 20% 92%;
-    --popover: 222 35% 12%;
-    --popover-foreground: 220 20% 92%;
-    --primary: 14 90% 58%;
+    --background: 262 35% 8%;
+    --foreground: 260 20% 92%;
+    --card: 262 30% 12%;
+    --card-foreground: 260 20% 92%;
+    --popover: 262 30% 12%;
+    --popover-foreground: 260 20% 92%;
+    --primary: 262 60% 62%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 174 60% 42%;
+    --secondary: 280 40% 72%;
     --secondary-foreground: 0 0% 100%;
-    --muted: 222 25% 18%;
-    --muted-foreground: 220 15% 60%;
-    --accent: 45 95% 60%;
-    --accent-foreground: 220 30% 12%;
+    --muted: 262 25% 18%;
+    --muted-foreground: 260 15% 60%;
+    --accent: 280 50% 88%;
+    --accent-foreground: 260 25% 12%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 40% 98%;
-    --border: 222 25% 20%;
-    --input: 222 25% 20%;
-    --ring: 14 90% 58%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
+    --border: 262 25% 20%;
+    --input: 262 25% 20%;
+    --ring: 262 60% 62%;
+    --sidebar-background: 262 30% 10%;
+    --sidebar-foreground: 260 10% 95%;
+    --sidebar-primary: 262 60% 55%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-accent: 262 20% 16%;
+    --sidebar-accent-foreground: 260 10% 95%;
+    --sidebar-border: 262 20% 16%;
+    --sidebar-ring: 262 60% 58%;
   }
 }
 
@@ -134,4 +135,72 @@
       linear-gradient(90deg, hsl(var(--workspace-foreground) / 0.05) 1px, transparent 1px);
     background-size: 24px 24px;
   }
+}
+
+/* Accessibility: Reduced motion */
+.a11y-reduced-motion *,
+.a11y-reduced-motion *::before,
+.a11y-reduced-motion *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+}
+
+/* Accessibility: Focus mode – dim non-interactive areas */
+.a11y-focus-mode main > * {
+  opacity: 0.6;
+  transition: opacity 0.2s;
+}
+.a11y-focus-mode main > *:hover,
+.a11y-focus-mode main > *:focus-within,
+.a11y-focus-mode main > *:has(:focus) {
+  opacity: 1;
+}
+
+/* Accessibility: Dyslexia-friendly font */
+.a11y-dyslexia body,
+.a11y-dyslexia h1,
+.a11y-dyslexia h2,
+.a11y-dyslexia h3,
+.a11y-dyslexia h4,
+.a11y-dyslexia h5,
+.a11y-dyslexia h6,
+.a11y-dyslexia p,
+.a11y-dyslexia span,
+.a11y-dyslexia button,
+.a11y-dyslexia label,
+.a11y-dyslexia input,
+.a11y-dyslexia .font-display,
+.a11y-dyslexia .font-body {
+  font-family: 'OpenDyslexic', 'Comic Sans MS', sans-serif !important;
+  letter-spacing: 0.05em;
+  word-spacing: 0.12em;
+  line-height: 1.8;
+}
+
+/* Accessibility: Large text */
+.a11y-large-text body {
+  font-size: 18px;
+}
+.a11y-large-text .text-xs {
+  font-size: 0.85rem !important;
+}
+.a11y-large-text .text-sm {
+  font-size: 1rem !important;
+}
+.a11y-large-text .text-base {
+  font-size: 1.15rem !important;
+}
+
+/* Accessibility: High contrast */
+.a11y-high-contrast {
+  --border: 260 25% 60%;
+  --muted-foreground: 260 15% 30%;
+}
+.a11y-high-contrast .text-muted-foreground {
+  font-weight: 500;
+}
+.a11y-high-contrast button,
+.a11y-high-contrast [role="button"] {
+  border-width: 2px;
 }
