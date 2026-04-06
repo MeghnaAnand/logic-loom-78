@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, ArrowRight, CheckCircle, XCircle, BookOpen, ChevronRight, RotateCcw, Lock } from "lucide-react";
+import { ArrowLeft, ArrowRight, CheckCircle, XCircle, BookOpen, ChevronRight, RotateCcw, Lock, Award } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { chapters, PASS_THRESHOLD, type Chapter, type QuizQuestion } from "@/data/learn-chapters";
