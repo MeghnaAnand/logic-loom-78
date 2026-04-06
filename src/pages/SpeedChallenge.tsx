@@ -315,7 +315,7 @@ const SpeedChallenge = () => {
                   {...provided.droppableProps}
                   animate={wrongShake ? { x: [0, -6, 6, -4, 4, 0] } : { x: 0 }}
                   transition={{ duration: 0.4 }}
-                  className={`min-h-[300px] max-w-md mx-auto rounded-xl border-2 border-dashed p-4 transition-colors
+                  className={`min-h-[180px] lg:min-h-[300px] max-w-md mx-auto rounded-xl border-2 border-dashed p-4 transition-colors
                     ${snapshot.isDraggingOver ? "border-primary/50 bg-primary/5" :
                       solved ? "border-success/50 bg-success/5" : "border-workspace-foreground/20"}`}
                 >
