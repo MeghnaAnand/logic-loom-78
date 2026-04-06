@@ -27,6 +27,19 @@ const Certificate = () => {
     enabled: !!user,
   });
 
+  const { data: chapterProgress, isLoading: chaptersLoading } = useQuery({
+    queryKey: ["chapter-progress", user?.id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("chapter_progress")
+        .select("chapter_id")
+        .eq("passed", true);
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!user,
+  });
+
   if (authLoading) return null;
   if (!user) {
     navigate("/auth?redirect=/certificate");
