@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, ArrowRight, CheckCircle, XCircle, BookOpen, ChevronRight, RotateCcw, Lock, Award, Send, Loader2, Zap } from "lucide-react";
@@ -8,6 +8,8 @@ import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import FlowDiagram from "@/components/learn/FlowDiagram";
 import { chapters, PASS_THRESHOLD, type Chapter, type QuizQuestion } from "@/data/learn-chapters";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
 
 type View = "list" | "reading" | "quiz" | "results";
 
