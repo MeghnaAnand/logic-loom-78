@@ -146,9 +146,13 @@ export const chapters: Chapter[] = [
       "A single automation can have many actions chained together. For example: trigger (new order) → action 1 (add to spreadsheet) → action 2 (send confirmation email) → action 3 (notify the team on Slack).",
       "Each action takes data from previous steps and uses it. When you send that confirmation email, you can pull in the customer's name, order number, and total from the trigger data. This is what makes automations powerful — data flows through every step.",
     ],
-    questions: [
-      {
-        question: "What is an action in an automation workflow?",
+    diagram: [
+      { label: "New Order Received", type: "trigger" },
+      { label: "Add to Spreadsheet", type: "action" },
+      { label: "Send Confirmation Email", type: "action" },
+      { label: "Notify Team on Slack", type: "action" },
+    ],
+    diagramCaption: "One trigger, three chained actions — data flows through each step",
         options: ["The event that starts the workflow", "A step that performs a task like sending an email or updating a record", "A rule that decides which path to take", "The app you connect to"],
         correctIndex: 1,
         explanation: "Actions are the steps that do the actual work — they execute tasks like sending messages, creating records, or updating data.",
