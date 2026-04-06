@@ -33,6 +33,7 @@ const App = () => (
             <Route path="/auth" element={<Auth />} />
             <Route path="/challenge" element={<ProtectedRoute><ChallengeMode /></ProtectedRoute>} />
             <Route path="/glossary" element={<Glossary />} />
+            <Route path="/learn" element={<Learn />} />
             <Route path="/skills" element={<ProtectedRoute><SkillMap /></ProtectedRoute>} />
             
             <Route path="*" element={<NotFound />} />
