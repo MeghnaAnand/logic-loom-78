@@ -166,10 +166,12 @@ const Learn = () => {
       setAnswered(false);
     } else {
       const total = activeChapter!.questions.length;
-      const passed = score / total >= PASS_THRESHOLD;
+      const finalScore = score;
+      const passed = finalScore / total >= PASS_THRESHOLD;
       if (passed) {
         setCompletedChapters((prev) => new Set(prev).add(activeChapter!.id));
       }
+      saveProgress(activeChapter!.id, finalScore);
       setView("results");
     }
   };
