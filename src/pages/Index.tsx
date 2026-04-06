@@ -59,6 +59,15 @@ const Index = () => {
             <BookOpen className="w-4 h-4" />
             Glossary
           </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => navigate("/learn")}
+            className="gap-1.5 font-display"
+          >
+            <BookOpen className="w-4 h-4" />
+            Learn
+          </Button>
           {user ? (
             <>
               <Button

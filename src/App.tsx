@@ -13,6 +13,7 @@ import History from "./pages/History";
 import ChallengeMode from "./pages/ChallengeMode";
 import Glossary from "./pages/Glossary";
 import SkillMap from "./pages/SkillMap";
+import Learn from "./pages/Learn";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -32,6 +33,7 @@ const App = () => (
             <Route path="/auth" element={<Auth />} />
             <Route path="/challenge" element={<ProtectedRoute><ChallengeMode /></ProtectedRoute>} />
             <Route path="/glossary" element={<Glossary />} />
+            <Route path="/learn" element={<Learn />} />
             <Route path="/skills" element={<ProtectedRoute><SkillMap /></ProtectedRoute>} />
             
             <Route path="*" element={<NotFound />} />
