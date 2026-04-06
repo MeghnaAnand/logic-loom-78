@@ -226,17 +226,17 @@ const Index = () => {
         >
           <div className="relative z-10">
             <h2 className="font-display text-3xl font-bold text-workspace-foreground mb-4">
-              Ready to think like an automator?
+              Your next interview edge starts here
             </h2>
             <p className="text-workspace-foreground/70 mb-8">
-              5 puzzles. 15 minutes. A whole new skill.
+              9 chapters. 5 puzzles. 1 certificate. 30 minutes.
             </p>
             <Button
               size="lg"
               onClick={handleStartPuzzling}
               className="bg-primary text-primary-foreground hover:bg-primary/90 glow-primary font-display text-base px-8 gap-2"
             >
-              {user ? "Start Your First Puzzle" : "Sign In & Start"} <ArrowRight className="w-4 h-4" />
+              {user ? "Continue Learning" : "Get Started Free"} <ArrowRight className="w-4 h-4" />
             </Button>
           </div>
         </motion.div>
