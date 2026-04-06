@@ -30,6 +30,7 @@ const App = () => (
             <Route path="/auth" element={<Auth />} />
             <Route path="/learn" element={<ProtectedRoute><Learn /></ProtectedRoute>} />
             <Route path="/certificate" element={<ProtectedRoute><Certificate /></ProtectedRoute>} />
+            <Route path="/speed-challenge" element={<ProtectedRoute><SpeedChallenge /></ProtectedRoute>} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
