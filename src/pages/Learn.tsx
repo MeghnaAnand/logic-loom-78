@@ -164,12 +164,21 @@ const Learn = () => {
                   <h2 className="font-display text-xl font-bold text-foreground">{activeChapter.title}</h2>
                 </div>
               </div>
-              <div className="space-y-4 mb-8">
+              <div className="space-y-4 mb-4">
                 {activeChapter.content.map((para, i) => (
                   <p key={i} className="text-sm text-muted-foreground leading-relaxed">{para}</p>
                 ))}
               </div>
-              <Button onClick={startQuiz} className="w-full gap-2">
+
+              {/* Visual flow diagram */}
+              {activeChapter.diagram && (
+                <FlowDiagram blocks={activeChapter.diagram} caption={activeChapter.diagramCaption} />
+              )}
+
+              {/* Webhook tester for walkthrough chapter */}
+              {activeChapter.isWalkthrough && <WebhookTester />}
+
+              <Button onClick={startQuiz} className="w-full gap-2 mt-6">
                 Take the Quiz ({activeChapter.questions.length} questions) <ArrowRight className="w-4 h-4" />
               </Button>
             </motion.div>
