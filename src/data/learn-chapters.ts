@@ -358,9 +358,13 @@ export const chapters: Chapter[] = [
       "The most common pattern is try-catch: 'Try this action. If it fails, catch the error and do something else.' For example: try to save to the database. If it fails, log the error and send an alert to the admin.",
       "Good error handling includes: retry logic (try again after a delay), fallback actions (use a backup method), notifications (alert someone when things fail), and logging (record what went wrong for debugging).",
     ],
-    questions: [
-      {
-        question: "Why is error handling important in automation?",
+    diagram: [
+      { label: "New Data Received", type: "trigger" },
+      { label: "TRY: Save to Database", type: "action" },
+      { label: "CATCH: Log Error", type: "error" },
+      { label: "Send Admin Alert", type: "output" },
+    ],
+    diagramCaption: "If TRY fails, CATCH handles the error gracefully",
         options: ["It makes automations run faster", "It prevents workflows from crashing silently and losing data", "It's only needed for complex automations", "It replaces the need for triggers"],
         correctIndex: 1,
         explanation: "Without error handling, a failed step can crash the whole workflow. Error handling catches failures and takes corrective action.",
