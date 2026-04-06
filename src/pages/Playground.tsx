@@ -281,6 +281,31 @@ const Playground = () => {
     }
   };
 
+  // Mobile tap-to-place: tap available block → add to workspace end
+  const handleTapAvailable = (index: number) => {
+    if (!isMobile || solved) return;
+    if (!timerRunning) setTimerRunning(true);
+    playWhoosh();
+    const block = availableBlocks[index];
+    const newAvailable = [...availableBlocks];
+    newAvailable.splice(index, 1);
+    const newPlaced = [...placedBlocks, block];
+    setAvailableBlocks(newAvailable);
+    setPlacedBlocks(newPlaced);
+    checkSolution(newPlaced);
+  };
+
+  // Mobile tap-to-remove: tap placed block → return to available
+  const handleTapPlaced = (index: number) => {
+    if (!isMobile || solved) return;
+    playWhoosh();
+    const block = placedBlocks[index];
+    const newPlaced = [...placedBlocks];
+    newPlaced.splice(index, 1);
+    setPlacedBlocks(newPlaced);
+    setAvailableBlocks([...availableBlocks, block]);
+  };
+
   const allSolved = solvedChallenges.size === sessionChallenges.length;
 
   return (
