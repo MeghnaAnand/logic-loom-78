@@ -12,7 +12,7 @@ import { useAuth } from "@/hooks/useAuth";
 const Auth = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const redirect = searchParams.get("redirect") || "/play";
+  const redirect = searchParams.get("redirect") || "/learn";
   const { user, loading: authLoading } = useAuth();
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState("");

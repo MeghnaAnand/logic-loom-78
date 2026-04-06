@@ -98,6 +98,17 @@ const Learn = () => {
                   </CardContent>
                 </Card>
               ))}
+
+              {/* CTA to puzzles */}
+              <div className="pt-4">
+                <Button
+                  variant="outline"
+                  className="w-full gap-2"
+                  onClick={() => navigate("/play")}
+                >
+                  Ready to Puzzle? Start Solving <ArrowRight className="w-4 h-4" />
+                </Button>
+              </div>
             </motion.div>
           )}
 

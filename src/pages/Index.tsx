@@ -36,9 +36,9 @@ const Index = () => {
 
   const handleStartPuzzling = () => {
     if (user) {
-      navigate("/play");
+      navigate("/learn");
     } else {
-      navigate("/auth?redirect=/play");
+      navigate("/auth?redirect=/learn");
     }
   };
 
