@@ -320,7 +320,7 @@ const SpeedChallenge = () => {
                       solved ? "border-success/50 bg-success/5" : "border-workspace-foreground/20"}`}
                 >
                   {placedBlocks.length === 0 && !snapshot.isDraggingOver && (
-                    <div className="flex items-center justify-center h-[280px] text-workspace-foreground/30 font-display text-center text-sm">
+                    <div className="flex items-center justify-center h-[140px] lg:h-[280px] text-workspace-foreground/30 font-display text-center text-sm">
                       Drop blocks here — fast! ⚡
                     </div>
                   )}
