@@ -3,7 +3,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { useNavigate } from "react-router-dom";
 import { DragDropContext, Droppable, Draggable, DropResult } from "@hello-pangea/dnd";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, ArrowRight, Lightbulb, RotateCcw, CheckCircle2, Trophy, Sparkles, Loader2, Code2, History, ChevronDown, ChevronUp, Flame } from "lucide-react";
+import { ArrowLeft, ArrowRight, Lightbulb, RotateCcw, CheckCircle2, Trophy, Sparkles, Loader2, Code2, History, ChevronDown, ChevronUp, Flame, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { pickSessionChallenges, type Block, type Challenge, getBlockIndent } from "@/data/challenges";
 import { LANGUAGE_META, type CodeLanguage, getFullCode } from "@/data/puzzle-code-translations";
@@ -636,7 +636,10 @@ const Playground = () => {
                           </Button>
                         ) : (
                           <div className="flex flex-col flex-1 gap-2">
-                            <Button size="sm" onClick={() => navigate("/history")} className="w-full bg-accent text-accent-foreground gap-1 text-xs">
+                            <Button size="sm" onClick={() => navigate("/speed-challenge")} className="w-full bg-accent text-accent-foreground gap-1 text-xs">
+                              <Zap className="w-3.5 h-3.5" /> Speed Challenge
+                            </Button>
+                            <Button size="sm" variant="outline" onClick={() => navigate("/history")} className="w-full gap-1 text-xs">
                               📊 Progress <ArrowRight className="w-3.5 h-3.5" />
                             </Button>
                             <div className="flex gap-1.5">
