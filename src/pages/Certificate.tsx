@@ -65,19 +65,13 @@ const Certificate = () => {
     }
   }, [existingCert]);
 
-  if (authLoading) return null;
-  if (!user) {
-    navigate("/auth?redirect=/certificate");
-    return null;
-  }
-
   const hasCompletedPuzzles = (sessions?.length ?? 0) > 0;
   const completedChapterCount = chapterProgress?.length ?? 0;
   const allChaptersCompleted = completedChapterCount === chapters.length;
   const isEligible = hasCompletedPuzzles && allChaptersCompleted;
   const loading = sessionsLoading || chaptersLoading || certLoading;
 
-  const userName = user.email?.split("@")[0] || "Learner";
+  const userName = user?.email?.split("@")[0] || "Learner";
   const completionDate = sessions?.[0]?.completed_at
     ? new Date(sessions[0].completed_at).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })
     : new Date().toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" });
@@ -102,7 +96,6 @@ const Certificate = () => {
       toast.success("Certificate issued! 🎓");
     } catch (e: any) {
       if (e?.code === "23505") {
-        // Already exists, refetch
         const { data } = await supabase
           .from("certificates")
           .select("certificate_number")
@@ -123,6 +116,12 @@ const Certificate = () => {
       issueCertificate();
     }
   }, [isEligible, certNumber, loading, existingCert]);
+
+  if (authLoading) return null;
+  if (!user) {
+    navigate("/auth?redirect=/certificate");
+    return null;
+  }
 
   const verifyUrl = certNumber ? `https://logic-loom-78.lovable.app/verify/${certNumber}` : "";
 
