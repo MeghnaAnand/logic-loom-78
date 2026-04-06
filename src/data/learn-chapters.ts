@@ -305,9 +305,13 @@ export const chapters: Chapter[] = [
       "A loop (also called an iterator or 'for each') takes a list and runs the same set of actions for every item in that list. Send an invoice to each customer. Update each row. Check each email.",
       "The key concept is iteration — going through items one by one. Without loops, you'd need to build 50 separate automations for 50 items. With a loop, you build one workflow and it handles all of them.",
     ],
-    questions: [
-      {
-        question: "When would you use a loop in an automation?",
+    diagram: [
+      { label: "Get All Spreadsheet Rows", type: "trigger" },
+      { label: "FOR EACH Row", type: "loop" },
+      { label: "Send Invoice Email", type: "action" },
+      { label: "Log Result", type: "output" },
+    ],
+    diagramCaption: "The loop processes each row one at a time, running the same actions",
         options: ["When you only have one item to process", "When you need to process multiple items from a list one by one", "When you want to stop the automation early", "When you need to check a condition"],
         correctIndex: 1,
         explanation: "Loops are used when your data contains multiple items (like rows or emails) and you need to perform the same action on each one.",
