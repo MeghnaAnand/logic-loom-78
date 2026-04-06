@@ -102,17 +102,17 @@ const Index = () => {
             className="text-center lg:text-left"
           >
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-sm font-medium mb-4">
-              <Sparkles className="w-4 h-4" />
-              No experience needed
+              <TrendingUp className="w-4 h-4" />
+              The #1 skill employers want in 2026
             </div>
             <h1 className="font-display text-5xl lg:text-6xl font-bold leading-tight mb-4 text-foreground">
-              Learn automation
+              Automation skills
               <br />
-              <span className="text-primary">by solving puzzles</span>
+              <span className="text-primary">that get you hired</span>
             </h1>
             <p className="text-lg text-muted-foreground mb-6 max-w-lg leading-relaxed mx-auto lg:mx-0">
-              Drag blocks. Solve real problems. Build skills employers actually want — 
-              no manuals, no code, no boring tutorials. Just puzzles that click.
+              Learn Zapier, Make & Power Automate concepts in 30 minutes. 
+              Earn a certificate. Stand out in your next interview.
             </p>
             <div className="flex justify-center lg:justify-start">
               <Button
