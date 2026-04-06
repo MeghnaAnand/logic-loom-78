@@ -13,6 +13,7 @@ import Auth from "./pages/Auth";
 import History from "./pages/History";
 import Learn from "./pages/Learn";
 import Certificate from "./pages/Certificate";
+import VerifyCertificate from "./pages/VerifyCertificate";
 import SpeedChallenge from "./pages/SpeedChallenge";
 import BuildZap from "./pages/BuildZap";
 import NotFound from "./pages/NotFound";
@@ -35,6 +36,7 @@ const App = () => (
               <Route path="/learn" element={<ProtectedRoute><Learn /></ProtectedRoute>} />
               <Route path="/certificate" element={<ProtectedRoute><Certificate /></ProtectedRoute>} />
               <Route path="/speed-challenge" element={<ProtectedRoute><SpeedChallenge /></ProtectedRoute>} />
+              <Route path="/verify/:certId" element={<VerifyCertificate />} />
               <Route path="/build-zap" element={<ProtectedRoute><BuildZap /></ProtectedRoute>} />
               <Route path="*" element={<NotFound />} />
             </Routes>
