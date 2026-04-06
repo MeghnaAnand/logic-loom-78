@@ -1,9 +1,11 @@
+import type { FlowBlock } from "@/components/learn/FlowDiagram";
+
 export interface QuizQuestion {
   question: string;
   options: string[];
   correctIndex: number;
   explanation: string;
-  concept: string; // short concept label for revisit feedback
+  concept: string;
 }
 
 export interface Chapter {
@@ -13,7 +15,11 @@ export interface Chapter {
   emoji: string;
   description: string;
   content: string[];
+  diagram?: FlowBlock[];
+  diagramCaption?: string;
   questions: QuizQuestion[];
+  /** If true, renders a special interactive walkthrough instead of standard quiz */
+  isWalkthrough?: boolean;
 }
 
 export const PASS_THRESHOLD = 0.6; // 60% to pass
