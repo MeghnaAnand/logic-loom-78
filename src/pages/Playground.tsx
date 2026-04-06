@@ -636,7 +636,10 @@ const Playground = () => {
                           </Button>
                         ) : (
                           <div className="flex flex-col flex-1 gap-2">
-                            <Button size="sm" onClick={() => navigate("/history")} className="w-full bg-accent text-accent-foreground gap-1 text-xs">
+                            <Button size="sm" onClick={() => navigate("/speed-challenge")} className="w-full bg-accent text-accent-foreground gap-1 text-xs">
+                              <Zap className="w-3.5 h-3.5" /> Speed Challenge
+                            </Button>
+                            <Button size="sm" variant="outline" onClick={() => navigate("/history")} className="w-full gap-1 text-xs">
                               📊 Progress <ArrowRight className="w-3.5 h-3.5" />
                             </Button>
                             <div className="flex gap-1.5">
