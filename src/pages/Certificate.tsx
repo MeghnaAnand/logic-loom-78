@@ -27,6 +27,19 @@ const Certificate = () => {
     enabled: !!user,
   });
 
+  const { data: chapterProgress, isLoading: chaptersLoading } = useQuery({
+    queryKey: ["chapter-progress", user?.id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("chapter_progress")
+        .select("chapter_id")
+        .eq("passed", true);
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!user,
+  });
+
   if (authLoading) return null;
   if (!user) {
     navigate("/auth?redirect=/certificate");
@@ -34,10 +47,10 @@ const Certificate = () => {
   }
 
   const hasCompletedPuzzles = (sessions?.length ?? 0) > 0;
-  // For now, we check puzzle completion. Chapter completion is tracked client-side.
-  // A user reaching this page after completing everything gets their certificate.
-  const isEligible = hasCompletedPuzzles;
-  const loading = sessionsLoading;
+  const completedChapterCount = chapterProgress?.length ?? 0;
+  const allChaptersCompleted = completedChapterCount === chapters.length;
+  const isEligible = hasCompletedPuzzles && allChaptersCompleted;
+  const loading = sessionsLoading || chaptersLoading;
 
   const userName = user.email?.split("@")[0] || "Learner";
   const completionDate = sessions?.[0]?.completed_at

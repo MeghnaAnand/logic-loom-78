@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, ArrowRight, CheckCircle, XCircle, BookOpen, ChevronRight, RotateCcw, Lock, Award, Send, Loader2, Zap } from "lucide-react";
@@ -8,6 +8,8 @@ import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import FlowDiagram from "@/components/learn/FlowDiagram";
 import { chapters, PASS_THRESHOLD, type Chapter, type QuizQuestion } from "@/data/learn-chapters";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
 
 type View = "list" | "reading" | "quiz" | "results";
 
@@ -66,6 +68,7 @@ const WebhookTester = () => {
 
 const Learn = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [view, setView] = useState<View>("list");
   const [activeChapter, setActiveChapter] = useState<Chapter | null>(null);
   const [currentQ, setCurrentQ] = useState(0);
@@ -74,6 +77,49 @@ const Learn = () => {
   const [score, setScore] = useState(0);
   const [wrongConcepts, setWrongConcepts] = useState<string[]>([]);
   const [completedChapters, setCompletedChapters] = useState<Set<string>>(new Set());
+  const [loadingProgress, setLoadingProgress] = useState(true);
+
+  // Load progress from database
+  useEffect(() => {
+    if (!user) { setLoadingProgress(false); return; }
+    const load = async () => {
+      const { data } = await supabase
+        .from("chapter_progress")
+        .select("chapter_id")
+        .eq("passed", true);
+      if (data) {
+        setCompletedChapters(new Set(data.map((r: any) => r.chapter_id)));
+      }
+      setLoadingProgress(false);
+    };
+    load();
+  }, [user]);
+
+  // Save progress to database
+  const saveProgress = useCallback(async (chapterId: string, quizScore: number) => {
+    if (!user) return;
+    const total = chapters.find(c => c.id === chapterId)?.questions.length ?? 5;
+    const didPass = quizScore / total >= PASS_THRESHOLD;
+    
+    const { data: existing } = await supabase
+      .from("chapter_progress")
+      .select("id, score")
+      .eq("chapter_id", chapterId)
+      .maybeSingle();
+
+    if (existing) {
+      if (quizScore > (existing.score ?? 0)) {
+        await supabase
+          .from("chapter_progress")
+          .update({ score: quizScore, passed: didPass, completed_at: new Date().toISOString() })
+          .eq("id", existing.id);
+      }
+    } else {
+      await supabase
+        .from("chapter_progress")
+        .insert({ user_id: user.id, chapter_id: chapterId, score: quizScore, passed: didPass });
+    }
+  }, [user]);
 
   const isChapterUnlocked = (ch: Chapter) => {
     if (ch.number === 1) return true;
@@ -120,10 +166,12 @@ const Learn = () => {
       setAnswered(false);
     } else {
       const total = activeChapter!.questions.length;
-      const passed = score / total >= PASS_THRESHOLD;
+      const finalScore = score;
+      const passed = finalScore / total >= PASS_THRESHOLD;
       if (passed) {
         setCompletedChapters((prev) => new Set(prev).add(activeChapter!.id));
       }
+      saveProgress(activeChapter!.id, finalScore);
       setView("results");
     }
   };
@@ -149,6 +197,12 @@ const Learn = () => {
           {/* Chapter List */}
           {view === "list" && (
             <motion.div key="list" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-3">
+              {loadingProgress ? (
+                <div className="flex justify-center py-16">
+                  <Loader2 className="w-6 h-6 animate-spin text-primary" />
+                </div>
+              ) : (
+              <>
               <p className="text-sm text-muted-foreground mb-4">
                 {chapters.length} chapters · 5 questions each · Score 60% to unlock the next
               </p>
@@ -206,6 +260,8 @@ const Learn = () => {
                     Ready to Puzzle? Start Solving <ArrowRight className="w-4 h-4" />
                   </Button>
                 </div>
+              )}
+              </>
               )}
             </motion.div>
           )}
