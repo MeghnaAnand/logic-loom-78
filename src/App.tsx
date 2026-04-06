@@ -36,6 +36,7 @@ const App = () => (
               <Route path="/learn" element={<ProtectedRoute><Learn /></ProtectedRoute>} />
               <Route path="/certificate" element={<ProtectedRoute><Certificate /></ProtectedRoute>} />
               <Route path="/speed-challenge" element={<ProtectedRoute><SpeedChallenge /></ProtectedRoute>} />
+              <Route path="/verify/:certId" element={<VerifyCertificate />} />
               <Route path="/build-zap" element={<ProtectedRoute><BuildZap /></ProtectedRoute>} />
               <Route path="*" element={<NotFound />} />
             </Routes>
