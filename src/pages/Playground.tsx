@@ -892,13 +892,10 @@ const Playground = () => {
                               })()}
                             </div>
                             <Button
-                              onClick={() => {
-                                const context = sessionChallenges.map(c => c.title).join(", ");
-                                navigate(`/challenge?context=${encodeURIComponent(context)}`);
-                              }}
+                              onClick={() => navigate("/history")}
                               className="w-full bg-accent text-accent-foreground gap-1 font-display"
                             >
-                              🧠 Challenge Mode <ArrowRight className="w-4 h-4" />
+                              📊 View Progress <ArrowRight className="w-4 h-4" />
                             </Button>
                             <div className="flex gap-2">
                               <Button
