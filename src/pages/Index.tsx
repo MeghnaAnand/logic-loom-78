@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ArrowRight, Zap, Puzzle, Sparkles, History, BookOpen, LogIn } from "lucide-react";
+import { ArrowRight, Zap, Puzzle, Sparkles, History, BookOpen, LogIn, Award, Clock, TrendingUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 import { useAuth } from "@/hooks/useAuth";
@@ -14,19 +14,19 @@ const floatingBlocks = [
 
 const features = [
   {
+    icon: <BookOpen className="w-6 h-6" />,
+    title: "Learn by Chapters",
+    description: "9 bite-sized chapters teach you triggers, actions, conditions, loops, and more — with quizzes to lock in the knowledge.",
+  },
+  {
     icon: <Puzzle className="w-6 h-6" />,
-    title: "Drag & Drop Puzzles",
-    description: "Arrange visual blocks in the right order to solve real automation scenarios — from email sorting to sales reports.",
+    title: "Practice with Puzzles",
+    description: "Drag-and-drop real automation workflows. Build the skills Zapier, Make, and Power Automate users need — without touching the tools yet.",
   },
   {
-    icon: <Zap className="w-6 h-6" />,
-    title: "Real-World Scenarios",
-    description: "Practice with tasks professionals automate daily using Zapier, Make, and Power Automate. Learn concepts that transfer to any tool.",
-  },
-  {
-    icon: <Sparkles className="w-6 h-6" />,
-    title: "AI-Powered Learning",
-    description: "Get personalized feedback, AI-generated challenges, and a learning path tailored to how you solve each puzzle.",
+    icon: <Award className="w-6 h-6" />,
+    title: "Earn a Certificate",
+    description: "Complete all chapters and puzzles to earn a shareable certificate you can add to LinkedIn and your resume.",
   },
 ];
 
