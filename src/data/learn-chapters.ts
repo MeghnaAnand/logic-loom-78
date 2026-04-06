@@ -91,6 +91,12 @@ export const chapters: Chapter[] = [
       "A trigger can be almost anything: a new email arriving, a form being submitted, a new row added to a spreadsheet, a specific time of day, or even a message in Slack. The trigger watches and waits for that event.",
       "When the trigger fires, it passes data to the next step. For example, if the trigger is 'new email received,' it passes along the sender, subject, body, and attachments — so the rest of your workflow can use that information.",
     ],
+    diagram: [
+      { label: "New Email Arrives", type: "trigger" },
+      { label: "Extract Sender & Subject", type: "data" },
+      { label: "Send Slack Notification", type: "action" },
+    ],
+    diagramCaption: "The trigger fires, passes data, and actions use it",
     questions: [
       {
         question: "What role does a trigger play in an automation?",
