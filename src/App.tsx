@@ -10,6 +10,7 @@ import Playground from "./pages/Playground";
 import Auth from "./pages/Auth";
 import History from "./pages/History";
 import Learn from "./pages/Learn";
+import Certificate from "./pages/Certificate";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
