@@ -120,8 +120,9 @@ const Index = () => {
                 onClick={handleStartPuzzling}
                 className="bg-primary text-primary-foreground hover:bg-primary/90 glow-primary font-display text-base px-8 gap-2"
               >
-                {user ? "Start Puzzling" : "Sign In & Start Puzzling"} <ArrowRight className="w-4 h-4" />
+                {user ? "Start Learning — Free" : "Sign Up Free"} <ArrowRight className="w-4 h-4" />
               </Button>
+              <p className="text-xs text-muted-foreground mt-2">No credit card · Takes 30 minutes · Certificate included</p>
             </div>
           </motion.div>
 
