@@ -199,9 +199,13 @@ export const chapters: Chapter[] = [
       "For example: when a new support ticket arrives, check the priority. If it's 'urgent,' send it to the senior team immediately. If it's 'low,' add it to the regular queue. The condition checks the priority and decides the path.",
       "In automation tools, conditions are called different names: Zapier calls them 'Filters' or 'Paths,' Make calls them 'Routers,' and Power Automate calls them 'Conditions.' The concept is always the same — check a value and branch.",
     ],
-    questions: [
-      {
-        question: "What does a condition do in a workflow?",
+    diagram: [
+      { label: "New Support Ticket", type: "trigger" },
+      { label: "Check Priority Level", type: "condition" },
+      { label: "Route to Senior Team", type: "action" },
+      { label: "Add to Regular Queue", type: "action" },
+    ],
+    diagramCaption: "Condition checks priority, then branches to different actions",
         options: ["It always stops the automation", "It checks a value and decides which path to follow", "It sends data to a spreadsheet", "It triggers the automation"],
         correctIndex: 1,
         explanation: "Conditions evaluate whether something is true or false, then route the workflow down the appropriate path.",
