@@ -13,6 +13,7 @@ import Auth from "./pages/Auth";
 import History from "./pages/History";
 import Learn from "./pages/Learn";
 import Certificate from "./pages/Certificate";
+import VerifyCertificate from "./pages/VerifyCertificate";
 import SpeedChallenge from "./pages/SpeedChallenge";
 import BuildZap from "./pages/BuildZap";
 import NotFound from "./pages/NotFound";
