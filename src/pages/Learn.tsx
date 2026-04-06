@@ -187,10 +187,13 @@ const Learn = () => {
                       <h3 className="font-display font-bold text-sm text-foreground mb-1">All chapters complete! 🎉</h3>
                       <p className="text-xs text-muted-foreground mb-3">Finish the puzzles to earn your certificate.</p>
                       <div className="flex flex-col gap-2">
-                        <Button className="w-full gap-2" onClick={() => navigate("/play")}>
+                        <Button className="w-full gap-2" onClick={() => navigate("/build-zap")}>
+                          <Zap className="w-4 h-4" /> Build Your First Real Zap
+                        </Button>
+                        <Button variant="outline" className="w-full gap-2" onClick={() => navigate("/play")}>
                           Start Puzzles <ArrowRight className="w-4 h-4" />
                         </Button>
-                        <Button variant="outline" size="sm" className="w-full gap-2" onClick={() => navigate("/certificate")}>
+                        <Button variant="ghost" size="sm" className="w-full gap-2" onClick={() => navigate("/certificate")}>
                           <Award className="w-4 h-4" /> View Certificate
                         </Button>
                       </div>
