@@ -136,3 +136,71 @@
     background-size: 24px 24px;
   }
 }
+
+/* Accessibility: Reduced motion */
+.a11y-reduced-motion *,
+.a11y-reduced-motion *::before,
+.a11y-reduced-motion *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+}
+
+/* Accessibility: Focus mode – dim non-interactive areas */
+.a11y-focus-mode main > * {
+  opacity: 0.6;
+  transition: opacity 0.2s;
+}
+.a11y-focus-mode main > *:hover,
+.a11y-focus-mode main > *:focus-within,
+.a11y-focus-mode main > *:has(:focus) {
+  opacity: 1;
+}
+
+/* Accessibility: Dyslexia-friendly font */
+.a11y-dyslexia body,
+.a11y-dyslexia h1,
+.a11y-dyslexia h2,
+.a11y-dyslexia h3,
+.a11y-dyslexia h4,
+.a11y-dyslexia h5,
+.a11y-dyslexia h6,
+.a11y-dyslexia p,
+.a11y-dyslexia span,
+.a11y-dyslexia button,
+.a11y-dyslexia label,
+.a11y-dyslexia input,
+.a11y-dyslexia .font-display,
+.a11y-dyslexia .font-body {
+  font-family: 'OpenDyslexic', 'Comic Sans MS', sans-serif !important;
+  letter-spacing: 0.05em;
+  word-spacing: 0.12em;
+  line-height: 1.8;
+}
+
+/* Accessibility: Large text */
+.a11y-large-text body {
+  font-size: 18px;
+}
+.a11y-large-text .text-xs {
+  font-size: 0.85rem !important;
+}
+.a11y-large-text .text-sm {
+  font-size: 1rem !important;
+}
+.a11y-large-text .text-base {
+  font-size: 1.15rem !important;
+}
+
+/* Accessibility: High contrast */
+.a11y-high-contrast {
+  --border: 260 25% 60%;
+  --muted-foreground: 260 15% 30%;
+}
+.a11y-high-contrast .text-muted-foreground {
+  font-weight: 500;
+}
+.a11y-high-contrast button,
+.a11y-high-contrast [role="button"] {
+  border-width: 2px;
+}
