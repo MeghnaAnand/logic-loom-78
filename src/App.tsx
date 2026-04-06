@@ -13,6 +13,7 @@ import History from "./pages/History";
 import ChallengeMode from "./pages/ChallengeMode";
 import Glossary from "./pages/Glossary";
 import SkillMap from "./pages/SkillMap";
+import Learn from "./pages/Learn";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
