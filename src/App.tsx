@@ -7,12 +7,8 @@ import { AuthProvider } from "@/hooks/useAuth";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import Index from "./pages/Index";
 import Playground from "./pages/Playground";
-import AutomationMind from "./pages/AutomationMind";
 import Auth from "./pages/Auth";
 import History from "./pages/History";
-import ChallengeMode from "./pages/ChallengeMode";
-import Glossary from "./pages/Glossary";
-import SkillMap from "./pages/SkillMap";
 import Learn from "./pages/Learn";
 import NotFound from "./pages/NotFound";
 
@@ -28,14 +24,9 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/play" element={<ProtectedRoute><Playground /></ProtectedRoute>} />
-            <Route path="/automation-mind" element={<ProtectedRoute><AutomationMind /></ProtectedRoute>} />
             <Route path="/history" element={<ProtectedRoute><History /></ProtectedRoute>} />
             <Route path="/auth" element={<Auth />} />
-            <Route path="/challenge" element={<ProtectedRoute><ChallengeMode /></ProtectedRoute>} />
-            <Route path="/glossary" element={<Glossary />} />
             <Route path="/learn" element={<ProtectedRoute><Learn /></ProtectedRoute>} />
-            <Route path="/skills" element={<ProtectedRoute><SkillMap /></ProtectedRoute>} />
-            
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
