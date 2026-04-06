@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { DragDropContext, Droppable, Draggable, DropResult } from "@hello-pangea/dnd";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { ArrowLeft, Trophy, Flame, Zap, CheckCircle2, Medal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { pickSessionChallenges, type Block, type Challenge, getBlockIndent } from "@/data/challenges";
@@ -46,19 +46,15 @@ const SpeedChallenge = () => {
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const startTimeRef = useRef(0);
 
-  // Fetch leaderboard
   useEffect(() => {
     supabase
       .from("speed_leaderboard")
       .select("*")
       .order("total_time_sec", { ascending: true })
       .limit(20)
-      .then(({ data }) => {
-        if (data) setLeaderboard(data);
-      });
+      .then(({ data }) => { if (data) setLeaderboard(data); });
   }, [submitted]);
 
-  // Countdown
   useEffect(() => {
     if (phase !== "countdown") return;
     if (countdownNum <= 0) {
@@ -74,7 +70,6 @@ const SpeedChallenge = () => {
     return () => clearTimeout(t);
   }, [phase, countdownNum, challenges]);
 
-  // Cleanup timer
   useEffect(() => {
     return () => { if (timerRef.current) clearInterval(timerRef.current); };
   }, []);
@@ -84,7 +79,6 @@ const SpeedChallenge = () => {
   const advanceOrFinish = useCallback(() => {
     playDing();
     confetti({ particleCount: 30, spread: 50, origin: { y: 0.65 }, colors: ["#FFD700", "#4ECDC4"] });
-
     if (currentIdx < challenges.length - 1) {
       const nextIdx = currentIdx + 1;
       setCurrentIdx(nextIdx);
@@ -92,7 +86,6 @@ const SpeedChallenge = () => {
       setPlacedBlocks([]);
       setSolved(false);
     } else {
-      // All done!
       if (timerRef.current) clearInterval(timerRef.current);
       const finalTime = Math.floor((Date.now() - startTimeRef.current) / 1000);
       setElapsedSec(finalTime);
@@ -163,7 +156,6 @@ const SpeedChallenge = () => {
 
   const formatTime = (s: number) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
 
-  // Countdown screen
   if (phase === "countdown") {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -175,7 +167,6 @@ const SpeedChallenge = () => {
             key={countdownNum}
             initial={{ scale: 2, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0.5, opacity: 0 }}
             className="text-7xl font-display font-bold text-primary"
           >
             {countdownNum}
@@ -185,24 +176,20 @@ const SpeedChallenge = () => {
     );
   }
 
-  // Finished screen
   if (phase === "finished") {
     return (
       <div className="min-h-screen bg-background flex flex-col">
         <header className="border-b border-border px-4 py-3 flex items-center gap-3 bg-card">
-          <Button variant="ghost" size="sm" onClick={() => navigate("/playground")} className="gap-1">
+          <Button variant="ghost" size="sm" onClick={() => navigate("/play")} className="gap-1">
             <ArrowLeft className="w-4 h-4" /> Puzzles
           </Button>
-          <h1 className="font-display font-bold text-foreground">Speed Challenge</h1>
+          <h1 className="font-display font-bold text-foreground text-sm">Speed Challenge</h1>
         </header>
-
         <div className="flex-1 flex flex-col lg:flex-row gap-6 p-6 max-w-4xl mx-auto w-full">
-          {/* Result */}
           <div className="flex-1 flex flex-col items-center justify-center text-center">
             <Trophy className="w-16 h-16 text-accent mb-4" />
             <h2 className="font-display text-2xl font-bold text-foreground mb-1">Challenge Complete!</h2>
             <div className="text-4xl font-display font-bold text-primary mb-4">{formatTime(elapsedSec)}</div>
-
             {user && !submitted ? (
               <div className="w-full max-w-xs space-y-3">
                 <input
@@ -224,18 +211,13 @@ const SpeedChallenge = () => {
             ) : (
               <p className="text-sm text-success font-display font-semibold">✓ Score submitted!</p>
             )}
-
             <div className="flex gap-2 mt-6">
-              <Button variant="outline" size="sm" onClick={() => navigate("/playground")}>
-                Back to Puzzles
-              </Button>
+              <Button variant="outline" size="sm" onClick={() => navigate("/play")}>Back to Puzzles</Button>
               <Button size="sm" onClick={() => window.location.reload()} className="bg-accent text-accent-foreground gap-1">
                 <Flame className="w-3.5 h-3.5" /> Try Again
               </Button>
             </div>
           </div>
-
-          {/* Leaderboard */}
           <div className="flex-1 max-w-sm">
             <div className="bg-card border border-border rounded-xl p-4">
               <div className="flex items-center gap-2 mb-4">
@@ -247,14 +229,10 @@ const SpeedChallenge = () => {
               ) : (
                 <div className="space-y-1.5">
                   {leaderboard.map((entry, i) => (
-                    <div
-                      key={entry.id}
-                      className={`flex items-center gap-2 px-3 py-2 rounded-lg text-xs ${
-                        i === 0 ? "bg-accent/15 text-accent-foreground font-bold" :
-                        i === 1 ? "bg-muted/80 font-semibold" :
-                        i === 2 ? "bg-muted/50 font-semibold" : "text-muted-foreground"
-                      }`}
-                    >
+                    <div key={entry.id} className={`flex items-center gap-2 px-3 py-2 rounded-lg text-xs ${
+                      i === 0 ? "bg-accent/15 text-accent-foreground font-bold" :
+                      i === 1 ? "bg-muted/80 font-semibold" :
+                      i === 2 ? "bg-muted/50 font-semibold" : "text-muted-foreground"}`}>
                       <span className="w-5 text-center font-display font-bold">
                         {i === 0 ? "🥇" : i === 1 ? "🥈" : i === 2 ? "🥉" : `${i + 1}`}
                       </span>
@@ -271,33 +249,26 @@ const SpeedChallenge = () => {
     );
   }
 
-  // Playing phase
+  // Playing phase — single DragDropContext wrapping both panels
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <header className="border-b border-border px-4 py-3 flex items-center justify-between bg-card">
         <div className="flex items-center gap-3">
-          <Button variant="ghost" size="sm" onClick={() => navigate("/playground")} className="gap-1">
+          <Button variant="ghost" size="sm" onClick={() => navigate("/play")} className="gap-1">
             <ArrowLeft className="w-4 h-4" />
           </Button>
           <Zap className="w-4 h-4 text-accent" />
           <h1 className="font-display font-bold text-foreground text-sm">Speed Challenge</h1>
         </div>
         <div className="flex items-center gap-3">
-          <motion.div
-            key={elapsedSec}
-            className="bg-destructive/15 text-destructive px-3 py-1 rounded-full font-mono font-bold text-sm"
-          >
+          <div className="bg-destructive/15 text-destructive px-3 py-1 rounded-full font-mono font-bold text-sm">
             ⏱ {formatTime(elapsedSec)}
-          </motion.div>
+          </div>
           <div className="flex items-center gap-1">
             {challenges.map((_, i) => (
-              <div
-                key={i}
-                className={`w-6 h-6 rounded-md font-display font-bold text-[10px] flex items-center justify-center
-                  ${i < currentIdx ? "bg-success text-success-foreground" :
-                    i === currentIdx ? "bg-primary text-primary-foreground" :
-                    "bg-muted text-muted-foreground"}`}
-              >
+              <div key={i} className={`w-6 h-6 rounded-md font-display font-bold text-[10px] flex items-center justify-center
+                ${i < currentIdx ? "bg-success text-success-foreground" :
+                  i === currentIdx ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}`}>
                 {i < currentIdx ? "✓" : i + 1}
               </div>
             ))}
@@ -305,27 +276,22 @@ const SpeedChallenge = () => {
         </div>
       </header>
 
-      <div className="flex-1 flex flex-col lg:flex-row">
-        {/* Compact challenge info + blocks */}
-        <div className="w-full lg:w-64 border-b lg:border-b-0 lg:border-r border-border bg-card p-4">
-          <h2 className="font-display text-sm font-bold text-card-foreground mb-1">{challenge.title}</h2>
-          <p className="text-[10px] text-muted-foreground mb-3">{challenge.scenario}</p>
-
-          <DragDropContext onDragEnd={onDragEnd}>
+      <DragDropContext onDragEnd={onDragEnd}>
+        <div className="flex-1 flex flex-col lg:flex-row">
+          {/* Sidebar: info + available blocks */}
+          <div className="w-full lg:w-64 border-b lg:border-b-0 lg:border-r border-border bg-card p-4">
+            <h2 className="font-display text-sm font-bold text-card-foreground mb-1">{challenge.title}</h2>
+            <p className="text-[10px] text-muted-foreground mb-3">{challenge.scenario}</p>
             <Droppable droppableId="available" direction="vertical">
               {(provided) => (
-                <div ref={provided.innerRef} {...provided.droppableProps} className="flex flex-col gap-2 mb-4">
+                <div ref={provided.innerRef} {...provided.droppableProps} className="flex flex-col gap-2">
                   {availableBlocks.map((block, index) => (
                     <Draggable key={block.id} draggableId={block.id} index={index}>
-                      {(provided, snapshot) => (
-                        <div
-                          ref={provided.innerRef}
-                          {...provided.draggableProps}
-                          {...provided.dragHandleProps}
+                      {(prov, snap) => (
+                        <div ref={prov.innerRef} {...prov.draggableProps} {...prov.dragHandleProps}
                           className={`${blockColorMap[block.type]} rounded-lg px-3 py-2 text-primary-foreground font-display font-semibold text-xs
                             select-none cursor-grab active:cursor-grabbing transition-shadow
-                            ${snapshot.isDragging ? "shadow-2xl scale-105" : "shadow-md hover:shadow-lg"}`}
-                        >
+                            ${snap.isDragging ? "shadow-2xl scale-105" : "shadow-md hover:shadow-lg"}`}>
                           <span className="mr-1.5">{block.icon}</span>{block.label}
                         </div>
                       )}
@@ -338,70 +304,24 @@ const SpeedChallenge = () => {
                 </div>
               )}
             </Droppable>
+          </div>
 
-            {/* Workspace */}
-            <div className="lg:hidden border-t border-border pt-3">
-              <Droppable droppableId="workspace">
-                {(provided, snapshot) => (
-                  <motion.div
-                    ref={provided.innerRef}
-                    {...provided.droppableProps}
-                    animate={wrongShake ? { x: [0, -6, 6, -4, 4, 0] } : { x: 0 }}
-                    className={`min-h-[200px] rounded-xl border-2 border-dashed p-3 transition-colors
-                      ${snapshot.isDraggingOver ? "border-primary/50 bg-primary/5" :
-                        solved ? "border-success/50 bg-success/5" : "border-border"}`}
-                  >
-                    {placedBlocks.length === 0 && !snapshot.isDraggingOver && (
-                      <div className="flex items-center justify-center h-[180px] text-muted-foreground/30 font-display text-center text-xs">
-                        Drop blocks here
-                      </div>
-                    )}
-                    {placedBlocks.map((block, index) => {
-                      const indent = getBlockIndent(placedBlocks, index);
-                      const isStructural = block.structure && block.structure !== "step";
-                      const isOpener = block.structure === "if" || block.structure === "loop-start" || block.structure === "try";
-                      const isCloser = block.structure === "endif" || block.structure === "loop-end" || block.structure === "end-try";
-                      const isBranch = block.structure === "else" || block.structure === "catch";
-                      return (
-                        <Draggable key={block.id} draggableId={block.id} index={index}>
-                          {(prov, snap) => (
-                            <div ref={prov.innerRef} {...prov.draggableProps} {...prov.dragHandleProps} style={{ ...prov.draggableProps.style, marginLeft: `${indent * 20}px` }}>
-                              <motion.div layout className={`
-                                ${isStructural ? (isOpener ? "bg-primary/20 border-2 border-primary/40 text-primary" : isCloser ? "bg-muted border-2 border-border text-muted-foreground" : isBranch ? "bg-accent/20 border-2 border-accent/40 text-accent-foreground" : blockColorMap[block.type] + " text-primary-foreground") : blockColorMap[block.type] + " text-primary-foreground"}
-                                rounded-lg px-3 py-2 font-display font-semibold text-xs select-none cursor-grab mb-1.5
-                                ${snap.isDragging ? "shadow-2xl" : "shadow-md"} ${solved ? "ring-2 ring-success/40" : ""}`}>
-                                <span className="mr-1.5">{block.icon}</span>{block.label}
-                                {solved && <CheckCircle2 className="w-3 h-3 ml-1 inline opacity-80" />}
-                              </motion.div>
-                            </div>
-                          )}
-                        </Draggable>
-                      );
-                    })}
-                    {provided.placeholder}
-                  </motion.div>
-                )}
-              </Droppable>
-            </div>
-          </DragDropContext>
-        </div>
-
-        {/* Desktop workspace */}
-        <div className="hidden lg:flex flex-1 bg-workspace workspace-grid p-6">
-          <DragDropContext onDragEnd={onDragEnd}>
+          {/* Workspace */}
+          <div className="flex-1 bg-workspace workspace-grid p-6">
             <Droppable droppableId="workspace">
               {(provided, snapshot) => (
                 <motion.div
                   ref={provided.innerRef}
                   {...provided.droppableProps}
                   animate={wrongShake ? { x: [0, -6, 6, -4, 4, 0] } : { x: 0 }}
-                  className={`min-h-[300px] max-w-md ml-auto rounded-xl border-2 border-dashed p-4 transition-colors w-full
+                  transition={{ duration: 0.4 }}
+                  className={`min-h-[300px] max-w-md mx-auto rounded-xl border-2 border-dashed p-4 transition-colors
                     ${snapshot.isDraggingOver ? "border-primary/50 bg-primary/5" :
                       solved ? "border-success/50 bg-success/5" : "border-workspace-foreground/20"}`}
                 >
                   {placedBlocks.length === 0 && !snapshot.isDraggingOver && (
                     <div className="flex items-center justify-center h-[280px] text-workspace-foreground/30 font-display text-center text-sm">
-                      Drop blocks here — fast!
+                      Drop blocks here — fast! ⚡
                     </div>
                   )}
                   {placedBlocks.map((block, index) => {
@@ -436,9 +356,9 @@ const SpeedChallenge = () => {
                 </motion.div>
               )}
             </Droppable>
-          </DragDropContext>
+          </div>
         </div>
-      </div>
+      </DragDropContext>
     </div>
   );
 };
