@@ -122,11 +122,32 @@ const Learn = () => {
                 );
               })}
 
-              <div className="pt-4">
-                <Button variant="outline" className="w-full gap-2" onClick={() => navigate("/play")}>
-                  Ready to Puzzle? Start Solving <ArrowRight className="w-4 h-4" />
-                </Button>
-              </div>
+              {/* All chapters done → certificate CTA */}
+              {completedChapters.size === chapters.length ? (
+                <div className="pt-4 space-y-3">
+                  <Card className="border-primary/30 bg-primary/5">
+                    <CardContent className="p-4 text-center">
+                      <Award className="w-8 h-8 text-primary mx-auto mb-2" />
+                      <h3 className="font-display font-bold text-sm text-foreground mb-1">All chapters complete! 🎉</h3>
+                      <p className="text-xs text-muted-foreground mb-3">Finish the puzzles to earn your certificate.</p>
+                      <div className="flex flex-col gap-2">
+                        <Button className="w-full gap-2" onClick={() => navigate("/play")}>
+                          Start Puzzles <ArrowRight className="w-4 h-4" />
+                        </Button>
+                        <Button variant="outline" size="sm" className="w-full gap-2" onClick={() => navigate("/certificate")}>
+                          <Award className="w-4 h-4" /> View Certificate
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+              ) : (
+                <div className="pt-4">
+                  <Button variant="outline" className="w-full gap-2" onClick={() => navigate("/play")}>
+                    Ready to Puzzle? Start Solving <ArrowRight className="w-4 h-4" />
+                  </Button>
+                </div>
+              )}
             </motion.div>
           )}
 
